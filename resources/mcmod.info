@@ -1,0 +1,16 @@
+[
+{
+  "modid": "is_mtc",
+  "name": "Mine Trading Cards",
+  "description": "Trading cards are now in Minecraft ! Collect and trade cards with your comrades with this mod !",
+  "version": "2.1",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["TeamWar aka Tradeworld"],
+  "credits": "The Forge and FML guys",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
