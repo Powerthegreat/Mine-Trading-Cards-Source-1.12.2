@@ -19,15 +19,14 @@ import com.is.mtc.root.Tools;
 
 public class CardItem extends Item {
 
-	private static final String _str = "item_card_";
+	private static final String prefix = "item_card_";
 	private static final int MAX_DESC_LENGTH = 42;
 
 	private int rarity;
 
-	public CardItem(int r)
-	{
-		setUnlocalizedName(_str + Rarity.toString(r).toLowerCase());
-		setTextureName(MineTradingCards.MODID + ":" + _str + Rarity.toString(r).toLowerCase());
+	public CardItem(int r) {
+		setUnlocalizedName(prefix + Rarity.toString(r).toLowerCase());
+		setTextureName(MineTradingCards.MODID + ":" + prefix + Rarity.toString(r).toLowerCase());
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		rarity = r;
@@ -51,11 +50,11 @@ public class CardItem extends Item {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World w, EntityPlayer player) {
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 
-		if (w.isRemote) {
+		if (world.isRemote) {
 			if (Tools.hasCDWD(stack)) {
-				player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, w, (int)player.posX, (int)player.posY, (int)player.posZ);
+				player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int)player.posX, (int)player.posY, (int)player.posZ);
 			}
 
 			return stack;

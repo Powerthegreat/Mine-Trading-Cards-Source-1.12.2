@@ -28,8 +28,7 @@ public class CardItemInterface extends GuiScreen {
 	}
 
 	// Adapted drawing
-	public void drawTexturedModalRect(int p_73729_1_, int p_73729_2_, int p_73729_5_, int p_73729_6_) // Custom for 01 size
-	{
+	public void drawTexturedModalRect(int p_73729_1_, int p_73729_2_, int p_73729_5_, int p_73729_6_) { // Custom for 01 size
 		float f = 0.00390625F;
 		float f1 = 0.00390625F;
 		Tessellator tessellator = Tessellator.instance;

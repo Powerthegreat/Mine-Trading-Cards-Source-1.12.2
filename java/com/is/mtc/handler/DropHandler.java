@@ -67,27 +67,27 @@ public class DropHandler {
 			return;
 
 		if (event.entity instanceof EntityDragon) { // 18 packs
-			addDrop(MineTradingCards.pl, event);
-			addDrop(MineTradingCards.pa, event, 2);
-			addDrop(MineTradingCards.pr, event, 3);
-			addDrop(MineTradingCards.pu, event, 5);
-			addDrop(MineTradingCards.pc, event, 7);
+			addDrop(MineTradingCards.packLegendary, event);
+			addDrop(MineTradingCards.packAncient, event, 2);
+			addDrop(MineTradingCards.packRare, event, 3);
+			addDrop(MineTradingCards.packUncommon, event, 5);
+			addDrop(MineTradingCards.packCommon, event, 7);
 		}
 
 		if (event.entity instanceof EntityWither) { // 18 packs
-			testDrop(4, MineTradingCards.pl, event); // 1 chance on 4 to drop a pl
-			addDrop(MineTradingCards.pa, event, 1);
-			addDrop(MineTradingCards.pr, event, 2);
-			addDrop(MineTradingCards.pu, event, 3);
-			addDrop(MineTradingCards.pc, event, 3);
+			testDrop(4, MineTradingCards.packLegendary, event); // 1 chance on 4 to drop a pl
+			addDrop(MineTradingCards.packAncient, event, 1);
+			addDrop(MineTradingCards.packRare, event, 2);
+			addDrop(MineTradingCards.packUncommon, event, 3);
+			addDrop(MineTradingCards.packCommon, event, 3);
 		}
 
-		testDrop(DROP_RATE_LEG, MineTradingCards.pl, event); // leg
-		testDrop(DROP_RATE_ANC, MineTradingCards.pa, event); // anc
-		testDrop(DROP_RATE_EDT, MineTradingCards.pe, event); // edt
-		testDrop(DROP_RATE_STD, MineTradingCards.ps, event); // std
-		testDrop(DROP_RATE_RAR, MineTradingCards.pr, event); // rar
-		testDrop(DROP_RATE_UNC, MineTradingCards.pu, event); // unc
-		testDrop(DROP_RATE_COM, MineTradingCards.pc, event); // com
+		testDrop(DROP_RATE_LEG, MineTradingCards.packLegendary, event); // Legendary (leg)
+		testDrop(DROP_RATE_ANC, MineTradingCards.packAncient, event); // Ancient (anc)
+		testDrop(DROP_RATE_EDT, MineTradingCards.packEdition, event); // Edition (edt)
+		testDrop(DROP_RATE_STD, MineTradingCards.packStandard, event); // Standard (std)
+		testDrop(DROP_RATE_RAR, MineTradingCards.packRare, event); // Rare (rar)
+		testDrop(DROP_RATE_UNC, MineTradingCards.packUncommon, event); // Uncommon (unc)
+		testDrop(DROP_RATE_COM, MineTradingCards.packCommon, event); // Common (com)
 	}
 }

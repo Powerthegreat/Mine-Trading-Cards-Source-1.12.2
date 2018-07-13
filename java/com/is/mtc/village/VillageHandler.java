@@ -25,12 +25,12 @@ implements VillagerRegistry.IVillageTradeHandler {
 	public void manipulateTradesForVillager(EntityVillager villager, MerchantRecipeList recipeList, Random random) {
 		if (villager.getProfession() == TRADER_ID) {
 			recipeList.clear();
-			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.iron_ingot, 1), new ItemStack(MineTradingCards.pc)));
-			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.gold_ingot, 1), new ItemStack(MineTradingCards.pu)));
-			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.diamond, 1), new ItemStack(MineTradingCards.pr)));
-			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.iron_ingot, 2), new ItemStack(MineTradingCards.ps)));
-			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.iron_ingot, 2), new ItemStack(MineTradingCards.pe)));
-			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.gold_ingot, 2), new ItemStack(Items.emerald, 1), new ItemStack(MineTradingCards.pa)));
+			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.iron_ingot, 1), new ItemStack(MineTradingCards.packCommon)));
+			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.gold_ingot, 1), new ItemStack(MineTradingCards.packUncommon)));
+			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.diamond, 1), new ItemStack(MineTradingCards.packRare)));
+			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.iron_ingot, 2), new ItemStack(MineTradingCards.packStandard)));
+			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.iron_ingot, 2), new ItemStack(MineTradingCards.packEdition)));
+			recipeList.addToListWithCheck(new MerchantRecipe(new ItemStack(Items.gold_ingot, 2), new ItemStack(Items.emerald, 1), new ItemStack(MineTradingCards.packAncient)));
 		}
 	}
 }

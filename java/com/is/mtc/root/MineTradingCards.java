@@ -48,153 +48,163 @@ import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = MineTradingCards.MODID, version = MineTradingCards.VERSION, name = MineTradingCards.NAME)
 public class MineTradingCards {
-
+	// Information about the mod
 	public static final String MODID = "is_mtc";
-	public static final String VERSION = "2.1";
+	public static final String VERSION = "2.1.1";
 	public static final String NAME = "Mine Trading Cards";
 
+	// The instance of the mod class that forge uses
 	@Instance(MineTradingCards.MODID)
 	public static MineTradingCards INSTANCE;
 
+	// Whether the proxy is remote
 	public static boolean PROXY_IS_REMOTE = false;
 
-	public static CardItem cc, cu, cr, ca, cl;
-	public static PackItemBase pc, pu, pr, pa, pl, ps, pe; // com, unc rar anc leg standard edition
+	// Cards, packs, binders and display blocks to be registered
+	public static CardItem cardCommon, cardUncommon, cardRare, cardAncient, cardLegendary;
+	public static PackItemBase packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard, packEdition; // Common (com), unccommon (unc), rare (rar), ancient (anc), legendary (leg), standard (std), edition (edt)
 
-	public static BinderItem bi;
-	public static DisplayerBlock db;
-	public static MonoDisplayerBlock mdb;
+	public static BinderItem binder;
+	public static DisplayerBlock displayerBlock;
+	public static MonoDisplayerBlock monoDisplayerBlock;
 
+	// The directories that MTC works with
 	private static String DATA_DIR = "";
 	private static String CONF_DIR = "";
 
+	// The proxy, either a combined client or a dedicated server
 	@SidedProxy(clientSide = "com.is.mtc.proxy.ClientProxy", serverSide = "com.is.mtc.proxy.ServerProxy")
 	public static CommonProxy PROXY;
-	public static SimpleNetworkWrapper snw;
+	public static SimpleNetworkWrapper simpleNetworkWrapper; // The network wrapper for the mod
 
-	public static CreativeTabs MODTAB = new CreativeTabs("tab_mtc") { @Override public Item getTabIconItem() { return MineTradingCards.ps; } };
-
+	// The creative tab that the mod uses
+	public static CreativeTabs MODTAB = new CreativeTabs("tab_mtc") {
+		@Override public Item getTabIconItem() {
+			return MineTradingCards.packStandard;
+		}
+	};
 	//-
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent e)
-	{
-		DATA_DIR = e.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
-		CONF_DIR = e.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
+	public void preInit(FMLPreInitializationEvent event) {
+		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
+		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
+		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
 
-		PROXY.preInit(e);
-		readConfig(e);
+		PROXY.preInit(event);
+		readConfig(event);
 
 		Databank.setup();
 		DataLoader.readAndLoad();
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent e)
-	{
-		PROXY.init(e);
+	public void init(FMLInitializationEvent event) {
+		// Runs the initialisation from the proxy, then defines the items and blocks
+		PROXY.init(event);
 
-		cc = new CardItem(Rarity.COMMON);
-		cu = new CardItem(Rarity.UNCOMMON);
-		cr = new CardItem(Rarity.RARE);
-		ca = new CardItem(Rarity.ANCIENT);
-		cl = new CardItem(Rarity.LEGENDARY);
+		cardCommon = new CardItem(Rarity.COMMON);
+		cardUncommon = new CardItem(Rarity.UNCOMMON);
+		cardRare = new CardItem(Rarity.RARE);
+		cardAncient = new CardItem(Rarity.ANCIENT);
+		cardLegendary = new CardItem(Rarity.LEGENDARY);
 
-		pc = new PackItemRarity(Rarity.COMMON);
-		pu = new PackItemRarity(Rarity.UNCOMMON);
-		pr = new PackItemRarity(Rarity.RARE);
-		pa = new PackItemRarity(Rarity.ANCIENT);
-		pl = new PackItemRarity(Rarity.LEGENDARY);
+		packCommon = new PackItemRarity(Rarity.COMMON);
+		packUncommon = new PackItemRarity(Rarity.UNCOMMON);
+		packRare = new PackItemRarity(Rarity.RARE);
+		packAncient = new PackItemRarity(Rarity.ANCIENT);
+		packLegendary = new PackItemRarity(Rarity.LEGENDARY);
 
-		ps = new PackItemStandard();
-		pe = new PackItemEdition();
+		packStandard = new PackItemStandard();
+		packEdition = new PackItemEdition();
 
-		bi = new BinderItem();
-		db = new DisplayerBlock();
-		mdb = new MonoDisplayerBlock();
+		binder = new BinderItem();
+		displayerBlock = new DisplayerBlock();
+		monoDisplayerBlock = new MonoDisplayerBlock();
 	}
 
 	@EventHandler
-	public void postInit(FMLPostInitializationEvent e)
-	{
-		PROXY.postInit(e);
+	public void postInit(FMLPostInitializationEvent event) {
+		// Runs the postinitialisation from the proxy, then registers the items and blocks
+		PROXY.postInit(event);
 
-		Injector.registerItem(cc);
-		Injector.registerItem(cu);
-		Injector.registerItem(cr);
-		Injector.registerItem(ca);
-		Injector.registerItem(cl);
+		Injector.registerItem(cardCommon);
+		Injector.registerItem(cardUncommon);
+		Injector.registerItem(cardRare);
+		Injector.registerItem(cardAncient);
+		Injector.registerItem(cardLegendary);
 
-		Injector.registerItem(pc);
-		Injector.registerItem(pu);
-		Injector.registerItem(pr);
-		Injector.registerItem(pa);
-		Injector.registerItem(pl);
+		Injector.registerItem(packCommon);
+		Injector.registerItem(packUncommon);
+		Injector.registerItem(packRare);
+		Injector.registerItem(packAncient);
+		Injector.registerItem(packLegendary);
 
-		Injector.registerItem(ps);
-		Injector.registerItem(pe);
+		Injector.registerItem(packStandard);
+		Injector.registerItem(packEdition);
 
-		Injector.registerItem(bi);
-		Injector.registerBlock(db);
-		Injector.registerBlock(mdb);
+		Injector.registerItem(binder);
+		Injector.registerBlock(displayerBlock);
+		Injector.registerBlock(monoDisplayerBlock);
 
-		snw = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
-		snw.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
+		// Sets up the network wrapper
+		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+		simpleNetworkWrapper.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
 
+		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 
+		// Registers tile entities
 		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, "tile_entity_displayer");
 		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, "tile_entity_monodisplayer");
 
-		GameRegistry.addRecipe(new ItemStack(db), new Object[] { "IGI", "GgG", "IGI",
-			'I', Items.iron_ingot, 'G', Blocks.glass, 'g', Blocks.glowstone });
+		// Adds recipes
+		GameRegistry.addRecipe(new ItemStack(displayerBlock), "IGI", "GgG", "IGI", 'I', Items.iron_ingot, 'G', Blocks.glass, 'g', Blocks.glowstone);
 
-		GameRegistry.addRecipe(new ItemStack(mdb, 4), new Object[] { "IWI", "WgW", "IGI",
-			'I', Items.iron_ingot, 'G', Blocks.glass, 'g', Blocks.glowstone, 'W', Blocks.planks });
+		GameRegistry.addRecipe(new ItemStack(monoDisplayerBlock, 4), "IWI", "WgW", "IGI", 'I', Items.iron_ingot, 'G', Blocks.glass, 'g', Blocks.glowstone, 'W', Blocks.planks);
 
-		GameRegistry.addShapelessRecipe(new ItemStack(bi), new Object[] {
-			Items.book, cc });
+		GameRegistry.addShapelessRecipe(new ItemStack(binder), Items.book, cardCommon);
 
-		MapGenStructureIO.func_143031_a(CardMasterHome.class, "Mtc_Cm_Jouse"); // Register the house to the generator with a typed id
+		MapGenStructureIO.func_143031_a(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
+		// Registers the Card Master villager's trades, and the creation handler for its home
 		VillagerRegistry.instance().registerVillageTradeHandler(VillageHandler.TRADER_ID, new VillageHandler());
 		VillagerRegistry.instance().registerVillageCreationHandler(new CardMasterHomeHandler());
 	}
 
 	@EventHandler
-	public void serverLoad(FMLServerStartingEvent event)
-	{
+	public void serverLoad(FMLServerStartingEvent event) {
+		// Registers the cards on a server
 		event.registerServerCommand(new CC_CreateCard());
 		event.registerServerCommand(new CC_ForceCreateCard());
 	}
 
 	//-
 
-	private void readConfig(FMLPreInitializationEvent e)
-	{
-		Configuration conf = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), "1v", false);
-		conf.load();
+	private void readConfig(FMLPreInitializationEvent event) {
+		// Loads from the configuration file
+		Configuration config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), "1v", false);
+		config.load();
 
-		Logs.ENABLE_DEV_LOGS = conf.getBoolean("devlog_enabled", "logs", false, "Enable developper logs");
+		Logs.ENABLE_DEV_LOGS = config.getBoolean("devlog_enabled", "logs", false, "Enable developper logs");
 
-		DropHandler.CAN_DROP_MOB = conf.getBoolean("mobs_can_drop", "drops", true, "Can mobs drop packs on death");
-		DropHandler.CAN_DROP_ANIMAL = conf.getBoolean("animals_can_drop", "drops", false, "Can animals drop packs on death");
-		DropHandler.CAN_DROP_PLAYER = conf.getBoolean("players_can_drop", "drops", false, "Can players drop packs on death");
+		DropHandler.CAN_DROP_MOB = config.getBoolean("mobs_can_drop", "drops", true, "Can mobs drop packs on death");
+		DropHandler.CAN_DROP_ANIMAL = config.getBoolean("animals_can_drop", "drops", false, "Can animals drop packs on death");
+		DropHandler.CAN_DROP_PLAYER = config.getBoolean("players_can_drop", "drops", false, "Can players drop packs on death");
 
-		DropHandler.DROP_RATE_COM = conf.getInt("pack_drop_rate_common", "drops", 16, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
-		DropHandler.DROP_RATE_UNC = conf.getInt("pack_drop_rate_uncommon", "drops", 32, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
-		DropHandler.DROP_RATE_RAR = conf.getInt("pack_drop_rate_rare", "drops", 48, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
-		DropHandler.DROP_RATE_ANC = conf.getInt("pack_drop_rate_ancient", "drops", 64, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
-		DropHandler.DROP_RATE_LEG = conf.getInt("pack_drop_rate_legendary", "drops", 256, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_COM = config.getInt("pack_drop_rate_common", "drops", 16, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_UNC = config.getInt("pack_drop_rate_uncommon", "drops", 32, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_RAR = config.getInt("pack_drop_rate_rare", "drops", 48, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_ANC = config.getInt("pack_drop_rate_ancient", "drops", 64, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_LEG = config.getInt("pack_drop_rate_legendary", "drops", 256, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
 
-		DropHandler.DROP_RATE_STD = conf.getInt("pack_drop_rate_standard", "drops", 40, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
-		DropHandler.DROP_RATE_EDT = conf.getInt("pack_drop_rate_edition", "drops", 40, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_STD = config.getInt("pack_drop_rate_standard", "drops", 40, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
+		DropHandler.DROP_RATE_EDT = config.getInt("pack_drop_rate_edition", "drops", 40, 0, Integer.MAX_VALUE, "1 chance out of X to drop");
 
-		conf.save();
+		config.save();
 	}
 
-	public static String getDataDir()
-	{
+	public static String getDataDir() {
 		return DATA_DIR;
 	}
 }

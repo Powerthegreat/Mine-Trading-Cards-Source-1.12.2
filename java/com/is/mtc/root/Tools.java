@@ -20,24 +20,24 @@ public class Tools {
 	public static final int SIDE_EAST = 5;
 
 	// -
-	public static String clean(String str) {
-		if (str == null)
+	public static String clean(String string) {
+		if (string == null)
 			return "";
 
-		str = str.replaceAll(" +", " ");
-		str = str.replace('\t', ' ');
-		str = str.trim();
+		string = string.replaceAll(" +", " ");
+		string = string.replace('\t', ' ');
+		string = string.trim();
 
-		return str;
+		return string;
 	}
 
 	private static Pattern pattern = Pattern.compile("^[a-z0-9_]*$");
-	public static boolean isValidID(String str) {
+	public static boolean isValidID(String string) {
 		Matcher matcher;
 
-		if (str == null || str.isEmpty())
+		if (string == null || string.isEmpty())
 			return false;
-		matcher = pattern.matcher(str.toLowerCase());
+		matcher = pattern.matcher(string.toLowerCase());
 
 		return matcher.find();
 	}
