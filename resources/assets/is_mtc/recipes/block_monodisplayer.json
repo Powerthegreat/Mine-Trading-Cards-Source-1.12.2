@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IWI",
+    "WgW",
+    "IGI"  ],
+  "key": {
+    "I": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "ingotIron"
+      }
+    ],
+    "G": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "blockGlass"
+      }
+    ],
+    "g": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "glowstone"
+      }
+    ],
+    "W": [
+      {
+        "type": "forge:ore_dict",
+        "ore": "plankWood"
+      }
+    ]
+  },
+  "result": {
+    "item": "is_mtc:block_displayer"
+  }
+}
+
