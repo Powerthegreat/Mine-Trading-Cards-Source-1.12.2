@@ -19,12 +19,14 @@ public class DisplayerBlock extends BlockContainer {
 	private IIcon iFace, iSides;
 
 	public DisplayerBlock() {
-		super(Material.iron);
+		super(Material.IRON);
 
 		setLightLevel(0.9375F);
 
-		setBlockName("block_displayer");
-		setBlockTextureName(MineTradingCards.MODID + ":block_displayer");
+		setUnlocalizedName("block_displayer");
+		setRegistryName("block_displayer");
+		//setBlockName("block_displayer");
+		//setBlockTextureName(MineTradingCards.MODID + ":block_displayer");
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		setHardness(5.0F);

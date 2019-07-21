@@ -13,7 +13,7 @@ public class CardItemInterface extends GuiScreen {
 	private CardStructure cStruct;
 
 	public CardItemInterface(ItemStack stack) {
-		cStruct = Databank.getCardByCDWD(stack.stackTagCompound.getString("cdwd"));
+		cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 	}
 
 	@Override
@@ -31,12 +31,12 @@ public class CardItemInterface extends GuiScreen {
 	public void drawTexturedModalRect(int p_73729_1_, int p_73729_2_, int p_73729_5_, int p_73729_6_) { // Custom for 01 size
 		float f = 0.00390625F;
 		float f1 = 0.00390625F;
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV(p_73729_1_ + 0, p_73729_2_ + p_73729_6_, this.zLevel, 0, 1);
-		tessellator.addVertexWithUV(p_73729_1_ + p_73729_5_, p_73729_2_ + p_73729_6_, this.zLevel, 1, 1);
-		tessellator.addVertexWithUV(p_73729_1_ + p_73729_5_, p_73729_2_ + 0, this.zLevel, 1, 0);
-		tessellator.addVertexWithUV(p_73729_1_ + 0, p_73729_2_ + 0, this.zLevel, 0, 0);
+		Tessellator tessellator = Tessellator.getInstance();
+		//tessellator.startDrawingQuads();
+		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + 0, p_73729_2_ + p_73729_6_, (int) this.zLevel, 0, 1});
+		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + p_73729_5_, p_73729_2_ + p_73729_6_, (int) this.zLevel, 1, 1});
+		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + p_73729_5_, p_73729_2_ + 0, (int) this.zLevel, 1, 0});
+		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + 0, p_73729_2_ + 0, (int) this.zLevel, 0, 0});
 		tessellator.draw();
 	}
 

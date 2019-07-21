@@ -4,19 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.data_manager.EditionStructure;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.MineTradingCards;
 import com.is.mtc.root.Rarity;
+
+import javax.annotation.Nullable;
 
 public class PackItemEdition extends PackItemBase {
 
@@ -26,26 +31,27 @@ public class PackItemEdition extends PackItemBase {
 
 	public PackItemEdition() {
 		setUnlocalizedName("item_pack_edition");
-		setTextureName(MineTradingCards.MODID + ":item_pack_edition");
+		setRegistryName("item_pack_edition");
+		//setTextureName(MineTradingCards.MODID + ":item_pack_edition");
 	}
 
 	@Override
 	public void onUpdate(ItemStack stack, World w, Entity player, int par_4, boolean par_5) {
 
 		if (!stack.hasTagCompound())
-			stack.stackTagCompound = new NBTTagCompound();
+			stack.setTagCompound(new NBTTagCompound());
 
-		if (!stack.stackTagCompound.hasKey("edition_id") && Databank.getEditionsCount() > 0) {
+		if (!stack.getTagCompound().hasKey("edition_id") && Databank.getEditionsCount() > 0) {
 			Random r = new Random();
 			int i = r.nextInt(Databank.getEditionsCount());
 
-			stack.stackTagCompound.setString("edition_id", Databank.getEditionWithNumeralId(i).getId());
+			stack.getTagCompound().setString("edition_id", Databank.getEditionWithNumeralId(i).getId());
 		}
 	}
 
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
-		String eid = stack.hasTagCompound() && stack.stackTagCompound.hasKey("edition_id") ? stack.stackTagCompound.getString("edition_id") : null;
+		String eid = stack.hasTagCompound() && stack.getTagCompound().hasKey("edition_id") ? stack.getTagCompound().getString("edition_id") : null;
 		EditionStructure eStruct = eid != null ? Databank.getEditionWithId(eid) : null;
 
 		if (eid != null) {
@@ -58,20 +64,19 @@ public class PackItemEdition extends PackItemBase {
 			return super.getItemStackDisplayName(stack);
 	}
 
-	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List infos, boolean par_4) {
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
 		EditionStructure eStruct;
 		NBTTagCompound nbt;
 
-		if (!stack.hasTagCompound() || !stack.stackTagCompound.hasKey("edition_id"))
+		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey("edition_id"))
 			return;
 
-		nbt = stack.stackTagCompound;
-		eStruct = Databank.getEditionWithId(stack.stackTagCompound.getString("edition_id"));
+		nbt = stack.getTagCompound();
+		eStruct = Databank.getEditionWithId(stack.getTagCompound().getString("edition_id"));
 
 		if (eStruct == null) {
-			infos.add(EnumChatFormatting.RED + "/!\\ Missing client-side edition");
-			infos.add(EnumChatFormatting.GRAY + nbt.getString("edition_id"));
+			infos.add(ChatFormatting.RED + "/!\\ Missing client-side edition");
+			infos.add(ChatFormatting.GRAY + nbt.getString("edition_id"));
 			return;
 		}
 
@@ -79,29 +84,28 @@ public class PackItemEdition extends PackItemBase {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World w, EntityPlayer player)
-	{
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		ArrayList<String> created;
 		EditionStructure eStruct;
 		NBTTagCompound nbt;
 		Random r;
 		int i;
 
-		if (w.isRemote)
-			return stack;
+		if (world.isRemote)
+			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 
-		if (!stack.hasTagCompound() || !stack.stackTagCompound.hasKey("edition_id")) {
+		if (!player.getHeldItem(hand).hasTagCompound() || !player.getHeldItem(hand).getTagCompound().hasKey("edition_id")) {
 			Logs.errLog("PackItemEdition: Missing NBT or NBTTag");
-			return stack;
+			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		}
 
-		nbt = stack.stackTagCompound;
-		eStruct = Databank.getEditionWithId(stack.stackTagCompound.getString("edition_id"));
+		nbt = player.getHeldItem(hand).getTagCompound();
+		eStruct = Databank.getEditionWithId(player.getHeldItem(hand).getTagCompound().getString("edition_id"));
 
 		if (eStruct == null) {
 			Logs.chatMessage(player, "The edition this pack is linked to does not exist, thus zero cards were generated");
 			Logs.errLog("PackItemEdition: Edition is missing");
-			return stack;
+			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		}
 
 		created = new ArrayList<String>();
@@ -119,16 +123,16 @@ public class PackItemEdition extends PackItemBase {
 
 		if (created.size() > 0) {
 			for (String cdwd : created) {
-				spawnCard(player, w, cdwd);
+				spawnCard(player, world, cdwd);
 			}
-			stack.stackSize -= 1;
+			player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
 		}
 		else {
 			Logs.chatMessage(player, "Zero cards were registered, thus zero cards were generated");
 			Logs.errLog("Zero cards were registered, thus zero cards were generated");
 		}
 
-		return stack;
+		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 	}
 
 	private void createCards(String edition, int cardRarity, int count, ArrayList<String> created) {

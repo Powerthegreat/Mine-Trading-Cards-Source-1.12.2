@@ -4,9 +4,11 @@ import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 
 import com.is.mtc.root.Tools;
@@ -22,7 +24,7 @@ public class BinderItemInventory implements IInventory {
 		this.container = container;
 		BinderItem.testNBT(container);
 
-		readFromNBT(container.stackTagCompound);
+		readFromNBT(container.getTagCompound());
 	}
 
 	/*-*/
@@ -36,8 +38,11 @@ public class BinderItemInventory implements IInventory {
 			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
 			int j = nbttagcompound1.getInteger("Slot");
 
-			if (j >= 0 && j < content.length)
-				content[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+			if (j >= 0 && j < content.length) {
+				ItemStack item = new ItemStack((Item) null);
+				item.setTagCompound(nbttagcompound1);
+				content[j] = item;
+			}
 		}
 	}
 
@@ -68,22 +73,23 @@ public class BinderItemInventory implements IInventory {
 		return 8;
 	}
 
-	@Override
 	public int getSizeInventory() { // 64x8 = 512 slots
 		return getTotalPages() * getStacksPerPage();
 	}
 
-	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
 	public ItemStack getStackInSlot(int slot) {
 		return content[slot];
 	}
 
-	@Override
 	public ItemStack decrStackSize(int slot, int amount) {
 		ItemStack stack = getStackInSlot(slot);
 
 		if (stack != null) {
-			if (stack.stackSize <= amount) // We set the content to null, since we'll remove more than there is in the slot
+			if (stack.getCount() <= amount) // We set the content to null, since we'll remove more than there is in the slot
 				setInventorySlotContents(slot, null);
 			else
 				stack = stack.splitStack(amount); // Remove 'amount' from the stack
@@ -92,58 +98,79 @@ public class BinderItemInventory implements IInventory {
 		return stack;
 	}
 
-	@Override
+	public ItemStack removeStackFromSlot(int slot) {
+		return getStackInSlot(slot);
+	}
+
 	public ItemStack getStackInSlotOnClosing(int slot) {
 		return getStackInSlot(slot);
 	}
 
-	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		content[slot] = stack;
 	}
 
 	/*-*/
 
-	@Override
-	public String getInventoryName() {
+	public String getName() {
 		return "binder_item_inventory";
 	}
 
-	@Override
-	public boolean hasCustomInventoryName() {
+	public boolean hasCustomName() {
 		return false;
 	}
 
 	/*-*/
 
-	@Override
 	public int getInventoryStackLimit() {
 		return 64;
 	}
 
-	@Override
 	public void markDirty() {
 	}
 
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(EntityPlayer player) {
 		return true;
 	}
 
 	/*-*/
 
-	@Override
-	public void openInventory() {
+	public void openInventory(EntityPlayer player) {
+
 	}
 
-	@Override
-	public void closeInventory() {
+	public void closeInventory(EntityPlayer player) {
+
 	}
 
 	/*-*/
 
-	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) { // Is 'ItemStack' is valid for slot
 		return Tools.isValidCard(stack);
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+
+	}
+
+	@Override
+	public ITextComponent getDisplayName() {
+		return null;
 	}
 }

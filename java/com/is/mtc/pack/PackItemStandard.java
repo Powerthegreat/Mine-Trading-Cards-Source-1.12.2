@@ -5,6 +5,9 @@ import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import com.is.mtc.root.Logs;
@@ -19,18 +22,18 @@ public class PackItemStandard extends PackItemBase{
 
 	public PackItemStandard() {
 		setUnlocalizedName("item_pack_standard");
-		setTextureName(MineTradingCards.MODID + ":item_pack_standard");
+		setRegistryName("item_pack_standard");
+		//setTextureName(MineTradingCards.MODID + ":item_pack_standard");
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World w, EntityPlayer player)
-	{
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		ArrayList<String> created;
 		Random r;
 		int i;
 
-		if (w.isRemote)
-			return stack;
+		if (world.isRemote)
+			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 
 		created = new ArrayList<String>();
 		createCards(Rarity.COMMON, cCount[Rarity.COMMON], created);
@@ -47,15 +50,15 @@ public class PackItemStandard extends PackItemBase{
 
 		if (created.size() > 0) {
 			for (String cdwd : created) {
-				spawnCard(player, w, cdwd);
+				spawnCard(player, world, cdwd);
 			}
-			stack.stackSize -= 1;
+			player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
 		}
 		else {
 			Logs.chatMessage(player, "Zero cards were registered, thus zero cards were generated");
 			Logs.errLog("Zero cards were registered, thus zero cards can be generated");
 		}
 
-		return stack;
+		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 	}
 }

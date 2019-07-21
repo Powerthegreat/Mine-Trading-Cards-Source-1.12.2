@@ -7,18 +7,18 @@ import com.is.mtc.binder.BinderItem;
 import com.is.mtc.binder.BinderItemInterfaceContainer;
 import com.is.mtc.root.Logs;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class MTCMessageHandler implements IMessageHandler<MTCMessage, IMessage>{
 
 	@Override
 	public IMessage onMessage(MTCMessage message, MessageContext ctx) {
-		EntityPlayer p = ctx.getServerHandler().playerEntity;
-		ItemStack binderStack = p.getHeldItem();
+		EntityPlayer p = ctx.getServerHandler().player;
+		ItemStack binderStack = p.getActiveItemStack();
 
-		if (binderStack == null || !binderStack.hasTagCompound() || !binderStack.stackTagCompound.hasKey("page"))
+		if (binderStack == null || !binderStack.hasTagCompound() || !binderStack.getTagCompound().hasKey("page"))
 			return null;
 
 		switch (message.id) {
@@ -43,10 +43,10 @@ public class MTCMessageHandler implements IMessageHandler<MTCMessage, IMessage>{
 			break;
 
 		case BinderItemInterfaceContainer.MODE_SWITCH:
-			int mode = binderStack.stackTagCompound.getInteger("mode_mtc");
+			int mode = binderStack.getTagCompound().getInteger("mode_mtc");
 
-			binderStack.stackTagCompound.setInteger("mode_mtc", mode == BinderItem.MODE_STD ? BinderItem.MODE_FIL : BinderItem.MODE_STD);
-			Logs.devLog("Server: " + mode + ">>" + binderStack.stackTagCompound.getInteger("mode_mtc"));
+			binderStack.getTagCompound().setInteger("mode_mtc", mode == BinderItem.MODE_STD ? BinderItem.MODE_FIL : BinderItem.MODE_STD);
+			Logs.devLog("Server: " + mode + ">>" + binderStack.getTagCompound().getInteger("mode_mtc"));
 			break;
 		}
 

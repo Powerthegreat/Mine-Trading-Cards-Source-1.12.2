@@ -15,7 +15,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 import com.is.mtc.root.MineTradingCards;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class DropHandler {
 
@@ -36,8 +36,8 @@ public class DropHandler {
 	private void addDrop(Item drop, LivingDropsEvent event, int count) {
 		ItemStack itemToDrop = new ItemStack(drop);
 
-		event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX,
-				event.entity.posY, event.entity.posZ, itemToDrop));
+		event.getDrops().add(new EntityItem(event.getEntity().getEntityWorld(), event.getEntity().posX,
+				event.getEntity().posY, event.getEntity().posZ, itemToDrop));
 	}
 
 	private void addDrop(Item drop, LivingDropsEvent event) {
@@ -54,19 +54,19 @@ public class DropHandler {
 
 	@SubscribeEvent
 	public void onEvent(LivingDropsEvent event) {
-		if (!(event.entity instanceof EntityLiving)) // Not a known living entity
+		if (!(event.getEntity() instanceof EntityLiving)) // Not a known living entity
 			return;
 
-		if (!CAN_DROP_MOB && event.entity instanceof EntityMob)
+		if (!CAN_DROP_MOB && event.getEntity() instanceof EntityMob)
 			return;
 
-		if (!CAN_DROP_ANIMAL && event.entity instanceof EntityAnimal)
+		if (!CAN_DROP_ANIMAL && event.getEntity() instanceof EntityAnimal)
 			return;
 
-		if (!CAN_DROP_PLAYER && event.entity instanceof EntityPlayer)
+		if (!CAN_DROP_PLAYER && event.getEntity() instanceof EntityPlayer)
 			return;
 
-		if (event.entity instanceof EntityDragon) { // 18 packs
+		if (event.getEntity() instanceof EntityDragon) { // 18 packs
 			addDrop(MineTradingCards.packLegendary, event);
 			addDrop(MineTradingCards.packAncient, event, 2);
 			addDrop(MineTradingCards.packRare, event, 3);
@@ -74,7 +74,7 @@ public class DropHandler {
 			addDrop(MineTradingCards.packCommon, event, 7);
 		}
 
-		if (event.entity instanceof EntityWither) { // 18 packs
+		if (!(event.getEntity().isNonBoss()) && !(event.getEntity() instanceof EntityDragon)) { // 18 packs
 			testDrop(4, MineTradingCards.packLegendary, event); // 1 chance on 4 to drop a pl
 			addDrop(MineTradingCards.packAncient, event, 1);
 			addDrop(MineTradingCards.packRare, event, 2);

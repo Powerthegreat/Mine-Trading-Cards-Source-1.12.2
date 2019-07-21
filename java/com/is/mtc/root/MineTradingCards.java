@@ -7,6 +7,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -156,14 +157,10 @@ public class MineTradingCards {
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 
 		// Registers tile entities
-		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, "tile_entity_displayer");
-		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, "tile_entity_monodisplayer");
+		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:tile_entity_displayer"));
+		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:tile_entity_monodisplayer"));
 
-		GameRegistry.addRecipe(new ItemStack(monoDisplayerBlock, 4), "IWI", "WgW", "IGI", 'I', Items.iron_ingot, 'G', Blocks.glass, 'g', Blocks.glowstone, 'W', Blocks.planks);
-
-		GameRegistry.addShapelessRecipe(new ItemStack(binder), Items.book, cardCommon);
-
-		MapGenStructureIO.func_143031_a(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
+		MapGenStructureIO.registerStructureComponent(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
 		// Registers the Card Master villager's trades, and the creation handler for its home
 		VillagerRegistry.instance().registerVillageTradeHandler(VillageHandler.TRADER_ID, new VillageHandler());
 		VillagerRegistry.instance().registerVillageCreationHandler(new CardMasterHomeHandler());

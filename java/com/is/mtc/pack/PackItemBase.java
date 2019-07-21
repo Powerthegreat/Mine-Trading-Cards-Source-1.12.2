@@ -43,10 +43,10 @@ public class PackItemBase extends Item {
 		ItemStack genStack = new ItemStack(Rarity.getAssociatedCardItem(Databank.getCardByCDWD(cdwd).getRarity()));
 		EntityItem spawnedEnt;
 
-		genStack.stackTagCompound = new NBTTagCompound();
-		genStack.stackTagCompound.setString("cdwd", cdwd); // Setting card
+		genStack.setTagCompound(new NBTTagCompound());
+		genStack.getTagCompound().setString("cdwd", cdwd); // Setting card
 		spawnedEnt = new EntityItem(w, player.posX, player.posY + 1, player.posZ, genStack); // Spawning card
 
-		w.spawnEntityInWorld(spawnedEnt);
+		w.spawnEntity(spawnedEnt);
 	}
 }

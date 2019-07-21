@@ -2,15 +2,21 @@ package com.is.mtc.binder;
 
 import java.util.List;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.MineTradingCards;
 import com.is.mtc.root.Tools;
+
+import javax.annotation.Nullable;
 
 public class BinderItem extends Item {
 
@@ -23,37 +29,36 @@ public class BinderItem extends Item {
 
 	public BinderItem() {
 		setUnlocalizedName("item_binder");
-		setTextureName(MineTradingCards.MODID + ":item_binder");
+		setRegistryName("item_binder");
+		//setTextureName(MineTradingCards.MODID + ":item_binder");
 		setCreativeTab(MineTradingCards.MODTAB);
 	}
 
 	/*-*/
 
-	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World w, EntityPlayer player) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		if (world.isRemote) {
+			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		}
 
-		if (w.isRemote)
-			return stack;
+		testNBT(player.getHeldItem(hand));
+		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_BINDER, world, (int)player.posX, (int)player.posY, (int)player.posZ);
 
-		testNBT(stack);
-		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_BINDER, w, (int)player.posX, (int)player.posY, (int)player.posZ);
-
-		return stack;
+		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 	}
 
-	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List infos, boolean par_4) {
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
 		testNBT(stack);
 
 		infos.add("");
-		infos.add("Page: " + (stack.stackTagCompound.getInteger("page") + 1) + "/" + BinderItemInventory.getTotalPages());
+		infos.add("Page: " + (stack.getTagCompound().getInteger("page") + 1) + "/" + BinderItemInventory.getTotalPages());
 	}
 
 	public static void testNBT(ItemStack binderStack) {
-		if (binderStack.stackTagCompound == null) {// Create nbt if not already existing
-			binderStack.stackTagCompound = new NBTTagCompound();
-			binderStack.stackTagCompound.setInteger("page", 0);
-			binderStack.stackTagCompound.setInteger("mode_mtc", MODE_STD);
+		if (binderStack.getTagCompound() == null) {// Create nbt if not already existing
+			binderStack.setTagCompound(new NBTTagCompound());
+			binderStack.getTagCompound().setInteger("page", 0);
+			binderStack.getTagCompound().setInteger("mode_mtc", MODE_STD);
 		}
 
 	}
@@ -64,7 +69,7 @@ public class BinderItem extends Item {
 
 	public static int setCurrentPage(ItemStack binderStack, int page) {
 		testNBT(binderStack);
-		binderStack.stackTagCompound.setInteger("page", (int)Tools.clamp(0, page, BinderItemInventory.getTotalPages() - 1));
+		binderStack.getTagCompound().setInteger("page", (int)Tools.clamp(0, page, BinderItemInventory.getTotalPages() - 1));
 
 		return getCurrentPage(binderStack);
 	}
@@ -72,6 +77,6 @@ public class BinderItem extends Item {
 	public static int getCurrentPage(ItemStack binderStack) {
 		testNBT(binderStack);
 
-		return binderStack.stackTagCompound.getInteger("page");
+		return binderStack.getTagCompound().getInteger("page");
 	}
 }

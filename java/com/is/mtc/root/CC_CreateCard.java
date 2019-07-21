@@ -13,7 +13,6 @@ import net.minecraft.world.World;
 import com.is.mtc.data_manager.Databank;
 
 public class CC_CreateCard extends CommandTime { // Command to create an existing card
-
 	@Override
 	public String getCommandName() {
 		return "mtc_card";

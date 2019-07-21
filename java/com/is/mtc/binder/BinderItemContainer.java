@@ -2,6 +2,7 @@ package com.is.mtc.binder;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -53,7 +54,7 @@ public class BinderItemContainer extends Container {
 	}
 
 	public ItemStack getCardStackAtIndex(int idx) {
-		return ((Slot)inventorySlots.get(idx + 36)).getStack(); // +Inventory size
+		return inventorySlots.get(idx + 36).getStack(); // +Inventory size
 	}
 
 	public ItemStack getBinderStack() {
@@ -62,17 +63,16 @@ public class BinderItemContainer extends Container {
 
 	/*-*/
 
-	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
-		Slot providerSlot = (Slot)inventorySlots.get(providerSlotIndex); // Slot from where the stack comes from
-		ItemStack providedStack = null; // Stack that is to be moved
-		int binderpage = -1;
+		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Slot from where the stack comes from
+		ItemStack providedStack; // Stack that is to be moved
+		int binderpage;
 		int tmp;
 
-		if (!(player.getCurrentEquippedItem().getItem() instanceof BinderItem))
+		if (!(player.getActiveItemStack().getItem() instanceof BinderItem))
 			return null;
-		BinderItem.testNBT(player.getCurrentEquippedItem());
-		binderpage = BinderItem.getCurrentPage(player.getCurrentEquippedItem());
+		BinderItem.testNBT(player.getActiveItemStack());
+		binderpage = BinderItem.getCurrentPage(player.getActiveItemStack());
 
 		if (providerSlot == null || !providerSlot.getHasStack())
 			return null;
@@ -84,12 +84,12 @@ public class BinderItemContainer extends Container {
 			if (!mergeItemStack(providedStack, 0, 36, false))
 				return null;
 
-			tmp = providedStack.stackSize;
+			tmp = providedStack.getCount();
 			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}
 		else { // From inv to binder
-			int mode = player.getCurrentEquippedItem().stackTagCompound.getInteger("mode_mtc");
+			int mode = player.getActiveItemStack().getTagCompound().getInteger("mode_mtc");
 
 			if (!Tools.isValidCard(providedStack))
 				return null;
@@ -114,7 +114,7 @@ public class BinderItemContainer extends Container {
 				break;*/
 			}
 
-			tmp = providedStack.stackSize;
+			tmp = providedStack.getCount();
 			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}
@@ -122,41 +122,36 @@ public class BinderItemContainer extends Container {
 		return null;
 	}
 
-	@Override
-	public ItemStack slotClick(int slot, int p_75144_2_, int p_75144_3_, EntityPlayer player) {
-		ItemStack heldItem = player.getHeldItem();
+	public ItemStack slotClick(int slot, int dragType, ClickType clickType, EntityPlayer player) {
+		ItemStack heldItem = player.getActiveItemStack();
 
-		if (heldItem == null || heldItem.stackTagCompound == null) // Invalid binder
+		if (heldItem == null || heldItem.getTagCompound() == null) // Invalid binder
 			return null;
 
 		if (slot == player.inventory.currentItem) // Can't slot click on the binder
 			return null;
 
 		if (slot >= 36) {// Slot is from binder
-			int binderPage = BinderItem.getCurrentPage(player.getCurrentEquippedItem());
+			int binderPage = BinderItem.getCurrentPage(player.getActiveItemStack());
 
 			slot += (binderPage * BinderItemInventory.getStacksPerPage()); // Set current slot offset then
 		}
-		ItemStack ret = super.slotClick(slot, p_75144_2_, p_75144_3_, player);
-
-		return ret;
+		return super.slotClick(slot, dragType, clickType, player);
 	}
 
 	/*-*/
 
 	/*-*/
 
-	@Override
 	public boolean canInteractWith(EntityPlayer p_75145_1_) {
 		return bii.isUseableByPlayer(p_75145_1_);
 	}
 
-	@Override
 	public void onContainerClosed(EntityPlayer p_75134_1_) {
-		ItemStack heldItem = p_75134_1_.getHeldItem();
+		ItemStack heldItem = p_75134_1_.getActiveItemStack();
 
-		if (heldItem != null && heldItem.stackTagCompound != null)
-			bii.writeToNBT(heldItem.stackTagCompound); // Save data
+		if (heldItem != null && heldItem.getTagCompound() != null)
+			bii.writeToNBT(heldItem.getTagCompound()); // Save data
 		super.onContainerClosed(p_75134_1_);
 	}
 

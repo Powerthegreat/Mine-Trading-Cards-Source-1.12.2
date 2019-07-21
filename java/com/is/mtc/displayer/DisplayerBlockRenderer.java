@@ -20,7 +20,7 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer {
 
 	@Override
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float par5) {
-		Tessellator tessellator = Tessellator.instance;
+		Tessellator tessellator = Tessellator.getInstance();
 		DisplayerBlockTileEntity dbte = (DisplayerBlockTileEntity)te;
 
 		RenderHelper.disableStandardItemLighting();
@@ -73,10 +73,10 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer {
 		if ((stack = dbte.getItemStackInSlot(slot)) != null) {
 
 			if (!Tools.isValidCard(stack))
-				tessellator.setColorRGBA_F(1, 1, 1, 0);
+				tessellator.getBuffer().color(1, 1, 1, 0);
 			else {
 				CardItem ci = (CardItem)stack.getItem();
-				CardStructure cStruct = Databank.getCardByCDWD(stack.stackTagCompound.getString("cdwd"));
+				CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
 				if (cStruct == null || cStruct.getDynamicTexture() == null) // Card not registered or unregistered illustration, use item image instead
 					bindTexture(new ResourceLocation(MineTradingCards.MODID, "textures/items/item_card_" + Rarity.toString(ci.getCardRarity()).toLowerCase() + ".png"));
@@ -85,10 +85,10 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer {
 					bindTexture(cStruct.getResourceLocation());
 				}
 
-				tessellator.setColorRGBA_F(1, 1, 1, 1);
+				tessellator.getBuffer().color(1, 1, 1, 1);
 			}
 		}
 		else
-			tessellator.setColorRGBA_F(1, 1, 1, 0);
+			tessellator.getBuffer().color(1, 1, 1, 0);
 	}
 }
