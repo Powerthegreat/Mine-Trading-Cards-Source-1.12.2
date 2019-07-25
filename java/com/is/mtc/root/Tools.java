@@ -10,14 +10,14 @@ import com.is.mtc.card.CardItem;
 
 public class Tools {
 
-	public static final int SIDE_BOTTOM = 0;
+	/*public static final int SIDE_BOTTOM = 0;
 	public static final int SIDE_TOP = 1;
 
 	public static final int SIDE_NORTH = 2;
 	public static final int SIDE_SOUTH = 3;
 
 	public static final int SIDE_WEST = 4;
-	public static final int SIDE_EAST = 5;
+	public static final int SIDE_EAST = 5;*/
 
 	// -
 	public static String clean(String string) {
@@ -69,7 +69,7 @@ public class Tools {
 	}
 
 	public static boolean hasCDWD(ItemStack stack) {
-		if (stack == null || !stack.hasTagCompound() || !stack.stackTagCompound.hasKey("cdwd"))
+		if (stack == null || !stack.hasTagCompound() || !stack.getTagCompound().hasKey("cdwd"))
 			return false;
 
 		return true;

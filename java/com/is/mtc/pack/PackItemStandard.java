@@ -11,7 +11,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.MineTradingCards;
 import com.is.mtc.root.Rarity;
 
 public class PackItemStandard extends PackItemBase{

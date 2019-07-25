@@ -19,7 +19,7 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.MineTradingCards;
+import com.is.mtc.MineTradingCards;
 
 
 public class DataLoader {

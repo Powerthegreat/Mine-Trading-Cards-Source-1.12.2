@@ -13,7 +13,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import com.is.mtc.handler.GuiHandler;
-import com.is.mtc.root.MineTradingCards;
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Tools;
 
 import javax.annotation.Nullable;

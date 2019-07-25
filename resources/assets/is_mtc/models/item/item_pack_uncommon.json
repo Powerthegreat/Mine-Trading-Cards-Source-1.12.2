@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "is_mtc:items/item_pack_uncommon"
+  }
+}

@@ -5,9 +5,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.math.BlockPos;
 
 public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 	public static final int INVENTORY_SIZE = 1;
@@ -35,13 +36,14 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
 			int j = nbttagcompound1.getByte("Slot") & 255;
 
-			if (j >= 0 && j < content.length)
-				content[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+			if (j >= 0 && j < content.length) {
+				content[j] = new ItemStack(nbttagcompound1);
+			}
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		NBTTagList nbttaglist = new NBTTagList();
 
@@ -56,6 +58,7 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 
 		nbt.setTag("Items", nbttaglist);
 		readFromNBT(nbt);
+		return nbt;
 	}
 
 	@Override
@@ -63,12 +66,12 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 		NBTTagCompound syncData = new NBTTagCompound();
 		this.writeToNBT(syncData);
 
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, syncData);
+		return new SPacketUpdateTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ()), 1, syncData);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.func_148857_g());
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		readFromNBT(pkt.getNbtCompound());
 	}
 
 	/*@Override

@@ -2,9 +2,9 @@ package com.is.mtc.handler;
 
 import java.util.Random;
 
+import com.is.mtc.init.MTCItems;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -12,8 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-
-import com.is.mtc.root.MineTradingCards;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -67,27 +65,27 @@ public class DropHandler {
 			return;
 
 		if (event.getEntity() instanceof EntityDragon) { // 18 packs
-			addDrop(MineTradingCards.packLegendary, event);
-			addDrop(MineTradingCards.packAncient, event, 2);
-			addDrop(MineTradingCards.packRare, event, 3);
-			addDrop(MineTradingCards.packUncommon, event, 5);
-			addDrop(MineTradingCards.packCommon, event, 7);
+			addDrop(MTCItems.packLegendary, event);
+			addDrop(MTCItems.packAncient, event, 2);
+			addDrop(MTCItems.packRare, event, 3);
+			addDrop(MTCItems.packUncommon, event, 5);
+			addDrop(MTCItems.packCommon, event, 7);
 		}
 
 		if (!(event.getEntity().isNonBoss()) && !(event.getEntity() instanceof EntityDragon)) { // 18 packs
-			testDrop(4, MineTradingCards.packLegendary, event); // 1 chance on 4 to drop a pl
-			addDrop(MineTradingCards.packAncient, event, 1);
-			addDrop(MineTradingCards.packRare, event, 2);
-			addDrop(MineTradingCards.packUncommon, event, 3);
-			addDrop(MineTradingCards.packCommon, event, 3);
+			testDrop(4, MTCItems.packLegendary, event); // 1 chance on 4 to drop a pl
+			addDrop(MTCItems.packAncient, event, 1);
+			addDrop(MTCItems.packRare, event, 2);
+			addDrop(MTCItems.packUncommon, event, 3);
+			addDrop(MTCItems.packCommon, event, 3);
 		}
 
-		testDrop(DROP_RATE_LEG, MineTradingCards.packLegendary, event); // Legendary (leg)
-		testDrop(DROP_RATE_ANC, MineTradingCards.packAncient, event); // Ancient (anc)
-		testDrop(DROP_RATE_EDT, MineTradingCards.packEdition, event); // Edition (edt)
-		testDrop(DROP_RATE_STD, MineTradingCards.packStandard, event); // Standard (std)
-		testDrop(DROP_RATE_RAR, MineTradingCards.packRare, event); // Rare (rar)
-		testDrop(DROP_RATE_UNC, MineTradingCards.packUncommon, event); // Uncommon (unc)
-		testDrop(DROP_RATE_COM, MineTradingCards.packCommon, event); // Common (com)
+		testDrop(DROP_RATE_LEG, MTCItems.packLegendary, event); // Legendary (leg)
+		testDrop(DROP_RATE_ANC, MTCItems.packAncient, event); // Ancient (anc)
+		testDrop(DROP_RATE_EDT, MTCItems.packEdition, event); // Edition (edt)
+		testDrop(DROP_RATE_STD, MTCItems.packStandard, event); // Standard (std)
+		testDrop(DROP_RATE_RAR, MTCItems.packRare, event); // Rare (rar)
+		testDrop(DROP_RATE_UNC, MTCItems.packUncommon, event); // Uncommon (unc)
+		testDrop(DROP_RATE_COM, MTCItems.packCommon, event); // Common (com)
 	}
 }

@@ -32,7 +32,7 @@ public class MonoDisplayerBlockContainer extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer user) {
-		return tileEntity.isUseableByPlayer(user);
+		return tileEntity.isUsableByPlayer(user);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class MonoDisplayerBlockContainer extends Container {
 				if (!mergeItemStack(providedStack, 1 + 9, 1 + 9 + 27, false)) // Then inventory
 					return null;
 
-			tmp = providedStack.stackSize;
+			tmp = providedStack.getCount();
 			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}
@@ -61,7 +61,7 @@ public class MonoDisplayerBlockContainer extends Container {
 			if (!mergeItemStack(providedStack, 0, 1, false)) // Shove the card somewhere
 				return null;
 
-			tmp = providedStack.stackSize;
+			tmp = providedStack.getCount();
 			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}

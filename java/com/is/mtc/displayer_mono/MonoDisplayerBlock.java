@@ -1,77 +1,105 @@
 package com.is.mtc.displayer_mono;
 
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import com.is.mtc.handler.GuiHandler;
-import com.is.mtc.root.MineTradingCards;
-import com.is.mtc.root.Tools;
+import com.is.mtc.MineTradingCards;
 
 public class MonoDisplayerBlock extends BlockContainer {
+	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
-	private IIcon iFace, iSides, iDisplaySide;
+	//private IIcon iFace, iSides, iDisplaySide;
 
 	public MonoDisplayerBlock() {
-		super(Material.iron);
+		super(Material.IRON);
 
 		setLightLevel(0.9375F);
 
-		setBlockName("block_monodisplayer");
-		setBlockTextureName(MineTradingCards.MODID + ":block_monodisplayer");
+		setUnlocalizedName("block_monodisplayer");
+		setRegistryName("block_monodisplayer");
+		//setBlockName("block_monodisplayer");
+		//setBlockTextureName(MineTradingCards.MODID + ":block_monodisplayer");
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		setHardness(5.0F);
 		setResistance(10.0F);
 
-		isBlockContainer = true;
+		setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		//isBlockContainer = true;
 	}
 
-	@Override
-	public boolean onBlockActivated(World w, int px, int py, int pz, EntityPlayer player,
-			int p_149727_6_, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-		TileEntity tileEntity = w.getTileEntity(px, py, pz);
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, new IProperty[] {FACING});
+	}
+
+	public IBlockState getStateFromMeta(int meta) {
+		EnumFacing enumfacing = EnumFacing.getFront(meta);
+
+		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
+			enumfacing = EnumFacing.NORTH;
+		}
+
+		return this.getDefaultState().withProperty(FACING, enumfacing);
+	}
+
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(FACING).getHorizontalIndex();
+	}
+
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
+									EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		TileEntity tileEntity = world.getTileEntity(pos);
 
 		if (tileEntity == null || !(tileEntity instanceof MonoDisplayerBlockTileEntity))
 			return false;
 
-		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_MONODISPLAYER, w, px, py, pz);
+		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_MONODISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 
-	@Override
-	public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase player, ItemStack p_149689_6_) {
-		int l = MathHelper.floor_double((player.rotationYaw * 4F) / 360F + 0.5D) & 3;
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
+		int l = MathHelper.floor((player.rotationYaw * 4F) / 360F + 0.5D) & 3;
 
-		switch (l)
-		{
-		case 0:
-			w.setBlockMetadataWithNotify(x, y, z, 2, 1 | 2);
-			break;
+		switch (l) {
+			case 0:
+				world.setBlockState(pos, getStateFromMeta(2));
+				//world.setBlockMetadataWithNotify(pos, 2, 1 | 2);
+				break;
 
-		case 1:
-			w.setBlockMetadataWithNotify(x, y, z, 5, 1 | 2);
-			break;
+			case 1:
+				world.setBlockState(pos, getStateFromMeta(5));
+				//world.setBlockMetadataWithNotify(pos, 5, 1 | 2);
+				break;
 
-		case 2:
-			w.setBlockMetadataWithNotify(x, y, z, 3, 1 | 2);
-			break;
+			case 2:
+				world.setBlockState(pos, getStateFromMeta(3));
+				//world.setBlockMetadataWithNotify(pos, 3, 1 | 2);
+				break;
 
-		case 3:
-			w.setBlockMetadataWithNotify(x, y, z, 4, 1 | 2);
-			break;
+			case 3:
+				world.setBlockState(pos, getStateFromMeta(4));
+				//world.setBlockMetadataWithNotify(pos, 4, 1 | 2);
+				break;
 		}
 	}
 
-	private void emptyMonoDisplayerBlockTileEntity(MonoDisplayerBlockTileEntity dte, World w, int x, int y, int z) {
+	private void emptyMonoDisplayerBlockTileEntity(MonoDisplayerBlockTileEntity dte, World world, int x, int y, int z) {
 		ItemStack[] content;
 
 		if (dte == null)
@@ -82,23 +110,24 @@ public class MonoDisplayerBlock extends BlockContainer {
 			ItemStack stack = content[i];
 
 			if (stack != null) {
-				EntityItem entity = new EntityItem(w, x, y, z, stack);
+				EntityItem entity = new EntityItem(world, x, y, z, stack);
 
-				w.spawnEntityInWorld(entity);
+				world.spawnEntity(entity);
 			}
 		}
 	}
 
 	@Override
-	public void onBlockPreDestroy(World w, int x, int y, int z, int oldMeta) {
-		if (w.isRemote)
+	public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state) {
+		if (world.isRemote) {
 			return;
+		}
 
-		emptyMonoDisplayerBlockTileEntity((MonoDisplayerBlockTileEntity)w.getTileEntity(x, y, z), w, x, y, z);
-		w.removeTileEntity(x, y, z);
+		emptyMonoDisplayerBlockTileEntity((MonoDisplayerBlockTileEntity)world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
+		world.removeTileEntity(pos);
 	}
 
-	@Override
+	/*@Override
 	public void registerBlockIcons(IIconRegister ireg) {
 		iFace = ireg.registerIcon(MineTradingCards.MODID + ":block_displayer");
 		iSides = ireg.registerIcon(MineTradingCards.MODID + ":block_raw"); // Faces w/o the illustration
@@ -108,15 +137,15 @@ public class MonoDisplayerBlock extends BlockContainer {
 	@Override
 	public IIcon getIcon(int side, int meta) {
 		return (side == Tools.SIDE_TOP || side == Tools.SIDE_BOTTOM) ? iFace : side == meta ? iDisplaySide : iSides;
-	}
+	}*/
 
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
 		return new MonoDisplayerBlockTileEntity();
 	}
 
-	@Override
+	/*@Override
 	public boolean renderAsNormalBlock() {
 		return false;
-	}
+	}*/
 }

@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import com.is.mtc.root.MineTradingCards;
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Rarity;
 
 public class PackItemBase extends Item {

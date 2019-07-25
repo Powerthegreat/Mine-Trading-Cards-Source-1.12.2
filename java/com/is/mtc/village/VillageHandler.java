@@ -1,6 +1,10 @@
 package com.is.mtc.village;
 
-import java.util.Random;
+public class VillageHandler {
+	public static int TRADER_ID = 7117;
+}
+
+/*import java.util.Random;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Items;
@@ -9,12 +13,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
-import com.is.mtc.root.MineTradingCards;
+import com.is.mtc.MineTradingCards;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
-public class VillageHandler
-implements VillagerRegistry.IVillageTradeHandler {
+public class VillageHandler implements VillagerRegistry.IVillageTradeHandler {
 	public static int TRADER_ID = 7117;
 
 	public VillageHandler() {
@@ -37,3 +40,4 @@ implements VillagerRegistry.IVillageTradeHandler {
 	}
 }
 
+*/

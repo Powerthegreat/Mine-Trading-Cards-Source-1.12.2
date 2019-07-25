@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 import com.google.gson.JsonElement;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.MineTradingCards;
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 

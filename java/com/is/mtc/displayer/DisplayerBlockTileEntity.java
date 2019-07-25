@@ -7,10 +7,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 import com.is.mtc.root.Tools;
+import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
 
 public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 	public static final int INVENTORY_SIZE = 4;
@@ -28,7 +31,6 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 
 	/*-*/
 
-	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		NBTTagList nbttaglist = nbt.getTagList("Items", 10);
@@ -39,12 +41,11 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 			int j = nbttagcompound1.getByte("Slot") & 255;
 
 			if (j >= 0 && j < content.length)
-				content[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
+				content[j] = new ItemStack(nbttagcompound1);
 		}
 	}
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		NBTTagList nbttaglist = new NBTTagList();
 
@@ -59,19 +60,18 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 
 		nbt.setTag("Items", nbttaglist);
 		readFromNBT(nbt);
+		return nbt;
 	}
 
-	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound syncData = new NBTTagCompound();
 		this.writeToNBT(syncData);
 
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, syncData);
+		return new SPacketUpdateTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ()), 1, syncData);
 	}
 
-	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.func_148857_g());
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		readFromNBT(pkt.getNbtCompound());
 	}
 
 	/*@Override
@@ -86,32 +86,38 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 
 	/*-*/
 
-	@Override
 	public int getSizeInventory() {
 		return INVENTORY_SIZE;
 	}
 
-	@Override
+	public boolean isEmpty() {
+		for (ItemStack itemstack : this.getContent()) {
+			if (!itemstack.isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public int getInventoryStackLimit() {
 		return 64;
 	}
 
 	/*-*/
 
-	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		content[slot] = stack;
 
-		if (stack != null && stack.stackSize > getInventoryStackLimit()) // Slot overflow
-			stack.stackSize = getInventoryStackLimit();
+		if (stack != null && stack.getCount() > getInventoryStackLimit()) // Slot overflow
+			stack.setCount(getInventoryStackLimit());
 	}
 
-	@Override
 	public ItemStack decrStackSize(int slot, int amount) {
 		ItemStack stack = getStackInSlot(slot);
 
 		if (stack != null) {
-			if (stack.stackSize <= amount) // We set the content to null, since we've removed everything
+			if (stack.getCount() <= amount) // We set the content to null, since we've removed everything
 				setInventorySlotContents(slot, null);
 			else
 				stack = stack.splitStack(amount); // Remove 'amount' from the stack
@@ -120,17 +126,15 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 		return stack;
 	}
 
-	@Override
 	public ItemStack getStackInSlot(int slot) {
-		return content[slot]; // Slot >= invsize ? Means something isn't doing it's job correctly !
+		return content[slot]; // Slot >= invsize ? Means something isn't doing its job correctly !
 	}
 
 	public ItemStack getItemStackInSlot(int slot) {
 		return content[slot];
 	}
 
-	@Override
-	public ItemStack getStackInSlotOnClosing(int slot) {
+	public ItemStack removeStackFromSlot(int slot) {
 		ItemStack stack = getStackInSlot(slot);
 
 		if (stack != null)
@@ -141,35 +145,45 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 
 	/*-*/
 
-	@Override
-	public String getInventoryName() {
+	public String getName() {
 		return "inventory_displayer";
 	}
 
-	@Override
-	public boolean hasCustomInventoryName() {
+	public boolean hasCustomName() {
 		return false;
 	}
 
 	/*-*/
 
-	@Override
-	public void openInventory() {
+	public void openInventory(EntityPlayer player) {
 	}
 
-	@Override
-	public void closeInventory() {
+	public void closeInventory(EntityPlayer player) {
 	}
 
 	/*-*/
 
-	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) { // Is a valid card
 		return Tools.isValidCard(stack);
 	}
 
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer user) { // Use standard chest formula
-		return worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : user.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) <= 64.0D;
+	public int getField(int id) {
+		return 0;
+	}
+
+	public void setField(int id, int value) {
+
+	}
+
+	public int getFieldCount() {
+		return 0;
+	}
+
+	public void clear() {
+
+	}
+
+	public boolean isUsableByPlayer(EntityPlayer user) { // Use standard chest formula
+		return world.getTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ())) != this ? false : user.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 }

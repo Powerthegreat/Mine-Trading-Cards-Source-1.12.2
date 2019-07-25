@@ -1,0 +1,11 @@
+{
+  "parent": "block/cube_directional",
+  "textures": {
+    "up": "is_mtc:blocks/block_displayer",
+    "down": "is_mtc:blocks/block_displayer",
+    "north": "is_mtc:blocks/block_displayer_side",
+    "south": "is_mtc:blocks/block_raw",
+    "west": "is_mtc:blocks/block_raw",
+    "east": "is_mtc:blocks/block_raw"
+  }
+}

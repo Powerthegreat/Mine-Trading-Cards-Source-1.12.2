@@ -4,7 +4,7 @@ import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.MineTradingCards;
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -30,6 +30,7 @@ public class CardItem extends Item {
 
 	public CardItem(int r) {
 		setUnlocalizedName(prefix + Rarity.toString(r).toLowerCase());
+		setRegistryName(prefix + Rarity.toString(r).toLowerCase());
 		//setTextureName(MineTradingCards.MODID + ":" + prefix + Rarity.toString(r).toLowerCase());
 		setCreativeTab(MineTradingCards.MODTAB);
 

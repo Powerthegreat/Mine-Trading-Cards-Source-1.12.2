@@ -1,20 +1,16 @@
 package com.is.mtc.proxy;
 
-import net.minecraft.util.ResourceLocation;
-
 import com.is.mtc.displayer.DisplayerBlockRenderer;
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
 import com.is.mtc.displayer_mono.MonoDisplayerBlockRenderer;
 import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.MineTradingCards;
-import com.is.mtc.village.VillageHandler;
+import com.is.mtc.MineTradingCards;
 
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
 public class ClientProxy extends CommonProxy {
 	@Override
@@ -36,6 +32,6 @@ public class ClientProxy extends CommonProxy {
 
 		ClientRegistry.bindTileEntitySpecialRenderer(DisplayerBlockTileEntity.class, new DisplayerBlockRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(MonoDisplayerBlockTileEntity.class, new MonoDisplayerBlockRenderer());
-		VillagerRegistry.instance().registerVillagerSkin(VillageHandler.TRADER_ID, new ResourceLocation("is_mtc", "textures/skins/card_master.png"));
+		//VillagerRegistry.instance().registerVillagerSkin(VillageHandler.TRADER_ID, new ResourceLocation("is_mtc", "textures/skins/card_master.png"));
 	}
 }

@@ -37,7 +37,7 @@ public class DisplayerBlockContainer extends Container {
 
 	@Override
 	public boolean canInteractWith(EntityPlayer user) {
-		return tileEntity.isUseableByPlayer(user);
+		return tileEntity.isUsableByPlayer(user);
 	}
 
 	@Override

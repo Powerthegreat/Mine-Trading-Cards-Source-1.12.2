@@ -1,37 +1,29 @@
-package com.is.mtc.root;
+package com.is.mtc;
 
 import java.io.File;
 
+import com.is.mtc.root.CC_CreateCard;
+import com.is.mtc.root.CC_ForceCreateCard;
+import com.is.mtc.root.Logs;
+import com.is.mtc.init.MTCItems;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
-import com.is.mtc.binder.BinderItem;
-import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.DataLoader;
 import com.is.mtc.data_manager.Databank;
-import com.is.mtc.displayer.DisplayerBlock;
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
-import com.is.mtc.displayer_mono.MonoDisplayerBlock;
 import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
 import com.is.mtc.handler.DropHandler;
 import com.is.mtc.handler.GuiHandler;
-import com.is.mtc.pack.PackItemBase;
-import com.is.mtc.pack.PackItemEdition;
-import com.is.mtc.pack.PackItemRarity;
-import com.is.mtc.pack.PackItemStandard;
 import com.is.mtc.packet.MTCMessage;
 import com.is.mtc.packet.MTCMessageHandler;
 import com.is.mtc.proxy.CommonProxy;
 import com.is.mtc.village.CardMasterHome;
 import com.is.mtc.village.CardMasterHomeHandler;
-import com.is.mtc.village.VillageHandler;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -47,27 +39,14 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = MineTradingCards.MODID, version = MineTradingCards.VERSION, name = MineTradingCards.NAME)
+@Mod(modid = Reference.MODID, version = Reference.VERSION, name = Reference.NAME)
 public class MineTradingCards {
-	// Information about the mod
-	public static final String MODID = "is_mtc";
-	public static final String VERSION = "2.1.1";
-	public static final String NAME = "Mine Trading Cards";
-
 	// The instance of the mod class that forge uses
-	@Instance(MineTradingCards.MODID)
+	@Instance(Reference.MODID)
 	public static MineTradingCards INSTANCE;
 
 	// Whether the proxy is remote
 	public static boolean PROXY_IS_REMOTE = false;
-
-	// Cards, packs, binders and display blocks to be registered
-	public static CardItem cardCommon, cardUncommon, cardRare, cardAncient, cardLegendary;
-	public static PackItemBase packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard, packEdition; // Common (com), unccommon (unc), rare (rar), ancient (anc), legendary (leg), standard (std), edition (edt)
-
-	public static BinderItem binder;
-	public static DisplayerBlock displayerBlock;
-	public static MonoDisplayerBlock monoDisplayerBlock;
 
 	// The directories that MTC works with
 	private static String DATA_DIR = "";
@@ -80,8 +59,8 @@ public class MineTradingCards {
 
 	// The creative tab that the mod uses
 	public static CreativeTabs MODTAB = new CreativeTabs("tab_mtc") {
-		@Override public ItemStack getTabIconItem() {
-			return new ItemStack(MineTradingCards.packStandard);
+		public ItemStack getTabIconItem() {
+			return new ItemStack(MTCItems.packStandard);
 		}
 	};
 	//-
@@ -91,6 +70,7 @@ public class MineTradingCards {
 		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
 		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
 		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
+		MTCItems.init();
 
 		PROXY.preInit(event);
 		readConfig(event);
@@ -103,25 +83,6 @@ public class MineTradingCards {
 	public void init(FMLInitializationEvent event) {
 		// Runs the initialisation from the proxy, then defines the items and blocks
 		PROXY.init(event);
-
-		cardCommon = new CardItem(Rarity.COMMON);
-		cardUncommon = new CardItem(Rarity.UNCOMMON);
-		cardRare = new CardItem(Rarity.RARE);
-		cardAncient = new CardItem(Rarity.ANCIENT);
-		cardLegendary = new CardItem(Rarity.LEGENDARY);
-
-		packCommon = new PackItemRarity(Rarity.COMMON);
-		packUncommon = new PackItemRarity(Rarity.UNCOMMON);
-		packRare = new PackItemRarity(Rarity.RARE);
-		packAncient = new PackItemRarity(Rarity.ANCIENT);
-		packLegendary = new PackItemRarity(Rarity.LEGENDARY);
-
-		packStandard = new PackItemStandard();
-		packEdition = new PackItemEdition();
-
-		binder = new BinderItem();
-		displayerBlock = new DisplayerBlock();
-		monoDisplayerBlock = new MonoDisplayerBlock();
 	}
 
 	@EventHandler
@@ -129,27 +90,8 @@ public class MineTradingCards {
 		// Runs the postinitialisation from the proxy, then registers the items and blocks
 		PROXY.postInit(event);
 
-		Injector.registerItem(cardCommon);
-		Injector.registerItem(cardUncommon);
-		Injector.registerItem(cardRare);
-		Injector.registerItem(cardAncient);
-		Injector.registerItem(cardLegendary);
-
-		Injector.registerItem(packCommon);
-		Injector.registerItem(packUncommon);
-		Injector.registerItem(packRare);
-		Injector.registerItem(packAncient);
-		Injector.registerItem(packLegendary);
-
-		Injector.registerItem(packStandard);
-		Injector.registerItem(packEdition);
-
-		Injector.registerItem(binder);
-		Injector.registerBlock(displayerBlock);
-		Injector.registerBlock(monoDisplayerBlock);
-
 		// Sets up the network wrapper
-		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MODID);
 		simpleNetworkWrapper.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
 
 		// Sets up the gui and drop handlers
@@ -162,7 +104,7 @@ public class MineTradingCards {
 
 		MapGenStructureIO.registerStructureComponent(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
 		// Registers the Card Master villager's trades, and the creation handler for its home
-		VillagerRegistry.instance().registerVillageTradeHandler(VillageHandler.TRADER_ID, new VillageHandler());
+		//VillagerRegistry.instance().registerVillageTradeHandler(VillageHandler.TRADER_ID, new VillageHandler());
 		VillagerRegistry.instance().registerVillageCreationHandler(new CardMasterHomeHandler());
 	}
 

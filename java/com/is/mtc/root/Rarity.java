@@ -1,8 +1,8 @@
 package com.is.mtc.root;
 
-import net.minecraft.util.EnumChatFormatting;
-
 import com.is.mtc.card.CardItem;
+import com.is.mtc.init.MTCItems;
+import com.mojang.realmsclient.gui.ChatFormatting;
 
 public class Rarity {
 	public static final int UNSET = -1;
@@ -52,33 +52,33 @@ public class Rarity {
 	{
 		switch (rarity) {
 			case COMMON:
-				return MineTradingCards.cardCommon;
+				return MTCItems.cardCommon;
 			case UNCOMMON:
-				return MineTradingCards.cardUncommon;
+				return MTCItems.cardUncommon;
 			case RARE:
-				return MineTradingCards.cardRare;
+				return MTCItems.cardRare;
 			case ANCIENT:
-				return MineTradingCards.cardAncient;
+				return MTCItems.cardAncient;
 			case LEGENDARY:
-				return MineTradingCards.cardLegendary;
+				return MTCItems.cardLegendary;
 
 			default:
 				return null;
 		}
 	}
 
-	public static EnumChatFormatting toColor(int rarity) {
+	public static ChatFormatting toColor(int rarity) {
 		switch (rarity) {
 			case COMMON:
-				return EnumChatFormatting.GREEN;
+				return ChatFormatting.GREEN;
 			case UNCOMMON:
-				return EnumChatFormatting.GOLD;
+				return ChatFormatting.GOLD;
 			case RARE:
-				return EnumChatFormatting.RED;
+				return ChatFormatting.RED;
 			case ANCIENT:
-				return EnumChatFormatting.AQUA;
+				return ChatFormatting.AQUA;
 			case LEGENDARY:
-				return EnumChatFormatting.DARK_PURPLE;
+				return ChatFormatting.DARK_PURPLE;
 
 			default:
 				return null;

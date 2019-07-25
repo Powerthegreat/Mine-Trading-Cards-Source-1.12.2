@@ -18,27 +18,27 @@ public class BinderItemContainer extends Container {
 
 	/*-*/
 
-	private BinderItemInventory bii;
+	private BinderItemInventory binderItemInventory;
 	private ItemStack binderStack;
-	private InventoryPlayer invP;
+	private InventoryPlayer inventoryPlayer;
 
 	/*-*/
 
-	public BinderItemContainer(InventoryPlayer invP, BinderItemInventory bii) {
-		binderStack = invP.getCurrentItem();
-		this.invP = invP;
-		this.bii = bii;
+	public BinderItemContainer(InventoryPlayer inventoryPlayer, BinderItemInventory binderItemInventory) {
+		binderStack = inventoryPlayer.getCurrentItem();
+		this.inventoryPlayer = inventoryPlayer;
+		this.binderItemInventory = binderItemInventory;
 
 		BinderItem.testNBT(binderStack);
 
 		inventorySlots.clear();
 		for (int i = 0; i < 9; i++) // Toolbar
-			addSlotToContainer(new Slot(invP, i,
+			addSlotToContainer(new Slot(inventoryPlayer, i,
 					offsetHotbarX + i * 18, offsetHotbarY));
 
 		for (int i = 0; i < 3; i++) // Player inv
 			for (int j = 0; j < 9; j++)
-				addSlotToContainer(new Slot(invP, j + i * 9 + 9, // Slot number + the toolbar size
+				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, // Slot number + the toolbar size
 						offsetInv3RowsX + j * 18, offsetInv3RowsY + i * 18));
 
 		// Note that slot index is different from slot number !!
@@ -48,7 +48,7 @@ public class BinderItemContainer extends Container {
 			int col = i % 4;
 			int row = i / 4;
 
-			addSlotToContainer(new CardSlot(bii, idx, // New card slot with bii, slot index
+			addSlotToContainer(new CardSlot(binderItemInventory, idx, // New card slot with bii, slot index
 					offsetBinderX + col * 58, offsetBinderY + row * 64)); // and slot coords
 		}
 	}
@@ -144,14 +144,14 @@ public class BinderItemContainer extends Container {
 	/*-*/
 
 	public boolean canInteractWith(EntityPlayer p_75145_1_) {
-		return bii.isUseableByPlayer(p_75145_1_);
+		return binderItemInventory.isUsableByPlayer(p_75145_1_);
 	}
 
 	public void onContainerClosed(EntityPlayer p_75134_1_) {
 		ItemStack heldItem = p_75134_1_.getActiveItemStack();
 
 		if (heldItem != null && heldItem.getTagCompound() != null)
-			bii.writeToNBT(heldItem.getTagCompound()); // Save data
+			binderItemInventory.writeToNBT(heldItem.getTagCompound()); // Save data
 		super.onContainerClosed(p_75134_1_);
 	}
 
