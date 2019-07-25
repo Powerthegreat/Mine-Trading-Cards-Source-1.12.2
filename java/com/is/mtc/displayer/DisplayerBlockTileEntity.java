@@ -1,5 +1,7 @@
 package com.is.mtc.displayer;
 
+import com.is.mtc.root.Logs;
+import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,11 +11,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-
-import com.is.mtc.root.Tools;
 import net.minecraft.util.math.BlockPos;
-
-import javax.annotation.Nullable;
 
 public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 	public static final int INVENTORY_SIZE = 4;
@@ -37,11 +35,11 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 		content = new ItemStack[getSizeInventory()];
 
 		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-			int j = nbttagcompound1.getByte("Slot") & 255;
+			NBTTagCompound nbtTagCompound = nbttaglist.getCompoundTagAt(i);
+			int j = nbtTagCompound.getByte("Slot") & 255;
 
 			if (j >= 0 && j < content.length)
-				content[j] = new ItemStack(nbttagcompound1);
+				content[j] = new ItemStack(nbtTagCompound);
 		}
 	}
 
@@ -65,24 +63,25 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 
 	public Packet getDescriptionPacket() {
 		NBTTagCompound syncData = new NBTTagCompound();
-		this.writeToNBT(syncData);
+		writeToNBT(syncData);
 
-		return new SPacketUpdateTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ()), 1, syncData);
+		return new SPacketUpdateTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), 1, syncData);
 	}
 
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}
 
-	/*@Override
+	@Override
 	public void updateContainingBlockInfo() { // Allow data being sync on game loading
 		Logs.stdLog("c2");
 
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord); // Makes the server call getDescriptionPacket for a full data sync
+		world.markTileEntityForRemoval(world.getTileEntity(pos));
+		//world.markBlockForUpdate(xCoord, yCoord, zCoord); // Makes the server call getDescriptionPacket for a full data sync
 		markDirty();
 
 		super.updateContainingBlockInfo();
-	}*/
+	}
 
 	/*-*/
 
@@ -91,7 +90,7 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 	}
 
 	public boolean isEmpty() {
-		for (ItemStack itemstack : this.getContent()) {
+		for (ItemStack itemstack : getContent()) {
 			if (!itemstack.isEmpty()) {
 				return false;
 			}
@@ -184,6 +183,6 @@ public class DisplayerBlockTileEntity extends TileEntity implements IInventory {
 	}
 
 	public boolean isUsableByPlayer(EntityPlayer user) { // Use standard chest formula
-		return world.getTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ())) != this ? false : user.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+		return world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) != this ? false : user.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
 	}
 }

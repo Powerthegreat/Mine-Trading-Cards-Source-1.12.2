@@ -20,7 +20,7 @@ public class DisplayerBlockContainer extends Container {
 		this.tileEntity = tileEntity;
 
 		// The four slots
-		addSlotToContainer(new CardSlot(tileEntity, 0, offset4SlotsX, 0 + offset4SlotsY));
+		addSlotToContainer(new CardSlot(tileEntity, 0, offset4SlotsX, offset4SlotsY));
 		addSlotToContainer(new CardSlot(tileEntity, 1, offset4SlotsX, 18 + offset4SlotsY));
 		addSlotToContainer(new CardSlot(tileEntity, 2, offset4SlotsX, 36 + offset4SlotsY));
 		addSlotToContainer(new CardSlot(tileEntity, 3, offset4SlotsX, 54 + offset4SlotsY));

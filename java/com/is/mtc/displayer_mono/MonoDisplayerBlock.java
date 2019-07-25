@@ -74,7 +74,8 @@ public class MonoDisplayerBlock extends BlockContainer {
 	}
 
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase player, ItemStack stack) {
-		int l = MathHelper.floor((player.rotationYaw * 4F) / 360F + 0.5D) & 3;
+		world.setBlockState(pos, getDefaultState().withProperty(FACING, player.getHorizontalFacing().getOpposite()));
+		/*int l = MathHelper.floor((player.rotationYaw * 4F) / 360F + 0.5D) & 3;
 
 		switch (l) {
 			case 0:
@@ -96,7 +97,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 				world.setBlockState(pos, getStateFromMeta(4));
 				//world.setBlockMetadataWithNotify(pos, 4, 1 | 2);
 				break;
-		}
+		}*/
 	}
 
 	private void emptyMonoDisplayerBlockTileEntity(MonoDisplayerBlockTileEntity dte, World world, int x, int y, int z) {

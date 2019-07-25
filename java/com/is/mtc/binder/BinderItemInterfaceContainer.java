@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -35,7 +36,7 @@ import org.lwjgl.util.vector.Vector2f;
 import com.is.mtc.packet.MTCMessage;
 import com.is.mtc.MineTradingCards;
 
-public class BinderItemInterfaceContainer extends GuiScreen {
+public class BinderItemInterfaceContainer extends GuiContainer {
 	/** The X size of the inventory window in pixels. */
 	protected int xSize = 242;
 	/** The Y size of the inventory window in pixels. */
@@ -84,6 +85,7 @@ public class BinderItemInterfaceContainer extends GuiScreen {
 	/*-*/
 
 	public BinderItemInterfaceContainer(BinderItemContainer binderItemContainer) {
+		super(binderItemContainer);
 		this.inventorySlots = binderItemContainer;
 		this.ignoreMouseUp = true;
 
