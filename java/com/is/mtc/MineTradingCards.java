@@ -96,11 +96,11 @@ public class MineTradingCards {
 
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());
-		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
+		//NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 
 		// Registers tile entities
-		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:tile_entity_displayer"));
-		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:tile_entity_monodisplayer"));
+		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:block_displayer"));
+		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:block_monodisplayer"));
 
 		MapGenStructureIO.registerStructureComponent(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
 		// Registers the Card Master villager's trades, and the creation handler for its home

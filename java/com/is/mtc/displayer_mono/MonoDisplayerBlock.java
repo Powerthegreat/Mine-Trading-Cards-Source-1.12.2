@@ -21,6 +21,8 @@ import net.minecraft.world.World;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.MineTradingCards;
 
+import javax.annotation.Nullable;
+
 public class MonoDisplayerBlock extends BlockContainer {
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
@@ -66,7 +68,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 									EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 
-		if (tileEntity == null || !(tileEntity instanceof MonoDisplayerBlockTileEntity))
+		if (!(tileEntity instanceof MonoDisplayerBlockTileEntity))
 			return false;
 
 		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_MONODISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
@@ -141,7 +143,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 	}*/
 
 	@Override
-	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
+	public TileEntity createNewTileEntity(World world, int meta) {
 		return new MonoDisplayerBlockTileEntity();
 	}
 

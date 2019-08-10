@@ -16,8 +16,7 @@ public class Databank {
 	//-
 
 	/// NOTE LinkedHashMap to keep the precise order
-	public static void setup()
-	{
+	public static void setup() {
 		editions_by_id = new LinkedHashMap<String, EditionStructure>();
 		editions_by_name = new LinkedHashMap<String, EditionStructure>();
 		editions_by_numeral_id = new LinkedHashMap<Integer, EditionStructure>();
@@ -44,8 +43,7 @@ public class Databank {
 
 	//-
 
-	public static boolean registerAnEdition(EditionStructure eStruct)
-	{
+	public static boolean registerAnEdition(EditionStructure eStruct) {
 		if (!eStruct.isValid()) {
 			Logs.errLog("Edition is invalid (Invalid/missing ID or name)");
 			return false;
@@ -85,18 +83,15 @@ public class Databank {
 
 	public static int getEditionsCount() { return editions_by_id.size(); }
 
-	public static EditionStructure getEditionWithId(String id)
-	{
+	public static EditionStructure getEditionWithId(String id) {
 		return editions_by_id.containsKey(id) ? editions_by_id.get(id) : null;
 	}
 
-	public static EditionStructure getEditionWithName(String name)
-	{
+	public static EditionStructure getEditionWithName(String name) {
 		return editions_by_name.containsKey(name) ? editions_by_name.get(name) : null;
 	}
 
-	public static EditionStructure getEditionWithNumeralId(int nid)
-	{
+	public static EditionStructure getEditionWithNumeralId(int nid) {
 		return editions_by_numeral_id.containsKey(nid) ? editions_by_numeral_id.get(nid) : null;
 	}
 
@@ -142,8 +137,7 @@ public class Databank {
 
 			cards_by_wraed.get(cStruct.getEdition()).get(cStruct.getRarity()).put(wraed.get(cStruct.getEdition()).get(cStruct.getRarity()) + cStruct.getWeight(), cStruct);
 			wraed.get(cStruct.getEdition()).put(cStruct.getRarity(), wraed.get(cStruct.getEdition()).get(cStruct.getRarity()) + cStruct.getWeight());
-		}
-		else {
+		} else {
 			Logs.errLog("Warning: Card does not have a strictely positive weight. Card will be usable but not droppable");
 			Logs.devLog("Card registered: " + cStruct.toString());
 
@@ -155,8 +149,7 @@ public class Databank {
 		return true;
 	}
 
-	public static CardStructure getCardByCDWD(String cdwd)
-	{
+	public static CardStructure getCardByCDWD(String cdwd) {
 		return cards_by_cdwd.containsKey(cdwd) ? cards_by_cdwd.get(cdwd) : null;
 	}
 

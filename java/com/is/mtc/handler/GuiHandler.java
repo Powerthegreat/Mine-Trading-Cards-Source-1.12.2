@@ -44,8 +44,9 @@ public class GuiHandler implements IGuiHandler {
 			return new BinderItemContainer(player.inventory, new BinderItemInventory(player.getActiveItemStack()));
 
 		case GUI_MONODISPLAYER:
-			if (tileEntity != null)
-				return new MonoDisplayerBlockContainer(player.inventory, (MonoDisplayerBlockTileEntity)tileEntity);
+			if (tileEntity != null) {
+				return new MonoDisplayerBlockContainer(player.inventory, (MonoDisplayerBlockTileEntity) tileEntity);
+			}
 			break;
 		}
 

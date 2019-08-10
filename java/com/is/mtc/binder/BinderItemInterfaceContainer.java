@@ -341,7 +341,7 @@ public class BinderItemInterfaceContainer extends GuiContainer {
 		Vector2f drawPos = new Vector2f((width - UI_SIZE.x) / 2, (height - UI_SIZE.y) / 2);
 
 		drawDefaultBackground();
-		mc.renderEngine.bindTexture(new ResourceLocation(Reference.MODID + ":textures/gui/ui_binder_3.png"));
+		mc.getTextureManager().bindTexture(new ResourceLocation(Reference.MODID + ":textures/gui/ui_binder_3.png"));
 		drawTexturedModalRect((int)drawPos.x, (int)drawPos.y, 0, 0, (int)UI_SIZE.x, (int)UI_SIZE.y);
 
 		for (int i = 0; binderItemContainer != null && i < 2; ++i) { // Display cards illustrations
@@ -355,7 +355,7 @@ public class BinderItemInterfaceContainer extends GuiContainer {
 					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card data and illustration are corrects
 
 						cStruct.preloadRessource(mc.getTextureManager());
-						mc.renderEngine.bindTexture(cStruct.getResourceLocation());
+						mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
 						drawTexturedModalRect((int)drawPos.x + 8 + j * 58, (int)drawPos.y + 8 + i * 64, 52, 52);
 					}
 					else
