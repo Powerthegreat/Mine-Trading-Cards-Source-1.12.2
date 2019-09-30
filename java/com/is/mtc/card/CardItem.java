@@ -56,13 +56,17 @@ public class CardItem extends Item {
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		if (world.isRemote) {
-			if (Tools.hasCDWD(player.getHeldItem(hand))) {
-				player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int)player.posX, (int)player.posY, (int)player.posZ);
-			}
-
+		//if (world.isRemote) {
+		if (Tools.hasCDWD(player.getHeldItem(hand))) {
+			//GuiHandler.currentMainItem = player.getHeldItem(hand);
+			System.out.println(player.getHeldItem(hand).getTagCompound());
+			GuiHandler.hand = hand;
+			player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int)player.posX, (int)player.posY, (int)player.posZ);
 			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		}
+
+			//return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		//}
 
 		if (!player.getHeldItem(hand).hasTagCompound())
 			player.getHeldItem(hand).setTagCompound(new NBTTagCompound());
@@ -70,9 +74,12 @@ public class CardItem extends Item {
 		if (!Tools.hasCDWD(player.getHeldItem(hand))) {
 			CardStructure cStruct = Databank.generateACard(rarity);
 
-			if (cStruct != null)
-				player.getHeldItem(hand).getTagCompound().setString("cdwd", cStruct.getCDWD());
-			else
+			if (cStruct != null) {
+				NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
+				nbtTag.setString("cdwd", cStruct.getCDWD());
+				player.getHeldItem(hand).setTagCompound(nbtTag);
+				//player.getHeldItem(hand).getTagCompound().setString("cdwd", cStruct.getCDWD());
+			} else
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
 		}
 

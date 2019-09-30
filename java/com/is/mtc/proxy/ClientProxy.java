@@ -14,21 +14,21 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
 	@Override
-	public void preInit(FMLPreInitializationEvent e) {
+	public void preInit(FMLPreInitializationEvent event) {
 		MineTradingCards.PROXY_IS_REMOTE = true;
 		Logs.devLog("Dectected proxy: Client");
 
-		super.preInit(e);
+		super.preInit(event);
 	}
 
 	@Override
-	public void init(FMLInitializationEvent e) {
-		super.init(e);
+	public void init(FMLInitializationEvent event) {
+		super.init(event);
 	}
 
 	@Override
-	public void postInit(FMLPostInitializationEvent e) {
-		super.postInit(e);
+	public void postInit(FMLPostInitializationEvent event) {
+		super.postInit(event);
 
 		ClientRegistry.bindTileEntitySpecialRenderer(DisplayerBlockTileEntity.class, new DisplayerBlockRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(MonoDisplayerBlockTileEntity.class, new MonoDisplayerBlockRenderer());

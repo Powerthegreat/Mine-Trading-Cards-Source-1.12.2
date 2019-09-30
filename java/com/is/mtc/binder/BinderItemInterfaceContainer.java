@@ -354,7 +354,7 @@ public class BinderItemInterfaceContainer extends GuiContainer {
 
 					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card data and illustration are corrects
 
-						cStruct.preloadRessource(mc.getTextureManager());
+						cStruct.preloadResource(mc.getTextureManager());
 						mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
 						drawTexturedModalRect((int)drawPos.x + 8 + j * 58, (int)drawPos.y + 8 + i * 64, 52, 52);
 					}

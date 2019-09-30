@@ -150,7 +150,7 @@ public class Databank {
 	}
 
 	public static CardStructure getCardByCDWD(String cdwd) {
-		return cards_by_cdwd.containsKey(cdwd) ? cards_by_cdwd.get(cdwd) : null;
+		return cards_by_cdwd.getOrDefault(cdwd, null);
 	}
 
 	public static CardStructure generateACard(int rarity) {

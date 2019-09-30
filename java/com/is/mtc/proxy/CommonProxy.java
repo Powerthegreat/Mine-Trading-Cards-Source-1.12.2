@@ -2,6 +2,7 @@ package com.is.mtc.proxy;
 
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
+import com.is.mtc.init.MTCItems;
 import com.is.mtc.root.Logs;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -13,14 +14,14 @@ public class CommonProxy {
 
 	public static boolean IS_REMOTE = false;
 
-	public void preInit(FMLPreInitializationEvent e) {
+	public void preInit(FMLPreInitializationEvent event) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(MineTradingCards.INSTANCE, new GuiHandler());
 	}
 
-	public void init(FMLInitializationEvent e) {
+	public void init(FMLInitializationEvent event) {
 	}
 
-	public void postInit(FMLPostInitializationEvent e) {
+	public void postInit(FMLPostInitializationEvent event) {
 		Logs.devLog("Proxy: Is remote ?: " + IS_REMOTE);
 	}
 }

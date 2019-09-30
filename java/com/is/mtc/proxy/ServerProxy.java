@@ -10,20 +10,20 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class ServerProxy extends CommonProxy {
 
 	@Override
-	public void preInit(FMLPreInitializationEvent e) {
+	public void preInit(FMLPreInitializationEvent event) {
 		MineTradingCards.PROXY_IS_REMOTE = false;
 		Logs.devLog("Detected proxy: Server");
 
-		super.preInit(e);
+		super.preInit(event);
 	}
 
 	@Override
-	public void init(FMLInitializationEvent e) {
-		super.init(e);
+	public void init(FMLInitializationEvent event) {
+		super.init(event);
 	}
 
 	@Override
-	public void postInit(FMLPostInitializationEvent e) {
-		super.postInit(e);
+	public void postInit(FMLPostInitializationEvent event) {
+		super.postInit(event);
 	}
 }

@@ -118,7 +118,7 @@ public class CardStructure {
 				"[name:'" + name + "' category:'" + category + "' weight:" + weight + " asset_path:" + assetPath + "]";
 	}
 
-	public void preloadRessource(TextureManager tema) {
+	public void preloadResource(TextureManager tema) {
 		if (dytex == null)
 			return;
 

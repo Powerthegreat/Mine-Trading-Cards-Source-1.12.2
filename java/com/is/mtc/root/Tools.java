@@ -61,7 +61,7 @@ public class Tools {
 	}
 
 	public static float clamp(float min, float value, float max) {
-		return value < min ? min : value > max ? max : value;
+		return value < min ? min : Math.min(value, max);
 	}
 
 	public static boolean isValidCard(ItemStack stack) {

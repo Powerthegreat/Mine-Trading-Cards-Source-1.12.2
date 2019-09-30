@@ -1,14 +1,20 @@
 package com.is.mtc.card;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.ITextureObject;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 
 public class CardItemInterface extends GuiScreen {
-	private static final int UI_WIDTH = 224, UI_HEIGHT = 224;
+	private static final double UI_WIDTH = 224, UI_HEIGHT = 224;
 
 	private CardStructure cStruct;
 
@@ -17,27 +23,38 @@ public class CardItemInterface extends GuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
-		int dpx = (width - CardItemInterface.UI_WIDTH) / 2, dpy = (height - CardItemInterface.UI_HEIGHT) / 2;
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		double dpx = (width - CardItemInterface.UI_WIDTH) / 2, dpy = (height - CardItemInterface.UI_HEIGHT) / 2;
 
-		cStruct.preloadRessource(mc.getTextureManager());
+		cStruct.preloadResource(mc.getTextureManager());
+		System.out.println(cStruct.getResourceLocation());
 		drawDefaultBackground();
 		mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
+		mc.getTextureManager().getTexture(cStruct.getResourceLocation());
+
 		drawTexturedModalRect(dpx, dpy, CardItemInterface.UI_WIDTH, CardItemInterface.UI_HEIGHT);
-		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
 	// Adapted drawing
-	public void drawTexturedModalRect(int p_73729_1_, int p_73729_2_, int p_73729_5_, int p_73729_6_) { // Custom for 01 size
+	public void drawTexturedModalRect(double x, double y, double width, double height) { // Custom for 01 size
 		float f = 0.00390625F;
 		float f1 = 0.00390625F;
 		Tessellator tessellator = Tessellator.getInstance();
-		//tessellator.startDrawingQuads();
-		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + 0, p_73729_2_ + p_73729_6_, (int) this.zLevel, 0, 1});
-		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + p_73729_5_, p_73729_2_ + p_73729_6_, (int) this.zLevel, 1, 1});
-		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + p_73729_5_, p_73729_2_ + 0, (int) this.zLevel, 1, 0});
-		tessellator.getBuffer().addVertexData(new int[] {p_73729_1_ + 0, p_73729_2_ + 0, (int) this.zLevel, 0, 0});
+		tessellator.getBuffer().begin(7, DefaultVertexFormats.POSITION_TEX);
+		tessellator.getBuffer().pos(x + 0, y + height, (int) this.zLevel).tex(0,1).endVertex();
+		tessellator.getBuffer().pos(x + width, y + height, (int) this.zLevel).tex(1,1).endVertex();
+		tessellator.getBuffer().pos(x + width, y + 0, (int) this.zLevel).tex(1,0).endVertex();
+		tessellator.getBuffer().pos(x + 0, y + 0, (int) this.zLevel).tex(0,0).endVertex();
 		tessellator.draw();
+		/*.tex((double)textureSprite.getMinU(), (double)textureSprite.getMaxV())*/
+		//Tessellator tessellator = Tessellator.getInstance();
+		////tessellator.startDrawingQuads();
+		//tessellator.getBuffer().addVertexData(new int[] {x + 0, y + height, (int) this.zLevel, 0, 1});
+		//tessellator.getBuffer().addVertexData(new int[] {x + width, y + height, (int) this.zLevel, 1, 1});
+		//tessellator.getBuffer().addVertexData(new int[] {x + width, y + 0, (int) this.zLevel, 1, 0});
+		//tessellator.getBuffer().addVertexData(new int[] {x + 0, y + 0, (int) this.zLevel, 0, 0});
+		//tessellator.draw();
 	}
 
 	@Override

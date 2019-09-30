@@ -16,7 +16,6 @@ import org.lwjgl.opengl.GL11;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 
@@ -110,7 +109,7 @@ public class MonoDisplayerBlockRenderer extends TileEntitySpecialRenderer {
 				if (cStruct == null || cStruct.getDynamicTexture() == null) // Card not registered or unregistered illustration, use item image instead
 					bindTexture(new ResourceLocation(Reference.MODID, "textures/items/item_card_" + Rarity.toString(ci.getCardRarity()).toLowerCase() + ".png"));
 				else {
-					cStruct.preloadRessource(instance.renderEngine);
+					cStruct.preloadResource(instance.renderEngine);
 					bindTexture(cStruct.getResourceLocation());
 				}
 

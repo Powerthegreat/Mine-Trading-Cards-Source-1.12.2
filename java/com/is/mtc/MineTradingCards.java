@@ -1,30 +1,26 @@
 package com.is.mtc;
 
-import java.io.File;
-
-import com.is.mtc.root.CC_CreateCard;
-import com.is.mtc.root.CC_ForceCreateCard;
-import com.is.mtc.root.Logs;
-import com.is.mtc.init.MTCItems;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.gen.structure.MapGenStructureIO;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-
 import com.is.mtc.data_manager.DataLoader;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
 import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
 import com.is.mtc.handler.DropHandler;
 import com.is.mtc.handler.GuiHandler;
+import com.is.mtc.init.MTCItems;
 import com.is.mtc.packet.MTCMessage;
 import com.is.mtc.packet.MTCMessageHandler;
 import com.is.mtc.proxy.CommonProxy;
+import com.is.mtc.root.CC_CreateCard;
+import com.is.mtc.root.CC_ForceCreateCard;
+import com.is.mtc.root.Logs;
 import com.is.mtc.village.CardMasterHome;
 import com.is.mtc.village.CardMasterHomeHandler;
-
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.gen.structure.MapGenStructureIO;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -38,6 +34,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.File;
+
+import static com.is.mtc.init.MTCItems.displayerBlock;
+import static com.is.mtc.init.MTCItems.monoDisplayerBlock;
 
 @Mod(modid = Reference.MODID, version = Reference.VERSION, name = Reference.NAME)
 public class MineTradingCards {
@@ -96,11 +97,11 @@ public class MineTradingCards {
 
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());
-		//NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 
 		// Registers tile entities
-		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:block_displayer"));
-		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation("is_mtc:block_monodisplayer"));
+		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation(displayerBlock.getRegistryName().toString()));
+		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation(monoDisplayerBlock.getRegistryName().toString()));
 
 		MapGenStructureIO.registerStructureComponent(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
 		// Registers the Card Master villager's trades, and the creation handler for its home

@@ -1,8 +1,11 @@
 package com.is.mtc.handler;
 
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -29,10 +32,12 @@ public class GuiHandler implements IGuiHandler {
 	public static final int GUI_DISPLAYER = 1;
 	public static final int GUI_BINDER = 2;
 	public static final int GUI_MONODISPLAYER = 3;
+	//public static ItemStack currentMainItem;
+	public static EnumHand hand = EnumHand.MAIN_HAND;
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+		/*TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 
 		switch (ID) {
 		case GUI_DISPLAYER:
@@ -48,7 +53,7 @@ public class GuiHandler implements IGuiHandler {
 				return new MonoDisplayerBlockContainer(player.inventory, (MonoDisplayerBlockTileEntity) tileEntity);
 			}
 			break;
-		}
+		}*/
 
 		return null;
 	}
@@ -58,32 +63,38 @@ public class GuiHandler implements IGuiHandler {
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 
 		switch (ID) {
-		case GUI_CARD:
-			ItemStack stack = player.getActiveItemStack();
-			if (Tools.hasCDWD(stack)) {
-				CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
+			case GUI_CARD:
+				//ItemStack stack = player.getActiveItemStack();
+				ItemStack stack = player.getHeldItem(hand);
+				/*if(currentMainItem != null) {
+					stack = currentMainItem;
+				}*/
+				//ItemStack stack = player.getActiveItemStack();
+				System.out.println(stack.getTagCompound());
+				if (Tools.hasCDWD(stack)) {
+					CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
-				if (cStruct != null && cStruct.getDynamicTexture() != null) // Card registered and dynamic texture (illustration) exists
-					return new CardItemInterface(player.getActiveItemStack());
-				else {
-					Logs.chatMessage(player, "Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));
-					Logs.errLog("Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));
+					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card registered and dynamic texture (illustration) exists
+						return new CardItemInterface(stack);
+					} else {
+						Logs.chatMessage(player, "Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));
+						Logs.errLog("Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));
+					}
 				}
-			}
-			break;
+				break;
 
-		case GUI_DISPLAYER:
-			if (tileEntity != null)
-				return new DisplayerBlockInterface(player.inventory, (DisplayerBlockTileEntity)tileEntity);
-			break;
+			/*case GUI_DISPLAYER:
+				if (tileEntity != null)
+					return new DisplayerBlockInterface(player.inventory, (DisplayerBlockTileEntity)tileEntity);
+				break;
 
-		case GUI_BINDER:
-			return new BinderItemInterfaceContainer(new BinderItemContainer(player.inventory, new BinderItemInventory(player.getActiveItemStack())));
+			case GUI_BINDER:
+				return new BinderItemInterfaceContainer(new BinderItemContainer(player.inventory, new BinderItemInventory(player.getActiveItemStack())));
 
-		case GUI_MONODISPLAYER:
-			if (tileEntity != null)
-				return new MonoDisplayerBlockInterface(player.inventory, (MonoDisplayerBlockTileEntity)tileEntity);
-			break;
+			case GUI_MONODISPLAYER:
+				if (tileEntity != null)
+					return new MonoDisplayerBlockInterface(player.inventory, (MonoDisplayerBlockTileEntity)tileEntity);
+				break;*/
 		}
 
 		return null;

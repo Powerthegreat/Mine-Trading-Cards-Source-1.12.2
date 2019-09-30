@@ -28,8 +28,8 @@ public class MTCItems {
 	public static CardItem cardCommon, cardUncommon, cardRare, cardAncient, cardLegendary;
 	public static PackItemBase packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard, packEdition;
 	private static BinderItem binder;
-	private static Block displayerBlock;
-	private static Block monoDisplayerBlock;
+	public static Block displayerBlock;
+	public static Block monoDisplayerBlock;
 	private static Item displayerItemBlock;
 	private static Item monoDisplayerItemBlock;
 
