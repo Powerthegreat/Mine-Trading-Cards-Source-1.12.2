@@ -1,5 +1,7 @@
 package com.is.mtc.displayer;
 
+import com.is.mtc.MineTradingCards;
+import com.is.mtc.handler.GuiHandler;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -10,10 +12,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import com.is.mtc.handler.GuiHandler;
-import com.is.mtc.MineTradingCards;
 
 public class DisplayerBlock extends BlockContainer {
 
@@ -42,10 +42,11 @@ public class DisplayerBlock extends BlockContainer {
 									EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 
-		if (tileEntity == null || !(tileEntity instanceof DisplayerBlockTileEntity))
+		if (!(tileEntity instanceof DisplayerBlockTileEntity))
 			return false;
 
-		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_DISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
+		if (/*!*/world.isRemote)
+			player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_DISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 
@@ -59,7 +60,7 @@ public class DisplayerBlock extends BlockContainer {
 		for (int i = 0; i < 4; ++i) {
 			ItemStack stack = content[i];
 
-			if (stack != null) {
+			if (stack != ItemStack.EMPTY) {
 				EntityItem entity = new EntityItem(world, x, y, z, stack);
 
 				world.spawnEntity(entity);
@@ -67,12 +68,11 @@ public class DisplayerBlock extends BlockContainer {
 		}
 	}
 
-	@Override
 	public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state) {
 		if (world.isRemote)
 			return;
 
-		emptyDisplayerBlockTileEntity((DisplayerBlockTileEntity)world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
+		emptyDisplayerBlockTileEntity((DisplayerBlockTileEntity) world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
 		world.removeTileEntity(pos);
 	}
 
@@ -91,8 +91,7 @@ public class DisplayerBlock extends BlockContainer {
 
 	/*-*/
 
-	@Override
-	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
+	public TileEntity createNewTileEntity(World world, int meta) {
 		return new DisplayerBlockTileEntity();
 	}
 
@@ -100,4 +99,16 @@ public class DisplayerBlock extends BlockContainer {
 	public boolean renderAsNormalBlock() {
 		return false;
 	}*/
+
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
+	}
+
+	public Class<DisplayerBlockTileEntity> getTileEntityClass() {
+		return DisplayerBlockTileEntity.class;
+	}
+
+	public DisplayerBlockTileEntity getTileEntity(IBlockAccess world, BlockPos pos) {
+		return (DisplayerBlockTileEntity) world.getTileEntity(pos);
+	}
 }

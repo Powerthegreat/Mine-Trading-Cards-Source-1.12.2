@@ -1,17 +1,11 @@
 package com.is.mtc.card;
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
-
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
 
 public class CardItemInterface extends GuiScreen {
 	private static final double UI_WIDTH = 224, UI_HEIGHT = 224;
@@ -27,7 +21,7 @@ public class CardItemInterface extends GuiScreen {
 		double dpx = (width - CardItemInterface.UI_WIDTH) / 2, dpy = (height - CardItemInterface.UI_HEIGHT) / 2;
 
 		cStruct.preloadResource(mc.getTextureManager());
-		System.out.println(cStruct.getResourceLocation());
+		//System.out.println(cStruct.getResourceLocation());
 		drawDefaultBackground();
 		mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
 		mc.getTextureManager().getTexture(cStruct.getResourceLocation());
@@ -42,10 +36,10 @@ public class CardItemInterface extends GuiScreen {
 		float f1 = 0.00390625F;
 		Tessellator tessellator = Tessellator.getInstance();
 		tessellator.getBuffer().begin(7, DefaultVertexFormats.POSITION_TEX);
-		tessellator.getBuffer().pos(x + 0, y + height, (int) this.zLevel).tex(0,1).endVertex();
-		tessellator.getBuffer().pos(x + width, y + height, (int) this.zLevel).tex(1,1).endVertex();
-		tessellator.getBuffer().pos(x + width, y + 0, (int) this.zLevel).tex(1,0).endVertex();
-		tessellator.getBuffer().pos(x + 0, y + 0, (int) this.zLevel).tex(0,0).endVertex();
+		tessellator.getBuffer().pos(x + 0, y + height, (int) this.zLevel).tex(0, 1).endVertex();
+		tessellator.getBuffer().pos(x + width, y + height, (int) this.zLevel).tex(1, 1).endVertex();
+		tessellator.getBuffer().pos(x + width, y + 0, (int) this.zLevel).tex(1, 0).endVertex();
+		tessellator.getBuffer().pos(x + 0, y + 0, (int) this.zLevel).tex(0, 0).endVertex();
 		tessellator.draw();
 		/*.tex((double)textureSprite.getMinU(), (double)textureSprite.getMaxV())*/
 		//Tessellator tessellator = Tessellator.getInstance();

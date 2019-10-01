@@ -22,7 +22,7 @@ public class CDFCardStructure {
 	}
 
 	public void giveArgument(String argument) {
-		String args[] = argument.split("=");
+		String[] args = argument.split("=");
 
 		if (args.length != 2)
 			return;
@@ -49,13 +49,35 @@ public class CDFCardStructure {
 			description = args[1];
 	}
 
-	public String getId() { return id; }
-	public String getEdition() { return edition; }
-	public String getRarity() { return rarity; }
+	public String getId() {
+		return id;
+	}
 
-	public String getName() { return name; }
-	public String getCategory() { return category; }
-	public int getWeight() { return weight; }
-	public String getAssetPath() { return assetPath; }
-	public String getDescription() { return description; }
+	public String getEdition() {
+		return edition;
+	}
+
+	public String getRarity() {
+		return rarity;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public String getAssetPath() {
+		return assetPath;
+	}
+
+	public String getDescription() {
+		return description;
+	}
 }

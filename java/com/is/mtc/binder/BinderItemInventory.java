@@ -1,69 +1,69 @@
 package com.is.mtc.binder;
 
-import java.util.Arrays;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
+import com.is.mtc.root.Tools;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 
-import com.is.mtc.root.Tools;
+import javax.annotation.Nonnull;
+import java.util.Arrays;
 
-public class BinderItemInventory implements IInventory {
+public class BinderItemInventory implements IItemHandlerModifiable {
+	public boolean hasLoaded;
+	private ItemStack[] contents;
+	private ItemStack binderStack;
 
-	private ItemStack[] content;
-	private ItemStack container;
+	public BinderItemInventory(ItemStack binder) {
+		binderStack = binder;
+		BinderItem.testNBT(binderStack);
 
-	/*-*/
-
-	public BinderItemInventory(ItemStack container) {
-		this.container = container;
-		BinderItem.testNBT(container);
-
-		readFromNBT(container.getTagCompound());
+		readFromNBT(binderStack.getTagCompound());
 	}
 
-	/*-*/
-
 	public void readFromNBT(NBTTagCompound nbt) {
-		NBTTagList nbttaglist = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
-		content = new ItemStack[getSizeInventory()];
+		NBTTagList nbtTagList = nbt.getTagList("Items", Constants.NBT.TAG_COMPOUND);
+		contents = new ItemStack[getSlots()];
 
-		Arrays.fill(content, null);
-		for (int i = 0; nbttaglist != null && i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-			int j = nbttagcompound1.getInteger("Slot");
+		Arrays.fill(contents, ItemStack.EMPTY);
+		if (nbtTagList.tagCount() > 0) {
+			for (int i = 0; i < nbtTagList.tagCount(); i++) {
+				NBTTagCompound nbtTagCompound = nbtTagList.getCompoundTagAt(i);
+				int j = nbtTagCompound.getInteger("Slot");
 
-			if (j >= 0 && j < content.length) {
-				ItemStack item = new ItemStack((Item) null);
-				item.setTagCompound(nbttagcompound1);
-				content[j] = item;
+				if (j >= 0 && j < contents.length) {
+					ItemStack item = new ItemStack(GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(nbtTagCompound.getString("id").split(":")[0], nbtTagCompound.getString("id").split(":")[1])));
+					item.setCount(nbtTagCompound.getInteger("Count"));
+					item.setTagCompound(nbtTagCompound.getCompoundTag("tag"));
+					contents[j] = item;
+				}
 			}
 		}
+		hasLoaded = true;
 	}
 
 	public void writeToNBT(NBTTagCompound nbt) {
 		NBTTagList nbttaglist = new NBTTagList();
 
-		for (int i = 0; i < content.length; ++i) {
-			if (content[i] != null) {
-				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-				nbttagcompound1.setInteger("Slot", i);
-				int j = nbttagcompound1.getInteger("Slot");
+		for (int i = 0; i < contents.length; ++i) {
+			if (contents[i] != ItemStack.EMPTY) {
+				NBTTagCompound nbtTagCompound = new NBTTagCompound();
+				nbtTagCompound.setInteger("Slot", i);
 
-				content[i].writeToNBT(nbttagcompound1);
-				nbttaglist.appendTag(nbttagcompound1);
+				contents[i].writeToNBT(nbtTagCompound);
+				if (!nbtTagCompound.getString("id").equals("minecraft:air")) {
+					nbttaglist.appendTag(nbtTagCompound);
+				}
 			}
 		}
 
 		nbt.setTag("Items", nbttaglist);
 	}
-
-	/*-*/
 
 	public static int getTotalPages() {
 		return 64;
@@ -73,104 +73,135 @@ public class BinderItemInventory implements IInventory {
 		return 8;
 	}
 
-	public int getSizeInventory() { // 64x8 = 512 slots
+	public int getSlots() { // 64x8 = 512 slots
 		return getTotalPages() * getStacksPerPage();
 	}
 
-	public boolean isEmpty() {
-		return false;
-	}
-
 	public ItemStack getStackInSlot(int slot) {
-		return content[slot];
+		if (slot < getSlots()) {
+			return contents[slot];
+		}
+		return ItemStack.EMPTY;
 	}
 
-	public ItemStack decrStackSize(int slot, int amount) {
-		ItemStack stack = getStackInSlot(slot);
+	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+		if (stack.isEmpty())
+			return ItemStack.EMPTY;
 
-		if (stack != null) {
-			if (stack.getCount() <= amount) // We set the content to null, since we'll remove more than there is in the slot
-				setInventorySlotContents(slot, null);
-			else
-				stack = stack.splitStack(amount); // Remove 'amount' from the stack
+		if (!Tools.isValidCard(stack))
+			return stack;
+		int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+
+		ItemStack existing = contents[slot];
+		if (!existing.isEmpty()) {
+			if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+				return stack;
+
+			limit -= existing.getCount();
 		}
 
-		return stack;
+		if (limit <= 0)
+			return stack;
+
+		boolean reachedLimit = stack.getCount() > limit;
+
+		if (!simulate) {
+			if (existing.isEmpty()) {
+				contents[slot] = reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack;
+			} else {
+				existing.grow(reachedLimit ? limit : stack.getCount());
+			}
+			//onContentsChanged(slot);
+		}
+
+		return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
+		/*ItemStack existingStack = contents[slot];
+		int amountToAdd;
+		if (!existingStack.isEmpty()) {
+			if (existingStack.getCount() >= Math.min(existingStack.getMaxStackSize(), getSlotLimit(slot)))
+				return stack;
+
+			if (!ItemHandlerHelper.canItemStacksStack(stack, existingStack))
+				return stack;
+
+			amountToAdd = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - existingStack.getCount();
+
+			if (stack.getCount() <= amountToAdd) {
+				if (!simulate) {
+					//ItemStack copy = stack.copy();
+					//copy.grow(existingStack.getCount());
+					//contents[slot] = copy;
+					existingStack.grow(stack.getCount());
+					writeToNBT(binderStack.getTagCompound());
+					//getInv().markDirty();
+				}
+
+				return ItemStack.EMPTY;
+			} else {
+				// copy the stack to not modify the original one
+				ItemStack newStack = stack.copy();
+				if (!simulate) {
+					//ItemStack copy = newStack.splitStack(amountToAdd);
+					//copy.grow(existingStack.getCount());
+					//contents[slot] = copy;
+					existingStack.grow(newStack.splitStack(amountToAdd));
+					writeToNBT(binderStack.getTagCompound());
+					//getInv().markDirty();
+					return newStack;
+				} else {
+					newStack.shrink(amountToAdd);
+					return newStack;
+				}
+			}
+		} else {
+			amountToAdd = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
+			if (amountToAdd < stack.getCount()) {
+				// copy the stack to not modify the original one
+				ItemStack newStack = stack.copy();
+				if (!simulate) {
+					contents[slot] = newStack.splitStack(amountToAdd);
+					writeToNBT(binderStack.getTagCompound());
+					//getInv().markDirty();
+					return newStack;
+				} else {
+					newStack.shrink(amountToAdd);
+					return newStack;
+				}
+			}
+			else {
+				if (!simulate) {
+					ItemStack copy = stack.copy();
+					contents[slot] = copy;
+					writeToNBT(binderStack.getTagCompound());
+					//getInv().markDirty();
+				}
+				return ItemStack.EMPTY;
+			}
+		}*/
 	}
 
-	public ItemStack removeStackFromSlot(int slot) {
-		return getStackInSlot(slot);
+	public ItemStack extractItem(int slot, int amount, boolean simulate) {
+		ItemStack stackToReturn = contents[slot].copy();
+		stackToReturn.setCount(Math.min(amount, contents[slot].getCount()));
+		if (!simulate) {
+			contents[slot].shrink(stackToReturn.getCount());
+			writeToNBT(binderStack.getTagCompound());
+		}
+		return stackToReturn;
 	}
 
-	public ItemStack getStackInSlotOnClosing(int slot) {
-		return getStackInSlot(slot);
-	}
-
-	public void setInventorySlotContents(int slot, ItemStack stack) {
-		content[slot] = stack;
-	}
-
-	/*-*/
-
-	public String getName() {
-		return "binder_item_inventory";
-	}
-
-	public boolean hasCustomName() {
-		return false;
-	}
-
-	/*-*/
-
-	public int getInventoryStackLimit() {
+	public int getSlotLimit(int slot) {
 		return 64;
 	}
 
-	public void markDirty() {
+	public ItemStack getBinderStack() {
+		return binderStack;
 	}
 
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return true;
-	}
-
-	/*-*/
-
-	public void openInventory(EntityPlayer player) {
-
-	}
-
-	public void closeInventory(EntityPlayer player) {
-
-	}
-
-	/*-*/
-
-	public boolean isItemValidForSlot(int slot, ItemStack stack) { // Is 'ItemStack' is valid for slot
-		return Tools.isValidCard(stack);
-	}
-
-	@Override
-	public int getField(int id) {
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, int value) {
-
-	}
-
-	@Override
-	public int getFieldCount() {
-		return 0;
-	}
-
-	@Override
-	public void clear() {
-
-	}
-
-	@Override
-	public ITextComponent getDisplayName() {
-		return null;
+	public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+		if (slot < getSlots()) {
+			contents[slot] = stack.copy();
+			writeToNBT(binderStack.getTagCompound());
+		}
 	}
 }

@@ -10,7 +10,7 @@ import net.minecraft.village.MerchantRecipeList;
 
 import java.util.Random;
 
-public class CardTrade implements EntityVillager.ITradeList{
+public class CardTrade implements EntityVillager.ITradeList {
 	public ItemStack buyingItemStack;
 	public EntityVillager.PriceInfo buyingPriceInfo;
 	public ItemStack sellingItemstack;
@@ -23,8 +23,7 @@ public class CardTrade implements EntityVillager.ITradeList{
 		this.sellingPriceInfo = emeraldsSold;
 	}
 
-	public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random)
-	{
+	public void addMerchantRecipe(IMerchant merchant, MerchantRecipeList recipeList, Random random) {
 		int i = this.buyingPriceInfo.getPrice(random);
 		int j = this.sellingPriceInfo.getPrice(random);
 		recipeList.add(new MerchantRecipe(new ItemStack(this.buyingItemStack.getItem(), i, this.buyingItemStack.getMetadata()), new ItemStack(Items.EMERALD), new ItemStack(this.sellingItemstack.getItem(), j, this.sellingItemstack.getMetadata())));

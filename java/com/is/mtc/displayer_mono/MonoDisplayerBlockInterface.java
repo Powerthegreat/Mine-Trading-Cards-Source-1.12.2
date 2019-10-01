@@ -3,12 +3,8 @@ package com.is.mtc.displayer_mono;
 import com.is.mtc.Reference;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.util.vector.Vector2f;
-
-import com.is.mtc.MineTradingCards;
 
 public class MonoDisplayerBlockInterface extends GuiContainer {
 	private static final int WIDTH = 224, HEIGHT = 90;
@@ -31,7 +27,7 @@ public class MonoDisplayerBlockInterface extends GuiContainer {
 
 		this.drawDefaultBackground();
 		mc.getTextureManager().bindTexture(new ResourceLocation(Reference.MODID, "textures/gui/ui_monodisplayer.png"));
-		drawTexturedModalRect((int)drawPos.x, (int)drawPos.y, 0, 0, WIDTH, HEIGHT);
+		drawTexturedModalRect((int) drawPos.x, (int) drawPos.y, 0, 0, WIDTH, HEIGHT);
 	}
 
 	@Override

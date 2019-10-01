@@ -1,9 +1,10 @@
 package com.is.mtc.pack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import com.is.mtc.data_manager.CardStructure;
+import com.is.mtc.data_manager.Databank;
+import com.is.mtc.data_manager.EditionStructure;
+import com.is.mtc.root.Logs;
+import com.is.mtc.root.Rarity;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -15,18 +16,15 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
-import com.is.mtc.data_manager.CardStructure;
-import com.is.mtc.data_manager.Databank;
-import com.is.mtc.data_manager.EditionStructure;
-import com.is.mtc.root.Logs;
-import com.is.mtc.root.Rarity;
-
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class PackItemEdition extends PackItemBase {
 
-	private static final int cCount[] = { 7, 2, 1 };
-	private static final int rWeight[] = { 25, 29, 30 };
+	private static final int[] cCount = {7, 2, 1};
+	private static final int[] rWeight = {25, 29, 30};
 	private static final int rtWeight = rWeight[2];
 
 	public PackItemEdition() {
@@ -45,7 +43,9 @@ public class PackItemEdition extends PackItemBase {
 			Random r = new Random();
 			int i = r.nextInt(Databank.getEditionsCount());
 
-			stack.getTagCompound().setString("edition_id", Databank.getEditionWithNumeralId(i).getId());
+			NBTTagCompound nbtTag = stack.getTagCompound();
+			nbtTag.setString("edition_id", Databank.getEditionWithNumeralId(i).getId());
+			stack.setTagCompound(nbtTag);
 		}
 	}
 
@@ -59,8 +59,7 @@ public class PackItemEdition extends PackItemBase {
 				return "edition_pack_" + eid;
 			else
 				return eStruct.getName() + " Pack";
-		}
-		else
+		} else
 			return super.getItemStackDisplayName(stack);
 	}
 
@@ -126,8 +125,7 @@ public class PackItemEdition extends PackItemBase {
 				spawnCard(player, world, cdwd);
 			}
 			player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
-		}
-		else {
+		} else {
 			Logs.chatMessage(player, "Zero cards were registered, thus zero cards were generated");
 			Logs.errLog("Zero cards were registered, thus zero cards were generated");
 		}

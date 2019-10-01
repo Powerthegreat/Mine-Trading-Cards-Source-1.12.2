@@ -1,25 +1,15 @@
 package com.is.mtc.data_manager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.is.mtc.MineTradingCards;
+import com.is.mtc.root.Logs;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.is.mtc.root.Logs;
-import com.is.mtc.MineTradingCards;
+import java.io.*;
+import java.util.*;
 
 
 public class DataLoader {
@@ -75,8 +65,7 @@ public class DataLoader {
 
 	// -
 
-	private static void getEditions(File folder)
-	{
+	private static void getEditions(File folder) {
 		File[] files = folder.listFiles(createFilenameFilter(".json"));
 		Arrays.sort(files);
 
@@ -86,15 +75,14 @@ public class DataLoader {
 			try {
 				FileReader reader = new FileReader(file);
 				JsonParser parser = new JsonParser();
-				JsonObject head = (JsonObject)parser.parse(reader);
+				JsonObject head = (JsonObject) parser.parse(reader);
 				EditionStructure eStruct = new EditionStructure(head.get("id"), head.get("name"));
 
 				if (!Databank.registerAnEdition(eStruct))
 					Logs.errLog("Concerned edition file: " + file.getName());
 
 				reader.close();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Logs.errLog("An error occured wile reading an edition file: " + file.getName());
 				Logs.errLog(e.getMessage());
 			}
@@ -109,8 +97,7 @@ public class DataLoader {
 		for (File file : files) {
 			Logs.devLog("Reading card file: " + file.getAbsolutePath());
 
-			if (file.getName().endsWith(".cdf"))
-			{
+			if (file.getName().endsWith(".cdf")) {
 				try {
 					FileInputStream fis = new FileInputStream(file);
 					BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -131,18 +118,16 @@ public class DataLoader {
 
 					br.close();
 					fis.close();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					Logs.errLog("An error occured wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());
 				}
-			}
-			else // JSON condition. Not 'else if' since only .cdf and .json should get there
+			} else // JSON condition. Not 'else if' since only .cdf and .json should get there
 			{ // Warning, json is case sensitive
 				try {
 					FileReader reader = new FileReader(file);
 					JsonParser parser = new JsonParser();
-					JsonObject head = (JsonObject)parser.parse(reader);
+					JsonObject head = (JsonObject) parser.parse(reader);
 					CardStructure cStruct = new CardStructure(head.get("id"), head.get("edition"), head.get("rarity"));
 
 					if (!cStruct.setSecondaryInput(head.get("name"), head.get("category"), head.get("weight"), head.get("asset"), head.get("description")))
@@ -152,8 +137,7 @@ public class DataLoader {
 						Logs.errLog("Concerned card file: " + file.getName());
 
 					reader.close();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					Logs.errLog("An error occured wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());
 				}

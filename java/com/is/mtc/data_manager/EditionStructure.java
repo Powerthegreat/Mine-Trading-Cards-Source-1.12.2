@@ -7,18 +7,15 @@ public class EditionStructure {
 	private String name, id;
 	public int cCount, eNI; // Cards count, edition numeral id
 
-	public EditionStructure(JsonElement jId, JsonElement jName)
-	{
+	public EditionStructure(JsonElement jId, JsonElement jName) {
 		setInput(jId != null ? jId.getAsString() : null, jName != null ? jName.getAsString() : null);
 	}
 
-	public EditionStructure(String id, String name)
-	{
+	public EditionStructure(String id, String name) {
 		setInput(id, name);
 	}
 
-	private void setInput(String id, String name)
-	{
+	private void setInput(String id, String name) {
 		this.id = Tools.clean(id).toLowerCase();
 		this.name = Tools.clean(name);
 
@@ -29,8 +26,7 @@ public class EditionStructure {
 		eNI = -1;
 	}
 
-	public boolean isValid()
-	{
+	public boolean isValid() {
 		return !(id.isEmpty() || name.isEmpty());
 	}
 
@@ -39,6 +35,11 @@ public class EditionStructure {
 		return "{id:" + id + " name:'" + name + "' cards_count:" + cCount + " numeral_id:" + eNI + "}";
 	}
 
-	public String getId() { return id; }
-	public String getName() { return name; }
+	public String getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
 }

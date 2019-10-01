@@ -1,5 +1,7 @@
 package com.is.mtc.binder;
 
+import com.is.mtc.root.CardSlot;
+import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
@@ -7,104 +9,88 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import com.is.mtc.root.CardSlot;
-import com.is.mtc.root.Tools;
-
 public class BinderItemContainer extends Container {
-	private static final int offsetBinderX = 44, offsetBinderY = 44; // Top left
-
+	private static final int offsetBinderX = 44, offsetBinderY = 44; // Top left, for card slots
 	private static final int offsetInv3RowsX = 41, offsetInv3RowsY = 140; // Inventory pos
 	private static final int offsetHotbarX = 41, offsetHotbarY = 198; // Hotbar pos
 
-	/*-*/
-
 	private BinderItemInventory binderItemInventory;
 	private ItemStack binderStack;
-	private InventoryPlayer inventoryPlayer;
 
-	/*-*/
-
-	public BinderItemContainer(InventoryPlayer inventoryPlayer, BinderItemInventory binderItemInventory) {
-		binderStack = inventoryPlayer.getCurrentItem();
-		this.inventoryPlayer = inventoryPlayer;
-		this.binderItemInventory = binderItemInventory;
+	public BinderItemContainer(InventoryPlayer inventory, BinderItemInventory binderInventory) {
+		binderStack = binderInventory.getBinderStack();
+		binderItemInventory = binderInventory;
 
 		BinderItem.testNBT(binderStack);
-
 		inventorySlots.clear();
+
 		for (int i = 0; i < 9; i++) // Toolbar
-			addSlotToContainer(new Slot(inventoryPlayer, i,
-					offsetHotbarX + i * 18, offsetHotbarY));
+			addSlotToContainer(new Slot(inventory, i, offsetHotbarX + i * 18, offsetHotbarY));
 
 		for (int i = 0; i < 3; i++) // Player inv
 			for (int j = 0; j < 9; j++)
-				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, // Slot number + the toolbar size
-						offsetInv3RowsX + j * 18, offsetInv3RowsY + i * 18));
+				addSlotToContainer(new Slot(inventory, j + i * 9 + 9, /* Slot number + the toolbar size */offsetInv3RowsX + j * 18, offsetInv3RowsY + i * 18));
 
-		// Note that slot index is different from slot number !!
-		for (int idx = 0; idx < BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages(); ++idx) {
-			int i = idx % 8; // Slot
-			int j = idx / 8; // Page
-			int col = i % 4;
-			int row = i / 4;
+		// Creating card slots by slot index - NOT slot number
+		for (int idx = 0; idx < BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages(); idx++) {
+			int slot = idx % 8; // Slot
+			int page = idx / 8; // Page
+			int column = slot % 4;
+			int row = slot / 4;
 
-			addSlotToContainer(new CardSlot(binderItemInventory, idx, // New card slot with bii, slot index
-					offsetBinderX + col * 58, offsetBinderY + row * 64)); // and slot coords
+			addSlotToContainer(new CardSlot(binderItemInventory, idx, /* New card slot with binderItemInventory, slot index */offsetBinderX + column * 58, offsetBinderY + row * 64)); // and slot coords
 		}
 	}
 
-	public ItemStack getCardStackAtIndex(int idx) {
-		return inventorySlots.get(idx + 36).getStack(); // +Inventory size
+	public ItemStack getCardStackAtIndex(int index) {
+		return inventorySlots.get(index + 36).getStack(); // Adding player's inventory size
 	}
 
 	public ItemStack getBinderStack() {
 		return binderStack;
 	}
 
-	/*-*/
-
 	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
 		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Slot from where the stack comes from
 		ItemStack providedStack; // Stack that is to be moved
-		int binderpage;
+		int binderPage;
 		int tmp;
 
-		if (!(player.getActiveItemStack().getItem() instanceof BinderItem))
-			return null;
+		//if (!(player.getActiveItemStack().getItem() instanceof BinderItem))
+		//return ItemStack.EMPTY;
 		BinderItem.testNBT(player.getActiveItemStack());
-		binderpage = BinderItem.getCurrentPage(player.getActiveItemStack());
+		binderPage = BinderItem.getCurrentPage(binderStack);
 
 		if (providerSlot == null || !providerSlot.getHasStack())
-			return null;
+			return ItemStack.EMPTY;
 		providedStack = providerSlot.getStack();
 
 
 		if (providerSlotIndex >= 36) { // Comes from the binder
 
 			if (!mergeItemStack(providedStack, 0, 36, false))
-				return null;
+				return ItemStack.EMPTY;
 
 			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
+			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
-		}
-		else { // From inv to binder
-			int mode = player.getActiveItemStack().getTagCompound().getInteger("mode_mtc");
+		} else { // From inv to binder
+			int mode = binderStack.getTagCompound().getInteger("mode_mtc");
 
 			if (!Tools.isValidCard(providedStack))
-				return null;
+				return ItemStack.EMPTY;
 
 			switch (mode) {
-			case BinderItem.MODE_STD:
-				if (!mergeItemStack(providedStack, 36 + (binderpage * BinderItemInventory.getStacksPerPage()),
-						36 + BinderItemInventory.getStacksPerPage() + (binderpage * BinderItemInventory.getStacksPerPage()), false))
-					return null;
-				break;
-			case BinderItem.MODE_FIL:
-				if (!mergeItemStack(providedStack, 36 + (binderpage * BinderItemInventory.getStacksPerPage()),
-						36 + (BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages()), false))
-					return null;
-				break;
+				case BinderItem.MODE_STD:
+					if (!mergeItemStack(providedStack, 36 + (binderPage * BinderItemInventory.getStacksPerPage()),
+							36 + BinderItemInventory.getStacksPerPage() + (binderPage * BinderItemInventory.getStacksPerPage()), false))
+						return ItemStack.EMPTY;
+					break;
+				case BinderItem.MODE_FIL:
+					if (!mergeItemStack(providedStack, 36 + (binderPage * BinderItemInventory.getStacksPerPage()),
+							36 + (BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages()), false))
+						return ItemStack.EMPTY;
+					break;
 				/*case BinderItem.MODE_PLA:
 				CardStructure cs = Databank.getCardByCDWD(providerSlot.getStack().stackTagCompound.getString("cdwd"));
 
@@ -115,49 +101,44 @@ public class BinderItemContainer extends Container {
 			}
 
 			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
+			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}
 
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	public ItemStack slotClick(int slot, int dragType, ClickType clickType, EntityPlayer player) {
-		ItemStack heldItem = player.getActiveItemStack();
 
-		if (heldItem == null || heldItem.getTagCompound() == null) // Invalid binder
-			return null;
+		if (binderStack.getTagCompound() == null) // Invalid binder
+			return ItemStack.EMPTY;
 
 		if (slot == player.inventory.currentItem) // Can't slot click on the binder
-			return null;
+			return ItemStack.EMPTY;
 
-		if (slot >= 36) {// Slot is from binder
-			int binderPage = BinderItem.getCurrentPage(player.getActiveItemStack());
+		/*if(slot >= 36) {// Slot is from binder
+			int binderPage = BinderItem.getCurrentPage(binderStack);
 
 			slot += (binderPage * BinderItemInventory.getStacksPerPage()); // Set current slot offset then
-		}
+		}*/
 		return super.slotClick(slot, dragType, clickType, player);
 	}
 
-	/*-*/
-
-	/*-*/
-
-	public boolean canInteractWith(EntityPlayer p_75145_1_) {
-		return binderItemInventory.isUsableByPlayer(p_75145_1_);
+	public boolean canInteractWith(EntityPlayer playerIn) {
+		return true;
 	}
-
-	public void onContainerClosed(EntityPlayer p_75134_1_) {
-		ItemStack heldItem = p_75134_1_.getActiveItemStack();
-
-		if (heldItem != null && heldItem.getTagCompound() != null)
-			binderItemInventory.writeToNBT(heldItem.getTagCompound()); // Save data
-		super.onContainerClosed(p_75134_1_);
-	}
-
-	/*-*/
 
 	public int getCurrentPage() {
 		return BinderItem.getCurrentPage(binderStack);
+	}
+
+	public void onContainerClosed(EntityPlayer player) {
+		if (!binderItemInventory.hasLoaded) {
+			binderItemInventory.readFromNBT(binderStack.getTagCompound());
+		}
+		if (binderStack != null && binderStack.getTagCompound() != null)
+			binderItemInventory.writeToNBT(binderStack.getTagCompound()); // Save data
+
+		super.onContainerClosed(player);
 	}
 }

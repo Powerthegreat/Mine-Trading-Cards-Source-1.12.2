@@ -1,23 +1,18 @@
 package com.is.mtc.root;
 
-import java.util.List;
-
+import com.is.mtc.data_manager.Databank;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandTime;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-import com.is.mtc.data_manager.Databank;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class CC_CreateCard extends CommandBase { // Command to create an existing card
 
@@ -51,8 +46,9 @@ public class CC_CreateCard extends CommandBase { // Command to create an existin
 			}
 			genStack = new ItemStack(Rarity.getAssociatedCardItem(Databank.getCardByCDWD(cdwd).getRarity()));
 
-			genStack.setTagCompound(new NBTTagCompound());
-			genStack.getTagCompound().setString("cdwd", cdwd); // Setting card
+			NBTTagCompound nbtTag = new NBTTagCompound();
+			nbtTag.setString("cdwd", cdwd); // Setting card
+			genStack.setTagCompound(nbtTag);
 			spawnedEntity = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY() + 1, player.getPosition().getZ(), genStack); // Spawning card
 
 			world.spawnEntity(spawnedEntity);

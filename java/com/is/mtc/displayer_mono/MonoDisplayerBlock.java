@@ -1,9 +1,10 @@
 package com.is.mtc.displayer_mono;
 
+import com.is.mtc.MineTradingCards;
+import com.is.mtc.handler.GuiHandler;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -15,13 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-
-import com.is.mtc.handler.GuiHandler;
-import com.is.mtc.MineTradingCards;
-
-import javax.annotation.Nullable;
 
 public class MonoDisplayerBlock extends BlockContainer {
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
@@ -47,7 +42,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 	}
 
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[] {FACING});
+		return new BlockStateContainer(this, FACING);
 	}
 
 	public IBlockState getStateFromMeta(int meta) {
@@ -126,7 +121,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 			return;
 		}
 
-		emptyMonoDisplayerBlockTileEntity((MonoDisplayerBlockTileEntity)world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
+		emptyMonoDisplayerBlockTileEntity((MonoDisplayerBlockTileEntity) world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
 		world.removeTileEntity(pos);
 	}
 

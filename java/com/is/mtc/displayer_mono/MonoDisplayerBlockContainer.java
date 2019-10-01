@@ -1,13 +1,11 @@
 package com.is.mtc.displayer_mono;
 
+import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
-import com.is.mtc.root.CardSlot;
-import com.is.mtc.root.Tools;
 
 public class MonoDisplayerBlockContainer extends Container {
 	private MonoDisplayerBlockTileEntity tileEntity;
@@ -17,8 +15,9 @@ public class MonoDisplayerBlockContainer extends Container {
 
 	public MonoDisplayerBlockContainer(InventoryPlayer inventoryPlayer, MonoDisplayerBlockTileEntity tileEntity) {
 		this.tileEntity = tileEntity;
+		//IItemHandler inventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 
-		addSlotToContainer(new CardSlot(tileEntity, 0, 21, 26));
+		//addSlotToContainer(new CardSlot(tileEntity, 0, 21, 26));
 
 		for (int i = 0; i < 9; i++) // Toolbar
 			addSlotToContainer(new Slot(inventoryPlayer, i,
@@ -37,7 +36,7 @@ public class MonoDisplayerBlockContainer extends Container {
 
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
-		Slot providerSlot = (Slot)inventorySlots.get(providerSlotIndex); // Since slots are syncs, get from self
+		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Since slots are syncs, get from self
 		ItemStack providedStack = null;
 		int tmp;
 
@@ -53,8 +52,7 @@ public class MonoDisplayerBlockContainer extends Container {
 			tmp = providedStack.getCount();
 			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
-		}
-		else { // Not from slot ? then from inventory !
+		} else { // Not from slot ? then from inventory !
 			if (!Tools.isValidCard(providedStack))
 				return null;
 

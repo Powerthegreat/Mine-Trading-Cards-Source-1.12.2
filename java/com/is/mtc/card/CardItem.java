@@ -1,10 +1,10 @@
 package com.is.mtc.card;
 
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Logs;
-import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -37,7 +37,9 @@ public class CardItem extends Item {
 		rarity = r;
 	}
 
-	public int getCardRarity() { return rarity; }
+	public int getCardRarity() {
+		return rarity;
+	}
 
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
@@ -49,23 +51,23 @@ public class CardItem extends Item {
 				return cdwd;
 			else
 				return cStruct.getName();
-		}
-		else
+		} else
 			return super.getItemStackDisplayName(stack);
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		System.out.println(player.getHeldItem(hand).getTagCompound());
 		//if (world.isRemote) {
 		if (Tools.hasCDWD(player.getHeldItem(hand))) {
 			//GuiHandler.currentMainItem = player.getHeldItem(hand);
-			System.out.println(player.getHeldItem(hand).getTagCompound());
+			//System.out.println(player.getHeldItem(hand).getTagCompound());
 			GuiHandler.hand = hand;
-			player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int)player.posX, (int)player.posY, (int)player.posZ);
+			player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int) player.posX, (int) player.posY, (int) player.posZ);
 			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		}
 
-			//return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		//return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		//}
 
 		if (!player.getHeldItem(hand).hasTagCompound())
@@ -77,7 +79,7 @@ public class CardItem extends Item {
 			if (cStruct != null) {
 				NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
 				nbtTag.setString("cdwd", cStruct.getCDWD());
-				player.getHeldItem(hand).setTagCompound(nbtTag);
+				//player.getHeldItem(hand).setTagCompound(nbtTag);
 				//player.getHeldItem(hand).getTagCompound().setString("cdwd", cStruct.getCDWD());
 			} else
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
@@ -109,7 +111,7 @@ public class CardItem extends Item {
 			infos.add("Category: " + ChatFormatting.WHITE + cStruct.getCategory());
 
 		if (!cStruct.getDescription().isEmpty()) {
-			String words[] = cStruct.getDescription().split(" ");
+			String[] words = cStruct.getDescription().split(" ");
 			String line = "";
 
 			infos.add("");

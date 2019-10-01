@@ -1,12 +1,11 @@
 package com.is.mtc.root;
 
+import com.is.mtc.card.CardItem;
+import net.minecraft.item.ItemStack;
+
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.minecraft.item.ItemStack;
-
-import com.is.mtc.card.CardItem;
 
 public class Tools {
 
@@ -32,6 +31,7 @@ public class Tools {
 	}
 
 	private static Pattern pattern = Pattern.compile("^[a-z0-9_]*$");
+
 	public static boolean isValidID(String string) {
 		Matcher matcher;
 
@@ -69,9 +69,6 @@ public class Tools {
 	}
 
 	public static boolean hasCDWD(ItemStack stack) {
-		if (stack == null || !stack.hasTagCompound() || !stack.getTagCompound().hasKey("cdwd"))
-			return false;
-
-		return true;
+		return stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("cdwd");
 	}
 }

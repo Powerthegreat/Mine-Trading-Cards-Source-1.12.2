@@ -1,29 +1,22 @@
 package com.is.mtc.handler;
 
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
+import com.is.mtc.binder.BinderItemContainer;
+import com.is.mtc.binder.BinderItemGuiContainer;
+import com.is.mtc.binder.BinderItemInventory;
+import com.is.mtc.card.CardItemInterface;
+import com.is.mtc.data_manager.CardStructure;
+import com.is.mtc.data_manager.Databank;
+import com.is.mtc.displayer.DisplayerBlockContainer;
+import com.is.mtc.displayer.DisplayerBlockGui;
+import com.is.mtc.displayer.DisplayerBlockTileEntity;
+import com.is.mtc.root.Logs;
+import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.is.mtc.binder.BinderItemContainer;
-import com.is.mtc.binder.BinderItemInterfaceContainer;
-import com.is.mtc.binder.BinderItemInventory;
-import com.is.mtc.card.CardItemInterface;
-import com.is.mtc.data_manager.CardStructure;
-import com.is.mtc.data_manager.Databank;
-import com.is.mtc.displayer.DisplayerBlockContainer;
-import com.is.mtc.displayer.DisplayerBlockInterface;
-import com.is.mtc.displayer.DisplayerBlockTileEntity;
-import com.is.mtc.displayer_mono.MonoDisplayerBlockContainer;
-import com.is.mtc.displayer_mono.MonoDisplayerBlockInterface;
-import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
-import com.is.mtc.root.Logs;
-import com.is.mtc.root.Tools;
-
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {
@@ -37,23 +30,25 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		/*TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 
 		switch (ID) {
-		case GUI_DISPLAYER:
-			if (tileEntity != null)
-				return new DisplayerBlockContainer(player.inventory, (DisplayerBlockTileEntity)tileEntity);
-			break;
+			case GUI_DISPLAYER:
+				if (tileEntity != null) {
+					System.out.println(tileEntity);
+					return new DisplayerBlockContainer(player.inventory, (DisplayerBlockTileEntity) tileEntity);
+				}
+				break;
 
-		case GUI_BINDER:
-			return new BinderItemContainer(player.inventory, new BinderItemInventory(player.getActiveItemStack()));
+			case GUI_BINDER:
+				return new BinderItemContainer(player.inventory, new BinderItemInventory(player.getHeldItem(hand)));
 
-		case GUI_MONODISPLAYER:
-			if (tileEntity != null) {
-				return new MonoDisplayerBlockContainer(player.inventory, (MonoDisplayerBlockTileEntity) tileEntity);
-			}
-			break;
-		}*/
+			/*case GUI_MONODISPLAYER:
+				if (tileEntity != null) {
+					return new MonoDisplayerBlockContainer(player.inventory, (MonoDisplayerBlockTileEntity) tileEntity);
+				}
+				break;*/
+		}
 
 		return null;
 	}
@@ -70,7 +65,7 @@ public class GuiHandler implements IGuiHandler {
 					stack = currentMainItem;
 				}*/
 				//ItemStack stack = player.getActiveItemStack();
-				System.out.println(stack.getTagCompound());
+				//System.out.println(stack.getTagCompound());
 				if (Tools.hasCDWD(stack)) {
 					CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
@@ -83,15 +78,15 @@ public class GuiHandler implements IGuiHandler {
 				}
 				break;
 
-			/*case GUI_DISPLAYER:
+			case GUI_DISPLAYER:
 				if (tileEntity != null)
-					return new DisplayerBlockInterface(player.inventory, (DisplayerBlockTileEntity)tileEntity);
+					return new DisplayerBlockGui(player.inventory, (DisplayerBlockContainer) getServerGuiElement(ID, player, world, x, y, z));
 				break;
 
 			case GUI_BINDER:
-				return new BinderItemInterfaceContainer(new BinderItemContainer(player.inventory, new BinderItemInventory(player.getActiveItemStack())));
+				return new BinderItemGuiContainer((BinderItemContainer) getServerGuiElement(ID, player, world, x, y, z));
 
-			case GUI_MONODISPLAYER:
+			/*case GUI_MONODISPLAYER:
 				if (tileEntity != null)
 					return new MonoDisplayerBlockInterface(player.inventory, (MonoDisplayerBlockTileEntity)tileEntity);
 				break;*/

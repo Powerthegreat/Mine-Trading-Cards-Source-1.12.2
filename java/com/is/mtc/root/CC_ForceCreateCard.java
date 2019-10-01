@@ -1,7 +1,5 @@
 package com.is.mtc.root;
 
-import java.util.regex.Pattern;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -9,6 +7,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+
+import java.util.regex.Pattern;
 
 public class CC_ForceCreateCard extends CC_CreateCard { // Command to create a specific card. Does not have to be an existing one
 
@@ -40,8 +40,9 @@ public class CC_ForceCreateCard extends CC_CreateCard { // Command to create a s
 			}
 			genStack = new ItemStack(Rarity.getAssociatedCardItem(Integer.parseInt(args[2])));
 
-			genStack.setTagCompound(new NBTTagCompound());
-			genStack.getTagCompound().setString("cdwd", cdwd); // Setting card
+			NBTTagCompound nbtTag = new NBTTagCompound();
+			nbtTag.setString("cdwd", cdwd); // Setting card
+			genStack.setTagCompound(nbtTag);
 			spawnedEntity = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY() + 1, player.getPosition().getZ(), genStack); // Spawning card
 
 			world.spawnEntity(spawnedEntity);

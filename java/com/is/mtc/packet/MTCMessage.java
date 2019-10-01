@@ -6,7 +6,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 public class MTCMessage implements IMessage {
 	public int id;
 
-	public MTCMessage() {}
+	public MTCMessage() {
+	}
 
 	public MTCMessage(int id) {
 		this.id = id;

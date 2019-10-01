@@ -1,7 +1,9 @@
 package com.is.mtc.pack;
 
-import java.util.ArrayList;
-
+import com.is.mtc.MineTradingCards;
+import com.is.mtc.data_manager.CardStructure;
+import com.is.mtc.data_manager.Databank;
+import com.is.mtc.root.Rarity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -9,10 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import com.is.mtc.data_manager.CardStructure;
-import com.is.mtc.data_manager.Databank;
-import com.is.mtc.MineTradingCards;
-import com.is.mtc.root.Rarity;
+import java.util.ArrayList;
 
 public class PackItemBase extends Item {
 
@@ -43,8 +42,9 @@ public class PackItemBase extends Item {
 		ItemStack genStack = new ItemStack(Rarity.getAssociatedCardItem(Databank.getCardByCDWD(cdwd).getRarity()));
 		EntityItem spawnedEnt;
 
-		genStack.setTagCompound(new NBTTagCompound());
-		genStack.getTagCompound().setString("cdwd", cdwd); // Setting card
+		NBTTagCompound nbtTag = new NBTTagCompound();
+		nbtTag.setString("cdwd", cdwd); // Setting card
+		genStack.setTagCompound(nbtTag);
 		spawnedEnt = new EntityItem(w, player.posX, player.posY + 1, player.posZ, genStack); // Spawning card
 
 		w.spawnEntity(spawnedEnt);
