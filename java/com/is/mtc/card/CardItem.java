@@ -57,7 +57,7 @@ public class CardItem extends Item {
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		System.out.println(player.getHeldItem(hand).getTagCompound());
+		//System.out.println(player.getHeldItem(hand).getTagCompound());
 		//if (world.isRemote) {
 		if (Tools.hasCDWD(player.getHeldItem(hand))) {
 			//GuiHandler.currentMainItem = player.getHeldItem(hand);
