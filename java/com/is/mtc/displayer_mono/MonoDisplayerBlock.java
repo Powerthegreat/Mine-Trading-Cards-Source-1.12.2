@@ -2,7 +2,7 @@ package com.is.mtc.displayer_mono;
 
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
-import net.minecraft.block.BlockContainer;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -16,9 +16,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class MonoDisplayerBlock extends BlockContainer {
+import javax.annotation.Nullable;
+
+public class MonoDisplayerBlock extends Block {
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 
 	//private IIcon iFace, iSides, iDisplaySide;
@@ -59,8 +62,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 		return state.getValue(FACING).getHorizontalIndex();
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
-									EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 
 		if (!(tileEntity instanceof MonoDisplayerBlockTileEntity))
@@ -107,7 +109,7 @@ public class MonoDisplayerBlock extends BlockContainer {
 		for (int i = 0; i < 1; ++i) {
 			ItemStack stack = content[i];
 
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				EntityItem entity = new EntityItem(world, x, y, z, stack);
 
 				world.spawnEntity(entity);
@@ -115,12 +117,16 @@ public class MonoDisplayerBlock extends BlockContainer {
 		}
 	}
 
-	@Override
+	/*@Override
 	public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state) {
-		if (world.isRemote) {
+		if (world.isRemote)
 			return;
-		}
 
+		emptyMonoDisplayerBlockTileEntity((MonoDisplayerBlockTileEntity) world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
+		world.removeTileEntity(pos);
+	}*/
+
+	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		emptyMonoDisplayerBlockTileEntity((MonoDisplayerBlockTileEntity) world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
 		world.removeTileEntity(pos);
 	}
@@ -137,9 +143,21 @@ public class MonoDisplayerBlock extends BlockContainer {
 		return (side == Tools.SIDE_TOP || side == Tools.SIDE_BOTTOM) ? iFace : side == meta ? iDisplaySide : iSides;
 	}*/
 
-	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
+	@Nullable
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new MonoDisplayerBlockTileEntity();
+	}
+
+	public boolean hasTileEntity(IBlockState state) {
+		return true;
+	}
+
+	public Class<MonoDisplayerBlockTileEntity> getTileEntityClass() {
+		return MonoDisplayerBlockTileEntity.class;
+	}
+
+	public MonoDisplayerBlockTileEntity getTileEntity(IBlockAccess world, BlockPos pos) {
+		return (MonoDisplayerBlockTileEntity) world.getTileEntity(pos);
 	}
 
 	/*@Override

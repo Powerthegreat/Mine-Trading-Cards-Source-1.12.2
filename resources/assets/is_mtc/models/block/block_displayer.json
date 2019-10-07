@@ -1,7 +1,8 @@
 {
-  "parent": "block/cube_column",
+  "parent": "is_mtc:block/cube_displayer",
   "textures": {
     "end": "is_mtc:blocks/block_displayer",
-    "side": "is_mtc:blocks/block_displayer_side"
+    "side": "is_mtc:blocks/block_displayer_side",
+    "rawside": "is_mtc:blocks/block_displayer_side"
   }
 }

@@ -65,10 +65,10 @@ public class Tools {
 	}
 
 	public static boolean isValidCard(ItemStack stack) {
-		return stack != null && stack.getItem() instanceof CardItem && hasCDWD(stack);
+		return stack != ItemStack.EMPTY && stack.getItem() instanceof CardItem && hasCDWD(stack);
 	}
 
 	public static boolean hasCDWD(ItemStack stack) {
-		return stack != null && stack.hasTagCompound() && stack.getTagCompound().hasKey("cdwd");
+		return stack != ItemStack.EMPTY && stack.hasTagCompound() && stack.getTagCompound().hasKey("cdwd");
 	}
 }

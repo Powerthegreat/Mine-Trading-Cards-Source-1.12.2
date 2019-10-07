@@ -2,7 +2,7 @@ package com.is.mtc.displayer;
 
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
-import net.minecraft.block.BlockContainer;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -15,10 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class DisplayerBlock extends BlockContainer {
+import javax.annotation.Nullable;
 
-	//private IIcon iFace, iSides;
-
+public class DisplayerBlock extends Block {
 	public DisplayerBlock() {
 		super(Material.IRON);
 
@@ -26,27 +25,19 @@ public class DisplayerBlock extends BlockContainer {
 
 		setUnlocalizedName("block_displayer");
 		setRegistryName("block_displayer");
-		//setBlockName("block_displayer");
-		//setBlockTextureName(MineTradingCards.MODID + ":block_displayer");
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		setHardness(5.0F);
 		setResistance(10.0F);
-
-		//isBlockContainer = true;
 	}
 
-	/*-*/
-
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
-									EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 
 		if (!(tileEntity instanceof DisplayerBlockTileEntity))
 			return false;
 
-		if (/*!*/world.isRemote)
-			player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_DISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
+		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_DISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
 		return true;
 	}
 
@@ -60,7 +51,7 @@ public class DisplayerBlock extends BlockContainer {
 		for (int i = 0; i < 4; ++i) {
 			ItemStack stack = content[i];
 
-			if (stack != ItemStack.EMPTY) {
+			if (!stack.isEmpty()) {
 				EntityItem entity = new EntityItem(world, x, y, z, stack);
 
 				world.spawnEntity(entity);
@@ -68,37 +59,22 @@ public class DisplayerBlock extends BlockContainer {
 		}
 	}
 
-	public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state) {
+	/*public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state) {
 		if (world.isRemote)
 			return;
 
+
+	}*/
+
+	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		emptyDisplayerBlockTileEntity((DisplayerBlockTileEntity) world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
 		world.removeTileEntity(pos);
 	}
 
-	/*-*/
-
-	/*@Override
-	public void registerBlockIcons(IIconRegister ireg) {
-		iFace = ireg.registerIcon(getTextureName());
-		iSides = ireg.registerIcon(getTextureName() + "_side");
-	}
-
-	@Override
-	public IIcon getIcon(int side, int meta) {
-		return (side == Tools.SIDE_TOP || side == Tools.SIDE_BOTTOM) ? iFace : iSides;
-	}*/
-
-	/*-*/
-
-	public TileEntity createNewTileEntity(World world, int meta) {
+	@Nullable
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new DisplayerBlockTileEntity();
 	}
-
-	/*@Override
-	public boolean renderAsNormalBlock() {
-		return false;
-	}*/
 
 	public boolean hasTileEntity(IBlockState state) {
 		return true;

@@ -1,5 +1,6 @@
 package com.is.mtc.displayer_mono;
 
+import com.is.mtc.root.CardSlot;
 import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -17,7 +18,7 @@ public class MonoDisplayerBlockContainer extends Container {
 		this.tileEntity = tileEntity;
 		//IItemHandler inventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 
-		//addSlotToContainer(new CardSlot(tileEntity, 0, 21, 26));
+		addSlotToContainer(new CardSlot(tileEntity, 0, 21, 26));
 
 		for (int i = 0; i < 9; i++) // Toolbar
 			addSlotToContainer(new Slot(inventoryPlayer, i,
@@ -37,33 +38,33 @@ public class MonoDisplayerBlockContainer extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
 		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Since slots are syncs, get from self
-		ItemStack providedStack = null;
+		ItemStack providedStack;
 		int tmp;
 
 		if (providerSlot == null || !providerSlot.getHasStack())
-			return null;
+			return ItemStack.EMPTY;
 		providedStack = providerSlot.getStack();
 
 		if (providerSlotIndex == 0) { // Comes from the displayer slots
 			if (!mergeItemStack(providedStack, 1, 1 + 9, false)) //
 				if (!mergeItemStack(providedStack, 1 + 9, 1 + 9 + 27, false)) // Then inventory
-					return null;
+					return ItemStack.EMPTY;
 
 			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
+			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		} else { // Not from slot ? then from inventory !
 			if (!Tools.isValidCard(providedStack))
-				return null;
+				return ItemStack.EMPTY;
 
 			if (!mergeItemStack(providedStack, 0, 1, false)) // Shove the card somewhere
-				return null;
+				return ItemStack.EMPTY;
 
 			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
+			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}
 
-		return null;
+		return ItemStack.EMPTY;
 	}
 }

@@ -94,6 +94,8 @@ public class MineTradingCards {
 		// Sets up the network wrapper
 		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MODID);
 		simpleNetworkWrapper.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
+		/*simpleNetworkWrapper.registerMessage(MTCMessageUpdateDisplayerHandler.class, MTCMessageUpdateDisplayer.class, 1, Side.CLIENT);
+		simpleNetworkWrapper.registerMessage(MTCMessageRequestUpdateDisplayerHandler.class, MTCMessageRequestUpdateDisplayer.class, 2, Side.SERVER);*/
 
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());

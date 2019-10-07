@@ -69,8 +69,8 @@ public class MTCItems {
 		packEdition = new PackItemEdition();
 		binder = new BinderItem();
 		displayerBlock = new DisplayerBlock();
-		monoDisplayerBlock = new MonoDisplayerBlock();
 		displayerItemBlock = new ItemBlock(displayerBlock).setRegistryName("block_displayer");
+		monoDisplayerBlock = new MonoDisplayerBlock();
 		monoDisplayerItemBlock = new ItemBlock(monoDisplayerBlock).setRegistryName("block_monodisplayer");
 	}
 

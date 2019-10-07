@@ -16,9 +16,7 @@ public class DisplayerBlockContainer extends Container {
 	private static final int offsetHotbarX = 56, offsetHotbarY = 66; // Hotbar pos
 
 	public DisplayerBlockContainer(InventoryPlayer inventoryPlayer, DisplayerBlockTileEntity tileEntity) {
-
 		this.tileEntity = tileEntity;
-		//IItemHandler inventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 
 		// The four slots
 		addSlotToContainer(new CardSlot(tileEntity, 0, offset4SlotsX, offset4SlotsY) {
@@ -56,12 +54,10 @@ public class DisplayerBlockContainer extends Container {
 						offsetInv3RowsX + j * 18, offsetInv3RowsY + i * 18));
 	}
 
-	@Override
-	public boolean canInteractWith(EntityPlayer user) {
-		return tileEntity.isUsableByPlayer(user);
+	public boolean canInteractWith(EntityPlayer player) {
+		return tileEntity.isUsableByPlayer(player);
 	}
 
-	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
 		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Since slots are syncs, get from self
 		ItemStack providedStack;
@@ -77,7 +73,7 @@ public class DisplayerBlockContainer extends Container {
 					return ItemStack.EMPTY;
 
 			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
+			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		} else { // Not from 4 slots ? then from inventory !
 			if (!Tools.isValidCard(providedStack))
@@ -87,7 +83,7 @@ public class DisplayerBlockContainer extends Container {
 				return ItemStack.EMPTY;
 
 			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? null : providedStack); // Inform the slot about some changes
+			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
 			providerSlot.onSlotChanged();
 		}
 
