@@ -7,8 +7,7 @@ import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
 import com.is.mtc.handler.DropHandler;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.init.MTCItems;
-import com.is.mtc.packet.MTCMessage;
-import com.is.mtc.packet.MTCMessageHandler;
+import com.is.mtc.packet.*;
 import com.is.mtc.proxy.CommonProxy;
 import com.is.mtc.root.CC_CreateCard;
 import com.is.mtc.root.CC_ForceCreateCard;
@@ -94,8 +93,8 @@ public class MineTradingCards {
 		// Sets up the network wrapper
 		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MODID);
 		simpleNetworkWrapper.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
-		/*simpleNetworkWrapper.registerMessage(MTCMessageUpdateDisplayerHandler.class, MTCMessageUpdateDisplayer.class, 1, Side.CLIENT);
-		simpleNetworkWrapper.registerMessage(MTCMessageRequestUpdateDisplayerHandler.class, MTCMessageRequestUpdateDisplayer.class, 2, Side.SERVER);*/
+		simpleNetworkWrapper.registerMessage(MTCMessageUpdateDisplayerHandler.class, MTCMessageUpdateDisplayer.class, 1, Side.CLIENT);
+		simpleNetworkWrapper.registerMessage(MTCMessageRequestUpdateDisplayerHandler.class, MTCMessageRequestUpdateDisplayer.class, 2, Side.SERVER);
 
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());

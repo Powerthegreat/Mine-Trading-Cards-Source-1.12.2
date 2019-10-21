@@ -1,5 +1,7 @@
 package com.is.mtc.displayer;
 
+import com.is.mtc.MineTradingCards;
+import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,6 +50,7 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 				item.setCount(nbtTagCompound.getInteger("Count"));
 				item.setTagCompound(nbtTagCompound.getCompoundTag("tag"));
 				content[j] = item;
+				//inventory.setStackInSlot(j, item;
 			}
 		}
 	}
@@ -164,11 +167,11 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 		}
 	}
 
-	/*public void onLoad() {
-		if (!world.isRemote) {
+	public void onLoad() {
+		if (world.isRemote) {
 			MineTradingCards.simpleNetworkWrapper.sendToServer(new MTCMessageRequestUpdateDisplayer(this));
 		}
-	}*/
+	}
 
 	public AxisAlignedBB getRenderBoundingBox() {
 		return new AxisAlignedBB(getPos(), getPos().add(1, 1, 1));

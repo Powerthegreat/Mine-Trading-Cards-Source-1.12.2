@@ -29,7 +29,6 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 
 	/*-*/
 
-	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		NBTTagList nbttaglist = nbt.getTagList("Items", 10);
@@ -49,7 +48,6 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 		}
 	}
 
-	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		NBTTagList nbttaglist = new NBTTagList();
@@ -68,15 +66,13 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 		return nbt;
 	}
 
-	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound syncData = new NBTTagCompound();
-		this.writeToNBT(syncData);
+		writeToNBT(syncData);
 
 		return new SPacketUpdateTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ()), 1, syncData);
 	}
 
-	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		readFromNBT(pkt.getNbtCompound());
 	}

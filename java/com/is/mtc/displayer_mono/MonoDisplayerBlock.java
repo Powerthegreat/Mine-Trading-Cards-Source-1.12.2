@@ -18,11 +18,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 
 public class MonoDisplayerBlock extends Block {
-	public static final PropertyDirection FACING = BlockHorizontal.FACING;
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);// BlockHorizontal.FACING;
 
 	//private IIcon iFace, iSides, iDisplaySide;
 
@@ -49,13 +50,13 @@ public class MonoDisplayerBlock extends Block {
 	}
 
 	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getFront(meta);
+		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
 
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
 
-		return this.getDefaultState().withProperty(FACING, enumfacing);
+		return getDefaultState().withProperty(FACING, enumfacing);
 	}
 
 	public int getMetaFromState(IBlockState state) {

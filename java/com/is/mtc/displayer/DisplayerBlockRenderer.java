@@ -23,63 +23,65 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 
+		GlStateManager.pushMatrix();
 		RenderHelper.disableStandardItemLighting();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, z);
-		/*Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-
-		GlStateManager.pushMatrix();
-		GlStateManager.disableCull();
 		GlStateManager.disableLighting();
-		RenderHelper.disableStandardItemLighting();
-
-		GlStateManager.alphaFunc(GL11.GL_ALWAYS, 0);*/
+		GlStateManager.translate(x, y, z);
+		GlStateManager.enableBlend();
+		GlStateManager.enableAlpha();
 
 		// Facing north face
-		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		bindTextureForSlot(tessellator, tileEntity, 0);
-		bufferBuilder.pos(0, 0, 0 - 0.01).endVertex();
-		bufferBuilder.pos(0, 1, 0 - 0.01).endVertex();
-		bufferBuilder.pos(1, 1, 0 - 0.01).endVertex();
-		bufferBuilder.pos(1, 0, 0 - 0.01).endVertex();
+		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		if (bindTextureForSlot(tessellator, tileEntity, 0)) {
+			bufferBuilder.normal(0, 0, -1);
+			bufferBuilder.pos(0, 0, 0 - 0.01).tex(1, 1).endVertex();
+			bufferBuilder.pos(0, 1, 0 - 0.01).tex(1, 0).endVertex();
+			bufferBuilder.pos(1, 1, 0 - 0.01).tex(0, 0).endVertex();
+			bufferBuilder.pos(1, 0, 0 - 0.01).tex(0, 1).endVertex();
+		}
 		tessellator.draw();
 
 		// Facing south face
-		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		bindTextureForSlot(tessellator, tileEntity, 1);
-		bufferBuilder.pos(0, 0, 1.01).endVertex();
-		bufferBuilder.pos(1, 0, 1.01).endVertex();
-		bufferBuilder.pos(1, 1, 1.01).endVertex();
-		bufferBuilder.pos(0, 1, 1.01).endVertex();
+		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		if (bindTextureForSlot(tessellator, tileEntity, 1)) {
+			bufferBuilder.normal(0, 0, 1);
+			bufferBuilder.pos(0, 0, 1.01).tex(0, 1).endVertex();
+			bufferBuilder.pos(1, 0, 1.01).tex(1, 1).endVertex();
+			bufferBuilder.pos(1, 1, 1.01).tex(1, 0).endVertex();
+			bufferBuilder.pos(0, 1, 1.01).tex(0, 0).endVertex();
+		}
 		tessellator.draw();
 
 		// Facing east face
-		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		bindTextureForSlot(tessellator, tileEntity, 2);
-		bufferBuilder.pos(1.01, 0, 0).endVertex();
-		bufferBuilder.pos(1.01, 1, 0).endVertex();
-		bufferBuilder.pos(1.01, 1, 1).endVertex();
-		bufferBuilder.pos(1.01, 0, 1).endVertex();
+		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		if (bindTextureForSlot(tessellator, tileEntity, 2)) {
+			bufferBuilder.normal(1, 0, 0);
+			bufferBuilder.pos(1.01, 0, 0).tex(1, 1).endVertex();
+			bufferBuilder.pos(1.01, 1, 0).tex(1, 0).endVertex();
+			bufferBuilder.pos(1.01, 1, 1).tex(0, 0).endVertex();
+			bufferBuilder.pos(1.01, 0, 1).tex(0, 1).endVertex();
+		}
 		tessellator.draw();
 
 		// Facing west face
-		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		bindTextureForSlot(tessellator, tileEntity, 3);
-		bufferBuilder.pos(0 - 0.01, 0, 0).endVertex();
-		bufferBuilder.pos(0 - 0.01, 0, 1).endVertex();
-		bufferBuilder.pos(0 - 0.01, 1, 1).endVertex();
-		bufferBuilder.pos(0 - 0.01, 1, 0).endVertex();
+		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		if (bindTextureForSlot(tessellator, tileEntity, 3)) {
+			bufferBuilder.normal(-1, 0, 0);
+			bufferBuilder.pos(0 - 0.01, 0, 0).tex(0, 1).endVertex();
+			bufferBuilder.pos(0 - 0.01, 0, 1).tex(1, 1).endVertex();
+			bufferBuilder.pos(0 - 0.01, 1, 1).tex(1, 0).endVertex();
+			bufferBuilder.pos(0 - 0.01, 1, 0).tex(0, 0).endVertex();
+		}
 		tessellator.draw();
 
-		/*GlStateManager.enableLighting();
-		GlStateManager.enableCull();
-		GlStateManager.disableAlpha();*/
-		GlStateManager.popMatrix();
+		GlStateManager.disableAlpha();
+		GlStateManager.disableBlend();
+		GlStateManager.enableLighting();
 		RenderHelper.enableStandardItemLighting();
+		GlStateManager.popMatrix();
 	}
 
-	private void bindTextureForSlot(Tessellator tessellator, DisplayerBlockTileEntity displayerBlockTileEntity, int slot) {
+	private boolean bindTextureForSlot(Tessellator tessellator, DisplayerBlockTileEntity displayerBlockTileEntity, int slot) {
 		ItemStack stack = displayerBlockTileEntity.getStackInSlot(slot);
 
 		if (Tools.isValidCard(stack)) {
@@ -94,7 +96,10 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 			}
 
 			tessellator.getBuffer().color(1f, 1f, 1f, 1f);
-		} else
+			return true;
+		} else {
 			tessellator.getBuffer().color(1f, 1f, 1f, 0f);
+			return false;
+		}
 	}
 }
