@@ -1,11 +1,13 @@
 package com.is.mtc.village;
 
+import com.is.mtc.init.MineTradingCardVillagers;
 import com.is.mtc.root.Logs;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
 import java.util.List;
 import java.util.Random;
@@ -18,8 +20,8 @@ public class CardMasterHome extends StructureVillagePieces.Village {
 
 	public CardMasterHome(StructureVillagePieces.Start villagePiece, int type, Random random, StructureBoundingBox structureBoundingBox, EnumFacing facing) {
 		super(villagePiece, type);
-		this.setCoordBaseMode(facing);
-		this.boundingBox = structureBoundingBox;
+		setCoordBaseMode(facing);
+		boundingBox = structureBoundingBox;
 	}
 
 	public boolean addComponentParts(World world, Random random, StructureBoundingBox sbb) {
@@ -53,7 +55,17 @@ public class CardMasterHome extends StructureVillagePieces.Village {
 		return true;
 	}
 
-	public static CardMasterHome buildComponent(StructureVillagePieces.Start villagePiece, List pieces, Random random, int p1, int p2, int p3, EnumFacing p4, int p5) {
+	@Override
+	public void buildComponent(StructureComponent componentIn, List<StructureComponent> listIn, Random rand) {
+		super.buildComponent(componentIn, listIn, rand);
+	}
+
+	@Override
+	protected VillagerRegistry.VillagerProfession chooseForgeProfession(int count, VillagerRegistry.VillagerProfession prof) {
+		return MineTradingCardVillagers.professionCardMaster;
+	}
+
+	/*public static CardMasterHome buildComponent(StructureVillagePieces.Start villagePiece, List pieces, Random random, int p1, int p2, int p3, EnumFacing p4, int p5) {
 		StructureBoundingBox structureboundingbox = StructureBoundingBox.getComponentToAddBoundingBox(p1, p2, p3, 0, 0, 0, 9, 3, 7, p4);
 
 		return CardMasterHome.canVillageGoDeeper(structureboundingbox) && StructureComponent.findIntersecting(pieces, structureboundingbox) == null ? new CardMasterHome(villagePiece, p5, random, structureboundingbox, p4) : null;
@@ -61,6 +73,6 @@ public class CardMasterHome extends StructureVillagePieces.Village {
 
 	protected int getVillagerType(int p_74888_1_) {
 		return VillageHandler.TRADER_ID;
-	}
+	}*/
 }
 

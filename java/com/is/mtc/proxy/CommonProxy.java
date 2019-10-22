@@ -2,6 +2,7 @@ package com.is.mtc.proxy;
 
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
+import com.is.mtc.init.MineTradingCardVillagers;
 import com.is.mtc.root.Logs;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -17,6 +18,7 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent event) {
+		MineTradingCardVillagers.registerCareers();
 	}
 
 	public void postInit(FMLPostInitializationEvent event) {

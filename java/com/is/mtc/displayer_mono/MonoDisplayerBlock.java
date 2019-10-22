@@ -3,7 +3,6 @@ package com.is.mtc.displayer_mono;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -18,7 +17,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 
