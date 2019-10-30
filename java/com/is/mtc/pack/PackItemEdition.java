@@ -141,9 +141,11 @@ public class PackItemEdition extends PackItemBase {
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
 				cStruct = Databank.generatedACardFromEdition(cardRarity, edition);
 
-				if (!created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
-					created.add(cStruct.getCDWD());
-					break;
+				if (cStruct != null) {
+					if (!created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
+						created.add(cStruct.getCDWD());
+						break;
+					}
 				}
 			}
 		}

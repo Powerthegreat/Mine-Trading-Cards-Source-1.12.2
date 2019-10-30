@@ -79,10 +79,17 @@ public class CardItem extends Item {
 			if (cStruct != null) {
 				NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
 				nbtTag.setString("cdwd", cStruct.getCDWD());
+				nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
 				//player.getHeldItem(hand).setTagCompound(nbtTag);
 				//player.getHeldItem(hand).getTagCompound().setString("cdwd", cStruct.getCDWD());
 			} else
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
+		}
+
+		NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
+		if (!nbtTag.hasKey("assetnumber")) {
+			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
+			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
 		}
 
 		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));

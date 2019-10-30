@@ -83,7 +83,7 @@ public class DataLoader {
 
 				reader.close();
 			} catch (Exception e) {
-				Logs.errLog("An error occured wile reading an edition file: " + file.getName());
+				Logs.errLog("An error occurred wile reading an edition file: " + file.getName());
 				Logs.errLog(e.getMessage());
 			}
 		}
@@ -119,7 +119,7 @@ public class DataLoader {
 					br.close();
 					fis.close();
 				} catch (Exception e) {
-					Logs.errLog("An error occured wile reading a card file: " + file.getName());
+					Logs.errLog("An error occurred wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());
 				}
 			} else // JSON condition. Not 'else if' since only .cdf and .json should get there
@@ -138,7 +138,7 @@ public class DataLoader {
 
 					reader.close();
 				} catch (Exception e) {
-					Logs.errLog("An error occured wile reading a card file: " + file.getName());
+					Logs.errLog("An error occurred wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());
 				}
 			}

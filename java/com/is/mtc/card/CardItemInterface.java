@@ -11,8 +11,10 @@ public class CardItemInterface extends GuiScreen {
 	private static final double UI_WIDTH = 224, UI_HEIGHT = 224;
 
 	private CardStructure cStruct;
+	private ItemStack stack;
 
 	public CardItemInterface(ItemStack stack) {
+		this.stack = stack;
 		cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 	}
 
@@ -20,7 +22,7 @@ public class CardItemInterface extends GuiScreen {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		double dpx = (width - CardItemInterface.UI_WIDTH) / 2, dpy = (height - CardItemInterface.UI_HEIGHT) / 2;
 
-		cStruct.preloadResource(mc.getTextureManager());
+		cStruct.preloadResource(mc.getTextureManager(), stack.getTagCompound().getInteger("assetnumber"));
 		//System.out.println(cStruct.getResourceLocation());
 		drawDefaultBackground();
 		mc.getTextureManager().bindTexture(cStruct.getResourceLocation());

@@ -13,9 +13,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /*
- * Card is identified by id and edition. Same id can be in two differents editions
+ * Card is identified by id and edition. Same id can be in two different editions
  * Mandatory parameters are id, edition and rarity
  */
 public class CardStructure {
@@ -23,16 +26,18 @@ public class CardStructure {
 	private int rarity;
 	public int numeral;
 
-	private String name, category, assetPath, desc;
+	private String name, category, /*assetPath, */
+			desc;
+	private List<String> assetPath;
 	private int weight;
 
-	private DynamicTexture dytex;
+	private List<DynamicTexture> dytex;
 	private ResourceLocation relo;
 
-	public CardStructure(JsonElement jId, JsonElement jEdit, JsonElement jRar) {
-		setInput(jId != null ? jId.getAsString() : null,
-				jEdit != null ? jEdit.getAsString() : null,
-				jRar != null ? jRar.getAsString() : null);
+	public CardStructure(JsonElement jsonId, JsonElement jsonEdition, JsonElement jsonRarity) {
+		setInput(jsonId != null ? jsonId.getAsString() : null,
+				jsonEdition != null ? jsonEdition.getAsString() : null,
+				jsonRarity != null ? jsonRarity.getAsString() : null);
 	}
 
 	public CardStructure(String id, String edition, String rarity) {
@@ -44,11 +49,11 @@ public class CardStructure {
 		return setSecondaryInput(jName != null ? jName.getAsString() : null,
 				jCategory != null ? jCategory.getAsString() : null,
 				jWeight != null ? jWeight.getAsInt() : 0,
-				jAssetPath != null ? jAssetPath.getAsString() : null,
+				jAssetPath != null ? Arrays.asList(jAssetPath.getAsString().split(":")) : null,
 				jDesc != null ? jDesc.getAsString() : null);
 	}
 
-	public boolean setSecondaryInput(String name, String category, int weight, String assetPath, String desc) {
+	public boolean setSecondaryInput(String name, String category, int weight, List<String> assetPath, String desc) {
 		this.weight = (int) Tools.clamp(0, weight, Integer.MAX_VALUE);
 
 		if (!MineTradingCards.PROXY_IS_REMOTE) // Only weight is really needed on server side
@@ -56,21 +61,33 @@ public class CardStructure {
 
 		this.name = Tools.clean(name);
 		this.category = Tools.clean(category);
-		this.assetPath = Tools.clean(assetPath);
+		this.assetPath = new ArrayList<>();
+		for (String asset : assetPath) {
+			this.assetPath.add(Tools.clean(asset));
+		}
+		//this.assetPath = Tools.clean(assetPath);
 		this.desc = Tools.clean(desc);
 
 		if (!this.assetPath.isEmpty()) {
-			File asset = new File(MineTradingCards.getDataDir() + "assets/", this.assetPath + ".png");
+			dytex = new ArrayList<>();
 
-			try {
-				BufferedImage image = ImageIO.read(asset);
-				dytex = new DynamicTexture(image);
-			} catch (IOException e) {
-				Logs.errLog("Missing texture at: '" + asset.getAbsolutePath() + "'");
-				dytex = null;
+			for (String asset : this.assetPath) {
+				if (!asset.isEmpty()) {
+					File assetFile = new File(MineTradingCards.getDataDir() + "assets/", asset + ".png");
 
-				return false;
+					try {
+						BufferedImage image = ImageIO.read(assetFile);
+						dytex.add(new DynamicTexture(image));
+					} catch (IOException e) {
+						Logs.errLog("Missing texture at: '" + assetFile.getAbsolutePath() + "'");
+						//dytex = null;
+
+						//return false;
+					}
+				}
 			}
+
+			return !dytex.isEmpty();
 		}
 
 		return true;
@@ -108,11 +125,11 @@ public class CardStructure {
 				"[name:'" + name + "' category:'" + category + "' weight:" + weight + " asset_path:" + assetPath + "]";
 	}
 
-	public void preloadResource(TextureManager tema) {
+	public void preloadResource(TextureManager tema, int assetNumber) {
 		if (dytex == null)
 			return;
 
-		relo = tema.getDynamicTextureLocation("mtc_dytex", dytex);
+		relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));
 	}
 
 	public String getId() {
@@ -139,7 +156,7 @@ public class CardStructure {
 		return weight;
 	}
 
-	public String getAssetPath() {
+	public List<String> getAssetPath() {
 		return assetPath;
 	}
 
@@ -147,7 +164,7 @@ public class CardStructure {
 		return desc;
 	}
 
-	public DynamicTexture getDynamicTexture() {
+	public List<DynamicTexture> getDynamicTexture() {
 		return dytex;
 	}
 

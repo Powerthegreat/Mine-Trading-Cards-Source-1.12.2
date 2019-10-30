@@ -4,6 +4,7 @@ import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.root.Rarity;
+import com.is.mtc.root.Tools;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -44,6 +45,7 @@ public class PackItemBase extends Item {
 
 		NBTTagCompound nbtTag = new NBTTagCompound();
 		nbtTag.setString("cdwd", cdwd); // Setting card
+		nbtTag.setInteger("assetnumber", Tools.randInt(0, Databank.getCardByCDWD(cdwd).getAssetPath().size()));
 		genStack.setTagCompound(nbtTag);
 		spawnedEnt = new EntityItem(w, player.posX, player.posY + 1, player.posZ, genStack); // Spawning card
 

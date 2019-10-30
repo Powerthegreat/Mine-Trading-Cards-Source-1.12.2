@@ -7,8 +7,8 @@ public class EditionStructure {
 	private String name, id;
 	public int cCount, eNI; // Cards count, edition numeral id
 
-	public EditionStructure(JsonElement jId, JsonElement jName) {
-		setInput(jId != null ? jId.getAsString() : null, jName != null ? jName.getAsString() : null);
+	public EditionStructure(JsonElement jsonId, JsonElement jsonName) {
+		setInput(jsonId != null ? jsonId.getAsString() : null, jsonName != null ? jsonName.getAsString() : null);
 	}
 
 	public EditionStructure(String id, String name) {

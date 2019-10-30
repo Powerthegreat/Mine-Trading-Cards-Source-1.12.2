@@ -139,7 +139,7 @@ public class Databank {
 			cards_by_wraed.get(cStruct.getEdition()).get(cStruct.getRarity()).put(wraed.get(cStruct.getEdition()).get(cStruct.getRarity()) + cStruct.getWeight(), cStruct);
 			wraed.get(cStruct.getEdition()).put(cStruct.getRarity(), wraed.get(cStruct.getEdition()).get(cStruct.getRarity()) + cStruct.getWeight());
 		} else {
-			Logs.errLog("Warning: Card does not have a strictely positive weight. Card will be usable but not droppable");
+			Logs.errLog("Warning: Card does not have a strictly positive weight. Card will be usable but not droppable");
 			Logs.devLog("Card registered: " + cStruct.toString());
 
 			return false;

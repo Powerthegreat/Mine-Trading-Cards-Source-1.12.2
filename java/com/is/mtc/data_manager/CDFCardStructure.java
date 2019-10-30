@@ -2,12 +2,17 @@ package com.is.mtc.data_manager;
 
 import com.is.mtc.root.Tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CDFCardStructure {
 
 	private String id, edition;
 	private String rarity;
 
-	private String name, category, assetPath, description;
+	private String name, category, /*assetPath, */
+			description;
+	private List<String> assetPath;
 	private int weight;
 
 	public CDFCardStructure() {
@@ -17,7 +22,7 @@ public class CDFCardStructure {
 
 		name = "";
 		category = "";
-		assetPath = "";
+		assetPath = new ArrayList<>();
 		weight = 0;
 	}
 
@@ -43,9 +48,12 @@ public class CDFCardStructure {
 			category = args[1];
 		else if (args[0].equals("dropweight") || args[0].equals("weight"))
 			weight = Integer.parseInt(args[1]);
-		else if (args[0].equals("illustrationpath") || args[0].equals("asset"))
-			assetPath = args[1];
-		else if (args[0].equals("description"))
+		else if (args[0].equals("illustrationpath") || args[0].equals("asset")) {
+			String[] tempPathList = args[1].split(":");
+			for (String asset : tempPathList) {
+				assetPath.add(Tools.clean(asset));
+			}
+		} else if (args[0].equals("description"))
 			description = args[1];
 	}
 
@@ -73,7 +81,7 @@ public class CDFCardStructure {
 		return weight;
 	}
 
-	public String getAssetPath() {
+	public List<String> getAssetPath() {
 		return assetPath;
 	}
 

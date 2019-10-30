@@ -261,7 +261,7 @@ public class BinderItemGuiContainer extends GuiContainer {
 					CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
 					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card data and illustration are correct
-						cStruct.preloadResource(mc.getTextureManager());
+						cStruct.preloadResource(mc.getTextureManager(), stack.getTagCompound().getInteger("assetnumber"));
 						mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
 						drawTexturedModalRect((int) drawPos.x + 8 + j * 58, (int) drawPos.y + 8 + i * 64);
 					} else {
