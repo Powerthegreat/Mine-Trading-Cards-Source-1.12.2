@@ -74,4 +74,8 @@ public class BinderItem extends Item {
 
 		return binderStack.getTagCompound().getInteger("page");
 	}
+
+	public int getItemStackLimit(ItemStack stack) {
+		return 1;
+	}
 }
