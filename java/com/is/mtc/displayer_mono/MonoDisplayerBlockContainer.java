@@ -7,6 +7,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class MonoDisplayerBlockContainer extends Container {
 	private MonoDisplayerBlockTileEntity tileEntity;
@@ -18,7 +19,7 @@ public class MonoDisplayerBlockContainer extends Container {
 		this.tileEntity = tileEntity;
 		//IItemHandler inventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 
-		addSlotToContainer(new CardSlot(tileEntity, 0, 21, 26));
+		addSlotToContainer(new CardSlot(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), 0, 21, 26));
 
 		for (int i = 0; i < 9; i++) // Toolbar
 			addSlotToContainer(new Slot(inventoryPlayer, i,

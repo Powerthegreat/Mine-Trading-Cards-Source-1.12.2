@@ -2,7 +2,6 @@ package com.is.mtc.handler;
 
 import com.is.mtc.binder.BinderItemContainer;
 import com.is.mtc.binder.BinderItemGuiContainer;
-import com.is.mtc.binder.BinderItemInventory;
 import com.is.mtc.card.CardItemInterface;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
@@ -43,7 +42,7 @@ public class GuiHandler implements IGuiHandler {
 				break;
 
 			case GUI_BINDER:
-				return new BinderItemContainer(player.inventory, new BinderItemInventory(player.getHeldItem(hand)));
+				return new BinderItemContainer(player.inventory, player.getHeldItem(hand));
 
 			case GUI_MONODISPLAYER:
 				if (tileEntity != null) {

@@ -1,17 +1,10 @@
 package com.is.mtc.displayer_mono;
 
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import java.util.Arrays;
 
 public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 	public static final int INVENTORY_SIZE = 1;
@@ -19,8 +12,8 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 	/*-*/
 
 	public MonoDisplayerBlockTileEntity() {
-		content = new ItemStack[INVENTORY_SIZE];
-		Arrays.fill(content, ItemStack.EMPTY);
+		/*content = new ItemStack[INVENTORY_SIZE];
+		Arrays.fill(content, ItemStack.EMPTY);*/
 	}
 
 	public int getSlots() {
@@ -29,7 +22,7 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 
 	/*-*/
 
-	public void readFromNBT(NBTTagCompound nbt) {
+	/*public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		NBTTagList nbttaglist = nbt.getTagList("Items", 10);
 		content = new ItemStack[getSlots()];
@@ -64,7 +57,7 @@ public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
 		nbt.setTag("Items", nbttaglist);
 		readFromNBT(nbt);
 		return nbt;
-	}
+	}*/
 
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound syncData = new NBTTagCompound();

@@ -8,18 +8,23 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class BinderItemContainer extends Container {
 	private static final int offsetBinderX = 44, offsetBinderY = 44; // Top left, for card slots
 	private static final int offsetInv3RowsX = 41, offsetInv3RowsY = 140; // Inventory pos
 	private static final int offsetHotbarX = 41, offsetHotbarY = 198; // Hotbar pos
 
-	private BinderItemInventory binderItemInventory;
+	private ItemStackHandler binderInventory;
 	private ItemStack binderStack;
 
-	public BinderItemContainer(InventoryPlayer inventory, BinderItemInventory binderInventory) {
-		binderStack = binderInventory.getBinderStack();
-		binderItemInventory = binderInventory;
+	public BinderItemContainer(InventoryPlayer inventory, ItemStack binderStack) {
+		this.binderStack = binderStack;
+		binderInventory = (ItemStackHandler) binderStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+		BinderItem.testNBT(binderStack);
+		readFromNBT(binderStack.getTagCompound());
 
 		BinderItem.testNBT(binderStack);
 		inventorySlots.clear();
@@ -38,16 +43,12 @@ public class BinderItemContainer extends Container {
 			int column = slot % 4;
 			int row = slot / 4;
 
-			addSlotToContainer(new CardSlot(binderItemInventory, idx, /* New card slot with binderItemInventory, slot index */offsetBinderX + column * 58, offsetBinderY + row * 64)); // and slot coords
+			addSlotToContainer(new CardSlot(binderStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), idx, /* New card slot with binderItemInventory, slot index */offsetBinderX + column * 58, offsetBinderY + row * 64)); // and slot coords
 		}
 	}
 
 	public ItemStack getCardStackAtIndex(int index) {
 		return inventorySlots.get(index + 36).getStack(); // Adding player's inventory size
-	}
-
-	public ItemStack getBinderStack() {
-		return binderStack;
 	}
 
 	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
@@ -133,12 +134,24 @@ public class BinderItemContainer extends Container {
 	}
 
 	public void onContainerClosed(EntityPlayer player) {
-		if (!binderItemInventory.hasLoaded) {
-			binderItemInventory.readFromNBT(binderStack.getTagCompound());
-		}
 		if (binderStack != null && binderStack.getTagCompound() != null)
-			binderItemInventory.writeToNBT(binderStack.getTagCompound()); // Save data
+			writeToNBT(binderStack.getTagCompound()); // Save data
 
 		super.onContainerClosed(player);
+	}
+
+	public void readFromNBT(NBTTagCompound nbt) {
+		binderInventory.deserializeNBT(nbt.getCompoundTag("Items"));
+		System.out.println(nbt);
+	}
+
+	public void writeToNBT(NBTTagCompound nbt) {
+		nbt.setTag("Items", binderInventory.serializeNBT());
+
+		System.out.println(nbt);
+	}
+
+	public ItemStack getBinderStack() {
+		return binderStack;
 	}
 }

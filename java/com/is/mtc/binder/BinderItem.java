@@ -12,6 +12,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -77,5 +78,10 @@ public class BinderItem extends Item {
 
 	public int getItemStackLimit(ItemStack stack) {
 		return 1;
+	}
+
+	@Nullable
+	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
+		return new BinderItemInventory();
 	}
 }

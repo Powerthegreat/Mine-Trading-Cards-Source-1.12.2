@@ -7,6 +7,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class DisplayerBlockContainer extends Container {
 	private DisplayerBlockTileEntity tileEntity;
@@ -19,25 +20,25 @@ public class DisplayerBlockContainer extends Container {
 		this.tileEntity = tileEntity;
 
 		// The four slots
-		addSlotToContainer(new CardSlot(tileEntity, 0, offset4SlotsX, offset4SlotsY) {
+		addSlotToContainer(new CardSlot(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), 0, offset4SlotsX, offset4SlotsY) {
 			@Override
 			public void onSlotChanged() {
 				tileEntity.markDirty();
 			}
 		});
-		addSlotToContainer(new CardSlot(tileEntity, 1, offset4SlotsX, 18 + offset4SlotsY) {
+		addSlotToContainer(new CardSlot(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), 1, offset4SlotsX, 18 + offset4SlotsY) {
 			@Override
 			public void onSlotChanged() {
 				tileEntity.markDirty();
 			}
 		});
-		addSlotToContainer(new CardSlot(tileEntity, 2, offset4SlotsX, 36 + offset4SlotsY) {
+		addSlotToContainer(new CardSlot(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), 2, offset4SlotsX, 36 + offset4SlotsY) {
 			@Override
 			public void onSlotChanged() {
 				tileEntity.markDirty();
 			}
 		});
-		addSlotToContainer(new CardSlot(tileEntity, 3, offset4SlotsX, 54 + offset4SlotsY) {
+		addSlotToContainer(new CardSlot(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), 3, offset4SlotsX, 54 + offset4SlotsY) {
 			@Override
 			public void onSlotChanged() {
 				tileEntity.markDirty();

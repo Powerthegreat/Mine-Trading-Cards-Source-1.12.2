@@ -3,72 +3,39 @@ package com.is.mtc.displayer;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.Tools;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
+import javax.annotation.Nullable;
 
-public class DisplayerBlockTileEntity extends TileEntity implements IItemHandlerModifiable {
+public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHandlerModifiable {
 	public static final int INVENTORY_SIZE = 4;
-	public ItemStack[] content;
+	private ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE);
 
 	public DisplayerBlockTileEntity() {
-		content = new ItemStack[getSlots()];
-		Arrays.fill(content, ItemStack.EMPTY);
-	}
-
-	public ItemStack[] getContent() {
-		return content;
 	}
 
 	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
-		NBTTagList nbttaglist = nbt.getTagList("Items", 10);
-		content = new ItemStack[getSlots()];
-		Arrays.fill(content, ItemStack.EMPTY);
-
-		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbtTagCompound = nbttaglist.getCompoundTagAt(i);
-			int j = nbtTagCompound.getByte("Slot") & 255;
-
-			if (j >= 0 && j < content.length) {
-				ItemStack item = new ItemStack(GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(nbtTagCompound.getString("id").split(":")[0], nbtTagCompound.getString("id").split(":")[1])));
-				item.setCount(nbtTagCompound.getInteger("Count"));
-				item.setTagCompound(nbtTagCompound.getCompoundTag("tag"));
-				content[j] = item;
-				//inventory.setStackInSlot(j, item;
-			}
+		if (nbt != null) {
+			inventory.deserializeNBT(nbt.getCompoundTag("Items"));
+			super.readFromNBT(nbt);
 		}
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
-		NBTTagList nbttaglist = new NBTTagList();
-
-		for (int i = 0; i < content.length; ++i) {
-			if (!content[i].isEmpty()) {
-				NBTTagCompound nbtTagCompound1 = new NBTTagCompound();
-				nbtTagCompound1.setByte("Slot", (byte) i);
-				content[i].writeToNBT(nbtTagCompound1);
-				nbttaglist.appendTag(nbtTagCompound1);
-			}
-		}
-
-		nbt.setTag("Items", nbttaglist);
+		nbt.setTag("Items", inventory.serializeNBT());
 		readFromNBT(nbt);
 		return nbt;
 	}
@@ -105,12 +72,12 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 	@Nonnull
 	public ItemStack getStackInSlot(int slot) {
 		if (slot < getSlots()) {
-			return content[slot];
+			return inventory.getStackInSlot(slot);//content[slot];
 		}
 		return ItemStack.EMPTY;
 	}
 
-	@Nonnull
+	/*@Nonnull
 	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 		if (stack.isEmpty())
 			return ItemStack.EMPTY;
@@ -119,7 +86,7 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 			return stack;
 		int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
 
-		ItemStack existing = content[slot];
+		ItemStack existing = inventory.getStackInSlot(slot);//content[slot];
 		if (!existing.isEmpty()) {
 			if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
 				return stack;
@@ -134,7 +101,7 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 
 		if (!simulate) {
 			if (existing.isEmpty()) {
-				content[slot] = reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack;
+				setStackInSlot(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
 			} else {
 				existing.grow(reachedLimit ? limit : stack.getCount());
 			}
@@ -142,30 +109,31 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 		}
 
 		markDirty();
-		return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
+		return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit);
 	}
 
 	@Nonnull
 	public ItemStack extractItem(int slot, int amount, boolean simulate) {
-		ItemStack stackToReturn = content[slot].copy();
-		stackToReturn.setCount(Math.min(amount, content[slot].getCount()));
+		ItemStack stackToReturn = getStackInSlot(slot).copy();
+		stackToReturn.setCount(Math.min(amount, getStackInSlot(slot).getCount()));
 		if (!simulate) {
-			content[slot].shrink(stackToReturn.getCount());
+			getStackInSlot(slot).shrink(stackToReturn.getCount());
 			markDirty();
 		}
 		return stackToReturn;
-	}
+	}*/
 
 	public boolean isUsableByPlayer(EntityPlayer player) { // Use standard chest formula
 		return world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) == this && player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
 	}
 
-	public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-		if (slot < getSlots()) {
-			content[slot] = stack.copy();
+	//public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+	//inventory.setStackInSlot(slot, stack);
+		/*if (slot < getSlots()) {
+			//content[slot] = stack.copy();
 			markDirty();
-		}
-	}
+		}*/
+	//}
 
 	public void onLoad() {
 		if (world.isRemote) {
@@ -175,5 +143,14 @@ public class DisplayerBlockTileEntity extends TileEntity implements IItemHandler
 
 	public AxisAlignedBB getRenderBoundingBox() {
 		return new AxisAlignedBB(getPos(), getPos().add(1, 1, 1));
+	}
+
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+	}
+
+	@Nullable
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
 	}
 }

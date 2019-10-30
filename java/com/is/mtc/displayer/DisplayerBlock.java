@@ -14,6 +14,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -42,14 +44,14 @@ public class DisplayerBlock extends Block {
 	}
 
 	private void emptyDisplayerBlockTileEntity(DisplayerBlockTileEntity dte, World world, int x, int y, int z) {
-		ItemStack[] content;
+		IItemHandler content;
 
 		if (dte == null)
 			return;
-		content = dte.getContent();
+		content = dte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);//.getContent();
 
 		for (int i = 0; i < 4; ++i) {
-			ItemStack stack = content[i];
+			ItemStack stack = content.getStackInSlot(i);//content[i];
 
 			if (!stack.isEmpty()) {
 				EntityItem entity = new EntityItem(world, x, y, z, stack);

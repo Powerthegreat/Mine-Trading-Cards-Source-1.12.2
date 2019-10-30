@@ -42,10 +42,12 @@ public class DropHandler {
 	}
 
 	private void testDrop(int rate, Item drop, LivingDropsEvent event) {
+		if (rate <= 0)
+			return;
 		Random r = new Random();
 		int dv = r.nextInt(rate);
 
-		if (rate > 0 && dv == 0)
+		if (dv == 0)
 			addDrop(drop, event);
 	}
 

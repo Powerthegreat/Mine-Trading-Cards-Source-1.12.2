@@ -12,10 +12,12 @@ public class MTCMessageUpdateDisplayerHandler implements IMessageHandler<MTCMess
 		Minecraft.getMinecraft().addScheduledTask(() -> {
 			if (message.mono) {
 				MonoDisplayerBlockTileEntity tileEntity = (MonoDisplayerBlockTileEntity) Minecraft.getMinecraft().world.getTileEntity(message.pos);
-				tileEntity.content = message.items;
+				tileEntity.readFromNBT(message.nbt);
+				//tileEntity.content = message.items;
 			} else {
 				DisplayerBlockTileEntity tileEntity = (DisplayerBlockTileEntity) Minecraft.getMinecraft().world.getTileEntity(message.pos);
-				tileEntity.content = message.items;
+				tileEntity.readFromNBT(message.nbt);
+				//tileEntity.content = message.items;
 			}
 		});
 		return null;
