@@ -31,7 +31,7 @@ public class BinderItemInventory implements ICapabilityProvider {
 	}
 
 	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-		return true;
+		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
 	}
 
 	@Nullable
