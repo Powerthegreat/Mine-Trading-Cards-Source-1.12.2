@@ -28,10 +28,10 @@ public class CardStructure {
 
 	private String name, category, /*assetPath, */
 			desc;
-	private List<String> assetPath;
+	private List<String> assetPath = new ArrayList<>();
 	private int weight;
 
-	private List<DynamicTexture> dytex;
+	private List<DynamicTexture> dytex = new ArrayList<>();
 	private ResourceLocation relo;
 
 	public CardStructure(JsonElement jsonId, JsonElement jsonEdition, JsonElement jsonRarity) {
@@ -127,6 +127,9 @@ public class CardStructure {
 
 	public void preloadResource(TextureManager tema, int assetNumber) {
 		if (dytex == null)
+			return;
+
+		if (assetNumber > dytex.size())
 			return;
 
 		relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));

@@ -90,7 +90,8 @@ public class CardItem extends Item {
 		if (!nbtTag.hasKey("assetnumber")) {
 			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
 			if (cStruct != null)
-				nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
+				if (cStruct.getAssetPath().size() > 0)
+					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
 		}
 
 		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
