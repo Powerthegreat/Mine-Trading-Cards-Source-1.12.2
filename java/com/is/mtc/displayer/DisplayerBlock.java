@@ -20,6 +20,8 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nullable;
 
 public class DisplayerBlock extends Block {
+	private boolean wasPowered;
+
 	public DisplayerBlock() {
 		super(Material.IRON);
 
@@ -88,5 +90,18 @@ public class DisplayerBlock extends Block {
 
 	public DisplayerBlockTileEntity getTileEntity(IBlockAccess world, BlockPos pos) {
 		return (DisplayerBlockTileEntity) world.getTileEntity(pos);
+	}
+
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos neighbor) {
+		boolean isPowered = world.getTileEntity(pos).getWorld().isBlockPowered(pos);
+		try {
+			DisplayerBlockTileEntity thisEntity = (DisplayerBlockTileEntity) world.getTileEntity(pos);
+			if (isPowered && !wasPowered) {
+				thisEntity.spinCards();
+			}
+		} catch (Exception ignored) {
+
+		}
+		wasPowered = isPowered;
 	}
 }

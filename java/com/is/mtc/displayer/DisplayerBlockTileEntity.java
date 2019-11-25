@@ -2,6 +2,7 @@ package com.is.mtc.displayer;
 
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
+import com.is.mtc.packet.MTCMessageUpdateDisplayer;
 import com.is.mtc.root.Logs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -136,9 +138,8 @@ public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHand
 	//}
 
 	public void onLoad() {
-		if (world.isRemote) {
+		if (world.isRemote)
 			MineTradingCards.simpleNetworkWrapper.sendToServer(new MTCMessageRequestUpdateDisplayer(this));
-		}
 	}
 
 	public AxisAlignedBB getRenderBoundingBox() {
@@ -152,5 +153,18 @@ public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHand
 	@Nullable
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
 		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
+	}
+
+	public void spinCards() {
+		ItemStack tempStack = inventory.getStackInSlot(0).copy();
+		inventory.setStackInSlot(0, inventory.getStackInSlot(3).copy());
+		inventory.setStackInSlot(3, inventory.getStackInSlot(2).copy());
+		inventory.setStackInSlot(2, inventory.getStackInSlot(1).copy());
+		inventory.setStackInSlot(1, tempStack);
+
+		markDirty();
+
+		if (!world.isRemote)
+			MineTradingCards.simpleNetworkWrapper.sendToAllAround(new MTCMessageUpdateDisplayer(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
 	}
 }
