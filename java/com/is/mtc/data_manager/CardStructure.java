@@ -134,8 +134,8 @@ public class CardStructure {
 
 		try {
 			relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));
-		} catch (Exception ignored) {
-
+		} catch (Exception e) {
+			relo = null;
 		}
 	}
 

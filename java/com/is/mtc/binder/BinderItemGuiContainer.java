@@ -262,9 +262,10 @@ public class BinderItemGuiContainer extends GuiContainer {
 
 					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card data and illustration are correct
 						cStruct.preloadResource(mc.getTextureManager(), stack.getTagCompound().getInteger("assetnumber"));
-						if (cStruct.getResourceLocation() != null)
+						if (cStruct.getResourceLocation() != null) {
 							mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
-						drawTexturedModalRect((int) drawPos.x + 8 + j * 58, (int) drawPos.y + 8 + i * 64);
+							drawTexturedModalRect((int) drawPos.x + 8 + j * 58, (int) drawPos.y + 8 + i * 64);
+						}
 					} else {
 						drawString(fontRenderer, "s" + (x + 1),
 								(int) drawPos.x + 8 + j * 58, (int) drawPos.y + 8 + i * 64, 0xFFFFFF);

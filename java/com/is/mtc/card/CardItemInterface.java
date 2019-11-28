@@ -25,11 +25,12 @@ public class CardItemInterface extends GuiScreen {
 		cStruct.preloadResource(mc.getTextureManager(), stack.getTagCompound().getInteger("assetnumber"));
 		//System.out.println(cStruct.getResourceLocation());
 		drawDefaultBackground();
-		if (cStruct.getResourceLocation() != null)
+		if (cStruct.getResourceLocation() != null) {
 			mc.getTextureManager().bindTexture(cStruct.getResourceLocation());
-		//mc.getTextureManager().getTexture(cStruct.getResourceLocation());
+			//mc.getTextureManager().getTexture(cStruct.getResourceLocation());
 
-		drawTexturedModalRect(dpx, dpy, CardItemInterface.UI_WIDTH, CardItemInterface.UI_HEIGHT);
+			drawTexturedModalRect(dpx, dpy, CardItemInterface.UI_WIDTH, CardItemInterface.UI_HEIGHT);
+		}
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
