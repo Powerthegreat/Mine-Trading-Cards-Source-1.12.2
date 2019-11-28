@@ -92,7 +92,8 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 				bindTexture(new ResourceLocation(Reference.MODID + ":textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
 			} else {
 				cStruct.preloadResource(instance.renderEngine, stack.getTagCompound().getInteger("assetnumber"));
-				bindTexture(cStruct.getResourceLocation());
+				if (cStruct.getResourceLocation() != null)
+					bindTexture(cStruct.getResourceLocation());
 			}
 
 			tessellator.getBuffer().color(1f, 1f, 1f, 1f);

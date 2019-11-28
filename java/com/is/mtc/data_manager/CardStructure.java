@@ -132,7 +132,11 @@ public class CardStructure {
 		if (assetNumber > dytex.size())
 			return;
 
-		relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));
+		try {
+			relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));
+		} catch (Exception ignored) {
+
+		}
 	}
 
 	public String getId() {
