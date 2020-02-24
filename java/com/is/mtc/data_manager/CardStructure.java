@@ -95,7 +95,7 @@ public class CardStructure {
 
 	private void setInput(String id, String edition, String rarity) {
 		this.id = Tools.clean(id).toLowerCase();
-		this.edition = Tools.clean(edition);
+		this.edition = Tools.clean(edition).toLowerCase();
 
 		if (rarity.toLowerCase().equals("artifact") || rarity.toLowerCase().equals("art")) {
 			Logs.errLog("An outdated rarity is used: Artifact. The rarity will be set to Ancient");
