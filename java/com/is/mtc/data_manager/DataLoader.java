@@ -1,9 +1,11 @@
 package com.is.mtc.data_manager;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Logs;
+import com.is.mtc.root.Rarity;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -30,6 +32,7 @@ public class DataLoader {
 	public static void readAndLoad() {
 		File editions_folder = new File(MineTradingCards.getDataDir() + "editions/");
 		File cards_folder = new File(MineTradingCards.getDataDir() + "cards/");
+		File custom_packs_folder = new File(MineTradingCards.getDataDir() + "packs/");
 
 		Logs.stdLog("MTC is now reading and loading data");
 		if (!editions_folder.exists()) {
@@ -58,6 +61,15 @@ public class DataLoader {
 			EditionStructure eStruct = Databank.getEditionWithNumeralId(i);
 
 			Logs.stdLog(eStruct.toString());
+		}
+
+		if (!custom_packs_folder.exists()) {
+			Logs.errLog("Custom packs folder not found. No custom packs will be loaded.");
+			Logs.errLog("Expected path: " + custom_packs_folder.getAbsolutePath());
+		} else {
+			Logs.stdLog("Loading custom packs");
+			getPacks(custom_packs_folder);
+			Logs.stdLog("Done loading custom packs");
 		}
 
 		Logs.stdLog("MTC data loading is done");
@@ -141,6 +153,36 @@ public class DataLoader {
 					Logs.errLog("An error occurred wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());
 				}
+			}
+		}
+	}
+
+	private static void getPacks(File folder) {
+		File[] files = folder.listFiles(createFilenameFilter(".json"));
+		Arrays.sort(files);
+
+		for (File file : files) {
+			Logs.devLog("Reading custom pack file: " + file.getAbsolutePath());
+
+			try {
+				FileReader reader = new FileReader(file);
+				JsonParser parser = new JsonParser();
+				JsonObject head = (JsonObject) parser.parse(reader);
+				CustomPackStructure customPackStructure = new CustomPackStructure(head.get("id"), head.get("name"));
+
+				JsonArray categories = head.getAsJsonArray("categories");
+				for (int i = 0; i < categories.size(); i++) {
+					String[] categoryQuantity = categories.get(i).getAsString().split(":");
+					customPackStructure.addCategoryQuantity(categoryQuantity[0], Integer.parseInt(categoryQuantity[1]), Rarity.fromString(categoryQuantity[2]));
+				}
+
+				if (!Databank.registerACustomPack(customPackStructure))
+					Logs.errLog("Concerned custom pack file: " + file.getName());
+
+				reader.close();
+			} catch (Exception e) {
+				Logs.errLog("An error occurred wile reading a custom pack file: " + file.getName());
+				Logs.errLog(e.getMessage());
 			}
 		}
 	}

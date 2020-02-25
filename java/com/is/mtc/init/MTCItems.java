@@ -4,10 +4,7 @@ import com.is.mtc.binder.BinderItem;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.displayer.DisplayerBlock;
 import com.is.mtc.displayer_mono.MonoDisplayerBlock;
-import com.is.mtc.pack.PackItemBase;
-import com.is.mtc.pack.PackItemEdition;
-import com.is.mtc.pack.PackItemRarity;
-import com.is.mtc.pack.PackItemStandard;
+import com.is.mtc.pack.*;
 import com.is.mtc.root.Rarity;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -26,7 +23,7 @@ public class MTCItems {
 	/*public static final String ITEM_HEAD = "item.";
 	public static final String BLOCK_HEAD = "tile.";*/
 	public static CardItem cardCommon, cardUncommon, cardRare, cardAncient, cardLegendary;
-	public static PackItemBase packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard, packEdition;
+	public static PackItemBase packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard, packEdition, packCustom;
 	private static BinderItem binder;
 	public static Block displayerBlock;
 	public static Block monoDisplayerBlock;
@@ -67,6 +64,7 @@ public class MTCItems {
 		packLegendary = new PackItemRarity(Rarity.LEGENDARY);
 		packStandard = new PackItemStandard();
 		packEdition = new PackItemEdition();
+		packCustom = new PackItemCustom();
 		binder = new BinderItem();
 		displayerBlock = new DisplayerBlock();
 		displayerItemBlock = new ItemBlock(displayerBlock).setRegistryName("block_displayer");
@@ -78,7 +76,7 @@ public class MTCItems {
 	public static void registerItems(RegistryEvent.Register<Item> event) {
 		event.getRegistry().registerAll(cardCommon, cardUncommon, cardRare, cardAncient, cardLegendary,
 				packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard,
-				packEdition, binder);
+				packEdition, packCustom, binder);
 	}
 
 	@SubscribeEvent
@@ -105,6 +103,7 @@ public class MTCItems {
 		registerRender(packLegendary);
 		registerRender(packStandard);
 		registerRender(packEdition);
+		registerRender(packCustom);
 		registerRender(binder);
 		registerRender(Item.getItemFromBlock(displayerBlock));
 		registerRender(Item.getItemFromBlock(monoDisplayerBlock));

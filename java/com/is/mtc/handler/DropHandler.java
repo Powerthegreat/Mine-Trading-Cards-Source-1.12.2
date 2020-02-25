@@ -29,6 +29,7 @@ public class DropHandler {
 
 	public static int DROP_RATE_STD = 56; // (4)
 	public static int DROP_RATE_EDT = 56; // (3)
+	public static int DROP_RATE_CUSTOM = 56;
 
 	private void addDrop(Item drop, LivingDropsEvent event, int count) {
 		ItemStack itemToDrop = new ItemStack(drop);
@@ -83,6 +84,7 @@ public class DropHandler {
 
 		testDrop(DROP_RATE_LEG, MTCItems.packLegendary, event); // Legendary (leg)
 		testDrop(DROP_RATE_ANC, MTCItems.packAncient, event); // Ancient (anc)
+		testDrop(DROP_RATE_CUSTOM, MTCItems.packCustom, event); // Custom
 		testDrop(DROP_RATE_EDT, MTCItems.packEdition, event); // Edition (edt)
 		testDrop(DROP_RATE_STD, MTCItems.packStandard, event); // Standard (std)
 		testDrop(DROP_RATE_RAR, MTCItems.packRare, event); // Rare (rar)

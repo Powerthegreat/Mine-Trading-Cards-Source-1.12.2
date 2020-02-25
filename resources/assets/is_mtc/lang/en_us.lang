@@ -14,6 +14,7 @@ item.item_pack_legendary.name=Legendary Pack
 
 item.item_pack_standard.name=Cards Pack
 item.item_pack_edition.name=Edition Pack
+item.item_pack_custom.name=Custom Pack
 
 item.item_binder.name=Cards Binder
 tile.block_displayer.name=Cards Displayer

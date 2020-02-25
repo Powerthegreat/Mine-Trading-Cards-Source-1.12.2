@@ -1,0 +1,28 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "mmm",
+    "pip",
+    "bbb"
+  ],
+  "key": {
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "b": {
+      "type": "forge:ore_dict",
+      "ore": "dyeBlack"
+    },
+    "m": {
+      "type": "forge:ore_dict",
+      "ore": "dyeWhite"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "is_mtc:item_card_uncommon"
+  }
+}

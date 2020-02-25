@@ -1,0 +1,28 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "mmm",
+    "pDp",
+    "bbb"
+  ],
+  "key": {
+    "D": {
+      "type": "forge:ore_dict",
+      "ore": "blockDiamond"
+    },
+    "b": {
+      "type": "forge:ore_dict",
+      "ore": "dyeBlack"
+    },
+    "m": {
+      "type": "forge:ore_dict",
+      "ore": "dyeWhite"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "is_mtc:item_card_legendary"
+  }
+}

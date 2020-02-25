@@ -13,6 +13,27 @@ public class Databank {
 	private static Map<String, EditionStructure> editions_by_name;
 	private static Map<Integer, EditionStructure> editions_by_numeral_id;
 
+	private static Map<String, CardStructure> cards_by_cdwd;
+
+	private static Map<Integer, Map<Integer, CardStructure>> cards_by_wrarity;
+	private static Map<Integer, Integer> wrarity_tw;
+
+	private static Map<String, Map<Integer, Map<Integer, CardStructure>>> cards_by_wraed;
+	// String for editions, integer for rarity, integer for total weight, cs !
+	private static Map<String, Map<Integer, Integer>> wraed;
+	// String for edition, integer for rarity, integer for total weight of this pool
+
+	private static Map<String, Map<Integer, Map<Integer, CardStructure>>> cards_by_wracat;
+	// String for category, integer for rarity, integer for total weight, cs !
+	private static Map<String, Map<Integer, Integer>> wracat;
+	// String for edition, integer for rarity, integer for total weight of this pool
+
+	private static int wedition_tw; // Weighted edition total weight
+
+	private static Map<String, CustomPackStructure> custom_packs_by_id;
+	private static Map<String, CustomPackStructure> custom_packs_by_name;
+	private static Map<Integer, CustomPackStructure> custom_packs_by_numeral_id;
+
 	//-
 
 	/// NOTE LinkedHashMap to keep the precise order
@@ -20,6 +41,10 @@ public class Databank {
 		editions_by_id = new LinkedHashMap<String, EditionStructure>();
 		editions_by_name = new LinkedHashMap<String, EditionStructure>();
 		editions_by_numeral_id = new LinkedHashMap<Integer, EditionStructure>();
+
+		custom_packs_by_id = new LinkedHashMap<String, CustomPackStructure>();
+		custom_packs_by_name = new LinkedHashMap<String, CustomPackStructure>();
+		custom_packs_by_numeral_id = new LinkedHashMap<Integer, CustomPackStructure>();
 
 		cards_by_cdwd = new LinkedHashMap<String, CardStructure>();
 
@@ -38,7 +63,9 @@ public class Databank {
 		wrarity_tw.put(Rarity.LEGENDARY, 0);
 
 		cards_by_wraed = new LinkedHashMap<String, Map<Integer, Map<Integer, CardStructure>>>();
+		cards_by_wracat = new LinkedHashMap<String, Map<Integer, Map<Integer, CardStructure>>>();
 		wraed = new LinkedHashMap<String, Map<Integer, Integer>>();
+		wracat = new LinkedHashMap<String, Map<Integer, Integer>>();
 	}
 
 	//-
@@ -99,17 +126,46 @@ public class Databank {
 
 	//-
 
-	private static Map<String, CardStructure> cards_by_cdwd;
+	public static boolean registerACustomPack(CustomPackStructure cpStruct) {
+		if (!cpStruct.isValid()) {
+			Logs.errLog("Custom pack is invalid (Invalid/missing ID or name)");
+			return false;
+		}
 
-	private static Map<Integer, Map<Integer, CardStructure>> cards_by_wrarity;
-	private static Map<Integer, Integer> wrarity_tw;
+		if (custom_packs_by_id.containsKey(cpStruct.getId())) {
+			Logs.errLog("Custom pack ID is already used");
+			return false;
+		}
 
-	private static Map<String, Map<Integer, Map<Integer, CardStructure>>> cards_by_wraed;
-	// String for editions, integer for rarity, integer for total weight, cs !
-	private static Map<String, Map<Integer, Integer>> wraed;
-	// String for edition, integer for rarity, integer for total weight of this pool
+		// Standard pools
+		custom_packs_by_id.put(cpStruct.getId(), cpStruct);
+		custom_packs_by_name.put(cpStruct.getName(), cpStruct);
 
-	private static int wedition_tw; // Weighted edition total weight
+		cpStruct.customPackNumeralID = custom_packs_by_numeral_id.size();
+		custom_packs_by_numeral_id.put(cpStruct.customPackNumeralID, cpStruct);
+
+		Logs.devLog("Custom pack registered: " + cpStruct.toString());
+
+		return true;
+	}
+
+	public static int getCustomPacksCount() {
+		return custom_packs_by_id.size();
+	}
+
+	public static CustomPackStructure getCustomPackWithId(String id) {
+		return custom_packs_by_id.containsKey(id) ? custom_packs_by_id.get(id) : null;
+	}
+
+	public static CustomPackStructure getCustomPackWithName(String name) {
+		return custom_packs_by_name.containsKey(name) ? custom_packs_by_name.get(name) : null;
+	}
+
+	public static CustomPackStructure getCustomPackWithNumeralId(int nid) {
+		return custom_packs_by_numeral_id.containsKey(nid) ? custom_packs_by_numeral_id.get(nid) : null;
+	}
+
+	//-
 
 	public static boolean registerACard(CardStructure cStruct) {
 		if (!cStruct.isValid()) {
@@ -131,6 +187,22 @@ public class Databank {
 		editions_by_id.get(cStruct.getEdition()).cCount += 1;
 		cStruct.numeral = editions_by_id.get(cStruct.getEdition()).cCount;
 
+		if (!(cStruct.getCategory().isEmpty() || cards_by_wracat.containsKey(cStruct.getCategory()))) {
+			cards_by_wracat.put(cStruct.getCategory(), new LinkedHashMap<Integer, Map<Integer, CardStructure>>());
+			cards_by_wracat.get(cStruct.getCategory()).put(Rarity.COMMON, new LinkedHashMap<Integer, CardStructure>());
+			cards_by_wracat.get(cStruct.getCategory()).put(Rarity.UNCOMMON, new LinkedHashMap<Integer, CardStructure>());
+			cards_by_wracat.get(cStruct.getCategory()).put(Rarity.RARE, new LinkedHashMap<Integer, CardStructure>());
+			cards_by_wracat.get(cStruct.getCategory()).put(Rarity.ANCIENT, new LinkedHashMap<Integer, CardStructure>());
+			cards_by_wracat.get(cStruct.getCategory()).put(Rarity.LEGENDARY, new LinkedHashMap<Integer, CardStructure>());
+
+			wracat.put(cStruct.getCategory(), new LinkedHashMap<Integer, Integer>());
+			wracat.get(cStruct.getCategory()).put(Rarity.COMMON, 0);
+			wracat.get(cStruct.getCategory()).put(Rarity.UNCOMMON, 0);
+			wracat.get(cStruct.getCategory()).put(Rarity.RARE, 0);
+			wracat.get(cStruct.getCategory()).put(Rarity.ANCIENT, 0);
+			wracat.get(cStruct.getCategory()).put(Rarity.LEGENDARY, 0);
+		}
+
 		if (cStruct.getWeight() > 0) { // Can be dropped ? Then add it to the drop pools
 
 			cards_by_wrarity.get(cStruct.getRarity()).put(wrarity_tw.get(cStruct.getRarity()) + cStruct.getWeight(), cStruct);
@@ -138,6 +210,11 @@ public class Databank {
 
 			cards_by_wraed.get(cStruct.getEdition()).get(cStruct.getRarity()).put(wraed.get(cStruct.getEdition()).get(cStruct.getRarity()) + cStruct.getWeight(), cStruct);
 			wraed.get(cStruct.getEdition()).put(cStruct.getRarity(), wraed.get(cStruct.getEdition()).get(cStruct.getRarity()) + cStruct.getWeight());
+
+			if (!(cStruct.getCategory().isEmpty())) {
+				cards_by_wracat.get(cStruct.getCategory()).get(cStruct.getRarity()).put(wracat.get(cStruct.getCategory()).get(cStruct.getRarity()) + cStruct.getWeight(), cStruct);
+				wracat.get(cStruct.getCategory()).put(cStruct.getRarity(), wracat.get(cStruct.getCategory()).get(cStruct.getRarity()) + cStruct.getWeight());
+			}
 		} else {
 			Logs.errLog("Warning: Card does not have a strictly positive weight. Card will be usable but not droppable");
 			Logs.devLog("Card registered: " + cStruct.toString());
@@ -198,6 +275,31 @@ public class Databank {
 		}
 
 		Logs.errLog("Error: In 'generatedACardFromEdition': {i:" + i + " wraed:" + wraed.get(edition_id).get(rarity) + "}");
+		return null;
+	}
+
+	public static CardStructure generatedACardFromCategory(int rarity, String category) {
+		Random r;
+		int i;
+
+		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
+			return null;
+
+		if (!cards_by_wracat.containsKey(category))
+			return null;
+
+		if (cards_by_wracat.get(category).get(rarity).size() <= 0) // No cards from the specified rarity in this edition
+			return null;
+
+		r = new Random();
+		i = r.nextInt(wracat.get(category).get(rarity));
+
+		for (Map.Entry<Integer, CardStructure> entry : cards_by_wracat.get(category).get(rarity).entrySet()) {
+			if (i < entry.getKey())
+				return entry.getValue();
+		}
+
+		Logs.errLog("Error: In 'generatedACardFromCategory': {i:" + i + " wracat:" + wracat.get(category).get(rarity) + "}");
 		return null;
 	}
 }

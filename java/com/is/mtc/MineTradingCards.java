@@ -138,6 +138,7 @@ public class MineTradingCards {
 
 		DropHandler.DROP_RATE_STD = config.getInt("pack_drop_rate_standard", "drops", 40, 0, Integer.MAX_VALUE, "Chance out of X to drop standard packs");
 		DropHandler.DROP_RATE_EDT = config.getInt("pack_drop_rate_edition", "drops", 40, 0, Integer.MAX_VALUE, "Chance out of X to drop set-specific (edition) packs");
+		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", "drops", 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
 
 		config.save();
 	}

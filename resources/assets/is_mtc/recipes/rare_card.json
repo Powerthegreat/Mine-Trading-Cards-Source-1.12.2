@@ -1,0 +1,28 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "mmm",
+    "pgp",
+    "bbb"
+  ],
+  "key": {
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    },
+    "b": {
+      "type": "forge:ore_dict",
+      "ore": "dyeBlack"
+    },
+    "m": {
+      "type": "forge:ore_dict",
+      "ore": "dyeWhite"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "is_mtc:item_card_rare"
+  }
+}
