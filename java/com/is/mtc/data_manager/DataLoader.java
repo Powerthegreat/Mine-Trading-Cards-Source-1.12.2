@@ -117,9 +117,12 @@ public class DataLoader {
 					CardStructure cStruct;
 					String line;
 
-					while ((line = br.readLine()) != null) {
+					while ((line = br.readLine()) != null)
 						cdfStruct.giveArgument(line);
-					}
+
+					br.close();
+					fis.close();
+
 					cStruct = new CardStructure(cdfStruct.getId(), cdfStruct.getEdition(), cdfStruct.getRarity());
 
 					if (!cStruct.setSecondaryInput(cdfStruct.getName(), cdfStruct.getCategory(), cdfStruct.getWeight(), cdfStruct.getAssetPath(), cdfStruct.getDescription()))
@@ -127,9 +130,6 @@ public class DataLoader {
 
 					if (!Databank.registerACard(cStruct))
 						Logs.errLog("Concerned card file: " + file.getName());
-
-					br.close();
-					fis.close();
 				} catch (Exception e) {
 					Logs.errLog("An error occurred wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());
@@ -140,6 +140,9 @@ public class DataLoader {
 					FileReader reader = new FileReader(file);
 					JsonParser parser = new JsonParser();
 					JsonObject head = (JsonObject) parser.parse(reader);
+
+					reader.close();
+
 					CardStructure cStruct = new CardStructure(head.get("id"), head.get("edition"), head.get("rarity"));
 
 					if (!cStruct.setSecondaryInput(head.get("name"), head.get("category"), head.get("weight"), head.get("asset"), head.get("description")))
@@ -147,8 +150,6 @@ public class DataLoader {
 
 					if (!Databank.registerACard(cStruct))
 						Logs.errLog("Concerned card file: " + file.getName());
-
-					reader.close();
 				} catch (Exception e) {
 					Logs.errLog("An error occurred wile reading a card file: " + file.getName());
 					Logs.errLog(e.getMessage());

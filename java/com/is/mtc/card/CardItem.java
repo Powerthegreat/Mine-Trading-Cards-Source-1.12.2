@@ -79,7 +79,8 @@ public class CardItem extends Item {
 			if (cStruct != null) {
 				NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
 				nbtTag.setString("cdwd", cStruct.getCDWD());
-				nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
+				if (cStruct.getAssetPath().size() > 0)
+					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
 				//player.getHeldItem(hand).setTagCompound(nbtTag);
 				//player.getHeldItem(hand).getTagCompound().setString("cdwd", cStruct.getCDWD());
 			} else

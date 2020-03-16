@@ -55,12 +55,12 @@ public class CardStructure {
 
 	public boolean setSecondaryInput(String name, String category, int weight, List<String> assetPath, String desc) {
 		this.weight = (int) Tools.clamp(0, weight, Integer.MAX_VALUE);
+		this.category = Tools.clean(category);
 
-		if (!MineTradingCards.PROXY_IS_REMOTE) // Only weight is really needed on server side
+		if (!MineTradingCards.PROXY_IS_REMOTE) // Only weight and category are really needed on server side
 			return true;
 
 		this.name = Tools.clean(name);
-		this.category = Tools.clean(category);
 		this.assetPath = new ArrayList<>();
 		for (String asset : assetPath) {
 			this.assetPath.add(Tools.clean(asset));
