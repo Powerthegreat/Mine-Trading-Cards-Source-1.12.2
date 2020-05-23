@@ -25,9 +25,8 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 
 		GlStateManager.pushMatrix();
 		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableLighting();
 		GlStateManager.translate(x, y, z);
-		GlStateManager.enableBlend();
+		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 
 		// Facing north face
@@ -75,8 +74,7 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 		tessellator.draw();
 
 		GlStateManager.disableAlpha();
-		GlStateManager.disableBlend();
-		GlStateManager.enableLighting();
+		GlStateManager.enableBlend();
 		RenderHelper.enableStandardItemLighting();
 		GlStateManager.popMatrix();
 	}

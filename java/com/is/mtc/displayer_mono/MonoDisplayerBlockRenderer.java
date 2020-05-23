@@ -26,9 +26,8 @@ public class MonoDisplayerBlockRenderer extends TileEntitySpecialRenderer<MonoDi
 
 		GlStateManager.pushMatrix();
 		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableLighting();
 		GlStateManager.translate(x, y, z);
-		GlStateManager.enableBlend();
+		GlStateManager.disableBlend();
 		GlStateManager.enableAlpha();
 
 		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -68,9 +67,8 @@ public class MonoDisplayerBlockRenderer extends TileEntitySpecialRenderer<MonoDi
 		tessellator.draw();
 		GlStateManager.disableAlpha();
 		GlStateManager.disableBlend();
-		GlStateManager.popMatrix();
-		GlStateManager.enableLighting();
 		RenderHelper.enableStandardItemLighting();
+		GlStateManager.popMatrix();
 	}
 
 	private boolean bindTextureForSlot(Tessellator tessellator, MonoDisplayerBlockTileEntity monoDisplayerBlockTileEntity, int slot) {
