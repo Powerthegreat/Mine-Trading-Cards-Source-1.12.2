@@ -1,5 +1,9 @@
 package com.is.mtc.card;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
@@ -8,7 +12,9 @@ import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 import com.mojang.realmsclient.gui.ChatFormatting;
+
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,20 +24,16 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class CardItem extends Item {
-
-	private static final String prefix = "item_card_";
+	
+	private static final String PREFIX = "item_card_";
 	private static final int MAX_DESC_LENGTH = 42;
 
 	private int rarity;
 
 	public CardItem(int r) {
-		setUnlocalizedName(prefix + Rarity.toString(r).toLowerCase());
-		setRegistryName(prefix + Rarity.toString(r).toLowerCase());
-		//setTextureName(MineTradingCards.MODID + ":" + prefix + Rarity.toString(r).toLowerCase());
+		setUnlocalizedName(PREFIX + Rarity.toString(r).toLowerCase());
+		setRegistryName(PREFIX + Rarity.toString(r).toLowerCase());
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		rarity = r;
@@ -40,6 +42,15 @@ public class CardItem extends Item {
 	public int getCardRarity() {
 		return rarity;
 	}
+	
+	private ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct) {
+		NBTTagCompound nbtTag = stack.getTagCompound();
+		nbtTag.setString("cdwd", cStruct.getCDWD());
+		if (cStruct.getAssetPath().size() > 0) {
+			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
+		}
+		return stack;
+	}
 
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
@@ -47,63 +58,81 @@ public class CardItem extends Item {
 		CardStructure cStruct = cdwd != null ? Databank.getCardByCDWD(cdwd) : null;
 
 		if (cdwd != null) {
-			if (cStruct == null) // Card not registered ? Display cdwd
+			if (cStruct == null) { // Card not registered ? Display cdwd
 				return cdwd;
-			else
+			} else {
 				return cStruct.getName();
-		} else
+			}
+		} else {
 			return super.getItemStackDisplayName(stack);
+		}
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		//System.out.println(player.getHeldItem(hand).getTagCompound());
-		//if (world.isRemote) {
-		if (Tools.hasCDWD(player.getHeldItem(hand))) {
-			//GuiHandler.currentMainItem = player.getHeldItem(hand);
-			//System.out.println(player.getHeldItem(hand).getTagCompound());
-			GuiHandler.hand = hand;
-			player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int) player.posX, (int) player.posY, (int) player.posZ);
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		
+		ItemStack stack = player.getHeldItem(hand);
+		
+		if (world.isRemote) {
+			if (Tools.hasCDWD(stack)) {
+				GuiHandler.hand = hand;
+				player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int) player.posX, (int) player.posY, (int) player.posZ);
+			}
+			
+			return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+		}
+		
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
 		}
 
-		//return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
-		//}
-
-		if (!player.getHeldItem(hand).hasTagCompound())
-			player.getHeldItem(hand).setTagCompound(new NBTTagCompound());
-
-		if (!Tools.hasCDWD(player.getHeldItem(hand))) {
+		if (!Tools.hasCDWD(stack)) {
 			CardStructure cStruct = Databank.generateACard(rarity);
 
 			if (cStruct != null) {
-				NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
-				nbtTag.setString("cdwd", cStruct.getCDWD());
-				if (cStruct.getAssetPath().size() > 0)
-					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
-				//player.getHeldItem(hand).setTagCompound(nbtTag);
-				//player.getHeldItem(hand).getTagCompound().setString("cdwd", cStruct.getCDWD());
-			} else
+				if (stack.getCount()!=1) { // Generate a single card from the stack and drop it into inventory
+					ItemStack popoffStack = stack.copy();
+					if (!popoffStack.hasTagCompound()) {
+						popoffStack.setTagCompound(new NBTTagCompound());
+					}
+					popoffStack.setCount(1);
+					popoffStack = applyCDWDtoStack(popoffStack, cStruct);
+					
+					EntityItem dropped_card = player.entityDropItem(popoffStack, 1);
+					dropped_card.setPickupDelay(0);
+					
+					if (!player.capabilities.isCreativeMode) {
+						stack.shrink(1);
+					}
+				}
+				else { // Add data to the singleton "empty" card 
+					stack = applyCDWDtoStack(stack, cStruct);
+				}
+			} else {
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
+			}
 		}
 
-		NBTTagCompound nbtTag = player.getHeldItem(hand).getTagCompound();
+		NBTTagCompound nbtTag = stack.getTagCompound();
 		if (!nbtTag.hasKey("assetnumber")) {
 			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
-			if (cStruct != null)
-				if (cStruct.getAssetPath().size() > 0)
+			if (cStruct != null) {
+				if (cStruct.getAssetPath().size() > 0) {
 					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
+				}
+			}
 		}
 
-		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
 
 	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
 		CardStructure cStruct;
 		NBTTagCompound nbt;
 
-		if (!stack.hasTagCompound() || !Tools.hasCDWD(stack))
+		if (!stack.hasTagCompound() || !Tools.hasCDWD(stack)) {
 			return;
+		}
 
 		nbt = stack.getTagCompound();
 		cStruct = Databank.getCardByCDWD(nbt.getString("cdwd"));
@@ -117,9 +146,10 @@ public class CardItem extends Item {
 		infos.add("");
 		infos.add("Edition: " + Rarity.toColor(rarity) + Databank.getEditionWithId(cStruct.getEdition()).getName());
 
-		if (!cStruct.getCategory().isEmpty())
+		if (!cStruct.getCategory().isEmpty()) {
 			infos.add("Category: " + ChatFormatting.WHITE + cStruct.getCategory());
-
+		}
+		
 		if (!cStruct.getDescription().isEmpty()) {
 			String[] words = cStruct.getDescription().split(" ");
 			String line = "";
@@ -133,8 +163,9 @@ public class CardItem extends Item {
 					line = "";
 				}
 			}
-			if (!line.isEmpty())
+			if (!line.isEmpty()) {
 				infos.add(line);
+			}
 		}
 
 		infos.add("");
