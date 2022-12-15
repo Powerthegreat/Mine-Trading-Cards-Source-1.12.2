@@ -1,6 +1,9 @@
 package com.is.mtc.displayer;
 
+import org.lwjgl.util.vector.Vector2f;
+
 import com.is.mtc.Reference;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,7 +12,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.util.vector.Vector2f;
 
 public class DisplayerBlockGuiContainer extends GuiContainer {
 	private InventoryPlayer inventoryPlayer;

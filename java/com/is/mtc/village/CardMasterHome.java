@@ -1,16 +1,17 @@
 package com.is.mtc.village;
 
+import java.util.List;
+import java.util.Random;
+
 import com.is.mtc.init.MineTradingCardVillagers;
 import com.is.mtc.root.Logs;
+
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
-
-import java.util.List;
-import java.util.Random;
 
 public class CardMasterHome extends StructureVillagePieces.Village {
 	private int averageGroundLevel = -1;

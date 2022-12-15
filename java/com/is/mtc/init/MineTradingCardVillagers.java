@@ -1,7 +1,9 @@
 package com.is.mtc.init;
 
+import com.is.mtc.Reference;
 import com.is.mtc.root.Logs;
 import com.is.mtc.village.CardTrade;
+
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Items;
 import net.minecraftforge.event.RegistryEvent;
@@ -13,8 +15,8 @@ import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfessio
 @Mod.EventBusSubscriber
 public class MineTradingCardVillagers {
 	public static VillagerProfession professionCardMaster = new VillagerProfession(
-			"is_mtc:card_master",
-			"is_mtc:textures/entities/card_master.png",
+			Reference.MODID+":card_master",
+			Reference.MODID+":textures/entities/card_master.png",
 			"minecraft:textures/entity/zombie_villager/zombie_villager.png");
 	public static VillagerCareer careerCardMaster;
 

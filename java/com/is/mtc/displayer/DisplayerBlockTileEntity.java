@@ -1,9 +1,13 @@
 package com.is.mtc.displayer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
 import com.is.mtc.packet.MTCMessageUpdateDisplayer;
 import com.is.mtc.root.Logs;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,9 +21,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHandlerModifiable {
 	public static final int INVENTORY_SIZE = 4;

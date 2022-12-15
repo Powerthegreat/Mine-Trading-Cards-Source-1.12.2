@@ -1,9 +1,9 @@
 package com.is.mtc.data_manager;
 
-import com.is.mtc.root.Tools;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.is.mtc.root.Tools;
 
 public class CDFCardStructure {
 

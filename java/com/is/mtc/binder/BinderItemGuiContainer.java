@@ -1,5 +1,11 @@
 package com.is.mtc.binder;
 
+import java.io.IOException;
+import java.util.Set;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.util.vector.Vector2f;
+
 import com.google.common.collect.Sets;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.Reference;
@@ -7,12 +13,17 @@ import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.packet.MTCMessage;
 import com.is.mtc.root.Tools;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -24,11 +35,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.util.vector.Vector2f;
-
-import java.io.IOException;
-import java.util.Set;
 
 public class BinderItemGuiContainer extends GuiContainer {
 	protected int xSize = 242;
