@@ -2,6 +2,7 @@ package com.is.mtc.proxy;
 
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Logs;
+
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

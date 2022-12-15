@@ -4,8 +4,13 @@ import com.is.mtc.binder.BinderItem;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.displayer.DisplayerBlock;
 import com.is.mtc.displayer_mono.MonoDisplayerBlock;
-import com.is.mtc.pack.*;
+import com.is.mtc.pack.PackItemBase;
+import com.is.mtc.pack.PackItemCustom;
+import com.is.mtc.pack.PackItemEdition;
+import com.is.mtc.pack.PackItemRarity;
+import com.is.mtc.pack.PackItemStandard;
 import com.is.mtc.root.Rarity;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

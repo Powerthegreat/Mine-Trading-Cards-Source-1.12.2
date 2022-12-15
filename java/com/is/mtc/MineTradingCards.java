@@ -1,5 +1,10 @@
 package com.is.mtc;
 
+import static com.is.mtc.init.MTCItems.displayerBlock;
+import static com.is.mtc.init.MTCItems.monoDisplayerBlock;
+
+import java.io.File;
+
 import com.is.mtc.data_manager.DataLoader;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
@@ -7,13 +12,19 @@ import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
 import com.is.mtc.handler.DropHandler;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.init.MTCItems;
-import com.is.mtc.packet.*;
+import com.is.mtc.packet.MTCMessage;
+import com.is.mtc.packet.MTCMessageHandler;
+import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
+import com.is.mtc.packet.MTCMessageRequestUpdateDisplayerHandler;
+import com.is.mtc.packet.MTCMessageUpdateDisplayer;
+import com.is.mtc.packet.MTCMessageUpdateDisplayerHandler;
 import com.is.mtc.proxy.CommonProxy;
 import com.is.mtc.root.CC_CreateCard;
 import com.is.mtc.root.CC_ForceCreateCard;
 import com.is.mtc.root.Logs;
 import com.is.mtc.village.CardMasterHome;
 import com.is.mtc.village.CardMasterHomeHandler;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -34,12 +45,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.File;
-
-import static com.is.mtc.init.MTCItems.displayerBlock;
-import static com.is.mtc.init.MTCItems.monoDisplayerBlock;
-
-@Mod(modid = Reference.MODID, version = Reference.VERSION, name = Reference.NAME)
+@Mod(modid = Reference.MODID, version = Reference.MOD_VERSION, name = Reference.NAME)
 public class MineTradingCards {
 	// The instance of the mod class that forge uses
 	@Instance(Reference.MODID)
@@ -47,11 +53,16 @@ public class MineTradingCards {
 
 	// Whether the proxy is remote
 	public static boolean PROXY_IS_REMOTE = false;
-
+	
 	// The directories that MTC works with
 	private static String DATA_DIR = "";
 	private static String CONF_DIR = "";
 
+	// Configuration stuff
+	public static final String CONFIG_CAT_DROPS = "drops";
+	public static final String CONFIG_CAT_LOGS = "logs";
+	public static final String CONFIG_CAT_RECIPES = "recipes";
+	
 	// The proxy, either a combined client or a dedicated server
 	@SidedProxy(clientSide = "com.is.mtc.proxy.ClientProxy", serverSide = "com.is.mtc.proxy.ServerProxy")
 	public static CommonProxy PROXY;
@@ -99,7 +110,7 @@ public class MineTradingCards {
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-
+		
 		// Registers tile entities
 		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation(displayerBlock.getRegistryName().toString()));
 		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation(monoDisplayerBlock.getRegistryName().toString()));
@@ -121,25 +132,29 @@ public class MineTradingCards {
 
 	private void readConfig(FMLPreInitializationEvent event) {
 		// Loads from the configuration file
-		Configuration config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), "1v", false);
+		Configuration config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), Reference.CONFIG_VERSION, false);
 		config.load();
 
-		Logs.ENABLE_DEV_LOGS = config.getBoolean("devlog_enabled", "logs", false, "Enable developer logs");
-
-		DropHandler.CAN_DROP_MOB = config.getBoolean("mobs_can_drop", "drops", true, "Can mobs drop packs on death");
-		DropHandler.CAN_DROP_ANIMAL = config.getBoolean("animals_can_drop", "drops", false, "Can animals drop packs on death");
-		DropHandler.CAN_DROP_PLAYER = config.getBoolean("players_can_drop", "drops", false, "Can players drop packs on death");
-
-		DropHandler.DROP_RATE_COM = config.getInt("pack_drop_rate_common", "drops", 16, 0, Integer.MAX_VALUE, "Chance out of X to drop common packs");
-		DropHandler.DROP_RATE_UNC = config.getInt("pack_drop_rate_uncommon", "drops", 32, 0, Integer.MAX_VALUE, "Chance out of X to drop uncommon packs");
-		DropHandler.DROP_RATE_RAR = config.getInt("pack_drop_rate_rare", "drops", 48, 0, Integer.MAX_VALUE, "Chance out of X to drop rare packs");
-		DropHandler.DROP_RATE_ANC = config.getInt("pack_drop_rate_ancient", "drops", 64, 0, Integer.MAX_VALUE, "Chance out of X to drop ancient packs");
-		DropHandler.DROP_RATE_LEG = config.getInt("pack_drop_rate_legendary", "drops", 256, 0, Integer.MAX_VALUE, "Chance out of X to drop legendary packs");
-
-		DropHandler.DROP_RATE_STD = config.getInt("pack_drop_rate_standard", "drops", 40, 0, Integer.MAX_VALUE, "Chance out of X to drop standard packs");
-		DropHandler.DROP_RATE_EDT = config.getInt("pack_drop_rate_edition", "drops", 40, 0, Integer.MAX_VALUE, "Chance out of X to drop set-specific (edition) packs");
-		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", "drops", 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
-
+		// Logging
+		Logs.ENABLE_DEV_LOGS = config.getBoolean("devlog_enabled", CONFIG_CAT_LOGS, false, "Enable developer logs");
+		
+		// Drops toggle
+		DropHandler.CAN_DROP_MOB = config.getBoolean("mobs_can_drop", CONFIG_CAT_DROPS, true, "Can mobs drop packs on death");
+		DropHandler.CAN_DROP_ANIMAL = config.getBoolean("animals_can_drop", CONFIG_CAT_DROPS, false, "Can animals drop packs on death");
+		DropHandler.CAN_DROP_PLAYER = config.getBoolean("players_can_drop", CONFIG_CAT_DROPS, false, "Can players drop packs on death");
+		// Tiered pack drop rates
+		DropHandler.DROP_RATE_COM = config.getInt("pack_drop_rate_common", CONFIG_CAT_DROPS, 16, 0, Integer.MAX_VALUE, "Chance out of X to drop common packs");
+		DropHandler.DROP_RATE_UNC = config.getInt("pack_drop_rate_uncommon", CONFIG_CAT_DROPS, 32, 0, Integer.MAX_VALUE, "Chance out of X to drop uncommon packs");
+		DropHandler.DROP_RATE_RAR = config.getInt("pack_drop_rate_rare", CONFIG_CAT_DROPS, 48, 0, Integer.MAX_VALUE, "Chance out of X to drop rare packs");
+		DropHandler.DROP_RATE_ANC = config.getInt("pack_drop_rate_ancient", CONFIG_CAT_DROPS, 64, 0, Integer.MAX_VALUE, "Chance out of X to drop ancient packs");
+		DropHandler.DROP_RATE_LEG = config.getInt("pack_drop_rate_legendary", CONFIG_CAT_DROPS, 256, 0, Integer.MAX_VALUE, "Chance out of X to drop legendary packs");
+		// Non-tiered pack drop rates
+		DropHandler.DROP_RATE_STD = config.getInt("pack_drop_rate_standard", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop standard packs");
+		DropHandler.DROP_RATE_EDT = config.getInt("pack_drop_rate_edition", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop set-specific (edition) packs");
+		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
+		
+		// Villager
+		
 		config.save();
 	}
 

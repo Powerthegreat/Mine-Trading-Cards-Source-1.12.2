@@ -1,8 +1,13 @@
 package com.is.mtc.binder;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Tools;
+
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -13,9 +18,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class BinderItem extends Item {
 	public static final int MODE_STD = 0; // Standard mode

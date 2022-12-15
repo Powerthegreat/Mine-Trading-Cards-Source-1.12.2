@@ -1,5 +1,7 @@
 package com.is.mtc.root;
 
+import java.util.regex.Pattern;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -7,8 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-
-import java.util.regex.Pattern;
 
 public class CC_ForceCreateCard extends CC_CreateCard { // Command to create a specific card. Does not have to be an existing one
 

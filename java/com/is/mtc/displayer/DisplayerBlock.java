@@ -1,7 +1,10 @@
 package com.is.mtc.displayer;
 
+import javax.annotation.Nullable;
+
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -16,8 +19,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nullable;
 
 public class DisplayerBlock extends Block {
 	private boolean wasPowered;

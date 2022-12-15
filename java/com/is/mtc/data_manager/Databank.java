@@ -1,11 +1,11 @@
 package com.is.mtc.data_manager;
 
-import com.is.mtc.root.Logs;
-import com.is.mtc.root.Rarity;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
+
+import com.is.mtc.root.Logs;
+import com.is.mtc.root.Rarity;
 
 public class Databank {
 

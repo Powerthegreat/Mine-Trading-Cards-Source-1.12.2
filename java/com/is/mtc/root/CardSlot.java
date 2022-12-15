@@ -1,10 +1,10 @@
 package com.is.mtc.root;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-
-import javax.annotation.Nonnull;
 
 public class CardSlot extends SlotItemHandler {
 

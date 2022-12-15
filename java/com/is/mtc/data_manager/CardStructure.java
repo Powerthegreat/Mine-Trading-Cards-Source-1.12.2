@@ -1,21 +1,23 @@
 package com.is.mtc.data_manager;
 
-import com.google.gson.JsonElement;
-import com.is.mtc.MineTradingCards;
-import com.is.mtc.root.Logs;
-import com.is.mtc.root.Rarity;
-import com.is.mtc.root.Tools;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import com.google.gson.JsonElement;
+import com.is.mtc.MineTradingCards;
+import com.is.mtc.root.Logs;
+import com.is.mtc.root.Rarity;
+import com.is.mtc.root.Tools;
+
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.util.ResourceLocation;
 
 /*
  * Card is identified by id and edition. Same id can be in two different editions

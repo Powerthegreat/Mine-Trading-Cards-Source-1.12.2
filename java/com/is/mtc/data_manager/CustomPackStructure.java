@@ -1,10 +1,10 @@
 package com.is.mtc.data_manager;
 
-import com.google.gson.JsonElement;
-import com.is.mtc.root.Tools;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.google.gson.JsonElement;
+import com.is.mtc.root.Tools;
 
 public class CustomPackStructure {
 	private String name, id;
