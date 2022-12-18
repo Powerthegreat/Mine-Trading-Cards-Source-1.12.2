@@ -43,7 +43,7 @@ public class CardItem extends Item {
 		return rarity;
 	}
 	
-	private ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct) {
+	public static ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct) {
 		NBTTagCompound nbtTag = stack.getTagCompound();
 		nbtTag.setString("cdwd", cStruct.getCDWD());
 		if (cStruct.getAssetPath().size() > 0) {

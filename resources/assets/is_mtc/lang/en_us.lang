@@ -21,3 +21,4 @@ tile.block_displayer.name=Cards Displayer
 tile.block_monodisplayer.name=Card Displayer
 
 entity.Villager.card_master=Card Master
+entity.Villager.card_trader=Card Trader

@@ -2,7 +2,7 @@ package com.is.mtc.displayer_mono;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import com.is.mtc.Reference;
+import com.is.mtc.util.Reference;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
