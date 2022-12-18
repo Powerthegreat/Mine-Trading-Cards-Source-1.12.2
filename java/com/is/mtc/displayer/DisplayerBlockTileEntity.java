@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
 import com.is.mtc.packet.MTCMessageUpdateDisplayer;
-import com.is.mtc.root.Logs;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -55,8 +54,6 @@ public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHand
 	}
 
 	public void updateContainingBlockInfo() { // Allow data being sync on game loading
-		Logs.stdLog("c2");
-
 		world.markTileEntityForRemoval(world.getTileEntity(pos));
 		//world.markBlockForUpdate(xCoord, yCoord, zCoord); // Makes the server call getDescriptionPacket for a full data sync
 		markDirty();
@@ -78,6 +75,13 @@ public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHand
 			return inventory.getStackInSlot(slot);//content[slot];
 		}
 		return ItemStack.EMPTY;
+	}
+
+	public void setStackIntoSlot(ItemStack stack, int slot, boolean simulate) {
+		if (slot >= getSlots()) {
+			return;
+		}
+		inventory.insertItem(slot, stack, simulate);
 	}
 
 	/*@Nonnull

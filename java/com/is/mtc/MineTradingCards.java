@@ -22,8 +22,10 @@ import com.is.mtc.proxy.CommonProxy;
 import com.is.mtc.root.CC_CreateCard;
 import com.is.mtc.root.CC_ForceCreateCard;
 import com.is.mtc.root.Logs;
+import com.is.mtc.util.Reference;
 import com.is.mtc.village.CardMasterHome;
 import com.is.mtc.village.CardMasterHomeHandler;
+import com.is.mtc.village.MineTradingCardVillagers;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -62,6 +64,10 @@ public class MineTradingCards {
 	public static final String CONFIG_CAT_DROPS = "drops";
 	public static final String CONFIG_CAT_LOGS = "logs";
 	public static final String CONFIG_CAT_RECIPES = "recipes";
+	public static final String CONFIG_CAT_VILLAGER = "villager";
+
+	// Mod intercompatibility stuff
+	public static boolean hasVillageNamesInstalled = false;
 	
 	// The proxy, either a combined client or a dedicated server
 	@SidedProxy(clientSide = "com.is.mtc.proxy.ClientProxy", serverSide = "com.is.mtc.proxy.ServerProxy")
@@ -74,8 +80,7 @@ public class MineTradingCards {
 			return new ItemStack(MTCItems.packStandard);
 		}
 	};
-	//-
-
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
@@ -154,6 +159,26 @@ public class MineTradingCards {
 		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
 		
 		// Villager
+		MineTradingCardVillagers.CARD_MASTER_TRADE_LIST = config.getStringList("card_master_trades", CONFIG_CAT_VILLAGER, MineTradingCardVillagers.CARD_MASTER_TRADE_LIST_DEFAULT,
+				"List of possible Card Master trades. Entries are of the form:"
+						+ "\nsellitem|amount|buyitem1|amount|buyitem2|amount"
+						+ "\n\"amount\" is either an integer, or a range like 1-3."
+						+ "\nbuyitem2|amount is optional."
+						+ "\nPossible sellitem and buyitem values are:"
+						+ "\niron_ingot, gold_ingot, emerald, diamond, [common/uncommon/rare/ancient/legendary/standard/edition/custom]_pack or [common/uncommon/rare/ancient/legendary]_card."
+						+ "\nYou also append \"_random\" at the end of a _card entry (e.g. common_card_random) in order to generate a random card for sale (or requested)."
+				);
+		MineTradingCardVillagers.CARD_TRADER_TRADE_LIST = config.getStringList("card_trader_trades", CONFIG_CAT_VILLAGER, MineTradingCardVillagers.CARD_TRADER_TRADE_LIST_DEFAULT,
+				"List of possible Card Trader trades. Entries are of the form:"
+						+ "\nsellitem|amount|buyitem1|amount|buyitem2|amount"
+						+ "\n\"amount\" is either an integer, or a range like 1-3."
+						+ "\nbuyitem2|amount is optional."
+						+ "\nPossible sellitem and buyitem values are:"
+						+ "\niron_ingot, gold_ingot, emerald, diamond, [common/uncommon/rare/ancient/legendary/standard/edition/custom]_pack or [common/uncommon/rare/ancient/legendary]_card."
+						+ "\nYou also append \"_random\" at the end of a _card entry (e.g. common_card_random) in order to generate a random card for sale (or requested)."
+				);
+		CardMasterHomeHandler.SHOP_WEIGHT = config.getInt("card_shop_weight", CONFIG_CAT_VILLAGER, 5, 0, 100, "Weighting for selection when villages generate. Farms and wood huts are 3, church is 20.");
+		CardMasterHomeHandler.SHOP_MAX_NUMBER = config.getInt("card_shop_max_number", CONFIG_CAT_VILLAGER, 1, 0, 32, "Maximum number of card master shops that can spawn per village");
 		
 		config.save();
 	}

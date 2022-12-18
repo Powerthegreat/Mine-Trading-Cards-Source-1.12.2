@@ -4,12 +4,12 @@ import static net.minecraft.client.renderer.tileentity.TileEntityRendererDispatc
 
 import org.lwjgl.opengl.GL11;
 
-import com.is.mtc.Reference;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
+import com.is.mtc.util.Reference;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
