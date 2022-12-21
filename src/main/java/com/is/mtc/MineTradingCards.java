@@ -23,6 +23,8 @@ import com.is.mtc.root.CC_CreateCard;
 import com.is.mtc.root.CC_ForceCreateCard;
 import com.is.mtc.root.Logs;
 import com.is.mtc.util.Reference;
+import com.is.mtc.version.DevVersionWarning;
+import com.is.mtc.version.VersionChecker;
 import com.is.mtc.village.CardMasterHome;
 import com.is.mtc.village.CardMasterHomeHandler;
 import com.is.mtc.village.MineTradingCardVillagers;
@@ -61,11 +63,12 @@ public class MineTradingCards {
 	private static String CONF_DIR = "";
 
 	// Configuration stuff
+	public static final String CONFIG_CAT_COLORS = "colors";
 	public static final String CONFIG_CAT_DROPS = "drops";
 	public static final String CONFIG_CAT_LOGS = "logs";
 	public static final String CONFIG_CAT_RECIPES = "recipes";
+	public static final String CONFIG_CAT_UPDATES = "updates";
 	public static final String CONFIG_CAT_VILLAGERS = "villagers";
-	public static final String CONFIG_CAT_COLORS = "colors";
 		
 	public static int CARD_COLOR_COMMON = Reference.COLOR_GREEN;
 	public static int CARD_COLOR_UNCOMMON = Reference.COLOR_GOLD;
@@ -83,6 +86,7 @@ public class MineTradingCards {
 	public static int PACK_COLOR_ANCIENT = Reference.COLOR_AQUA;
 	public static int PACK_COLOR_LEGENDARY = Reference.COLOR_LIGHT_PURPLE;
 	public static int PACK_COLOR_STANDARD = Reference.COLOR_BLUE;
+	public static boolean ENABLE_UPDATE_CHECKER = true;
 	
 	public static final String COLOR_ITEM_DESCRIPTION_1 = "Color for ";
 	public static final String COLOR_ITEM_DESCRIPTION_2 = "Entered as a decimal integer, or as a hexadecimal by putting # in front.";
@@ -111,6 +115,10 @@ public class MineTradingCards {
 		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
 		MTCItems.init();
 
+        // Version check monitor
+        if (Reference.MOD_VERSION.contains("DEV") || Reference.MOD_VERSION.equals("@VERSION@")) {MinecraftForge.EVENT_BUS.register(DevVersionWarning.instance);}
+        else if (ENABLE_UPDATE_CHECKER) {MinecraftForge.EVENT_BUS.register(VersionChecker.instance);}
+        
 		PROXY.preInit(event);
 		readConfig(event);
 
@@ -156,16 +164,11 @@ public class MineTradingCards {
 		event.registerServerCommand(new CC_ForceCreateCard());
 	}
 
-	//-
-
 	private void readConfig(FMLPreInitializationEvent event) {
 		// Loads from the configuration file
 		Configuration config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), Reference.CONFIG_VERSION, false);
 		config.load();
 
-		// Logging
-		Logs.ENABLE_DEV_LOGS = config.getBoolean("devlog_enabled", CONFIG_CAT_LOGS, false, "Enable developer logs");
-		
 		// Drops toggle
 		DropHandler.CAN_DROP_MOB = config.getBoolean("mobs_can_drop", CONFIG_CAT_DROPS, true, "Can mobs drop packs on death");
 		DropHandler.CAN_DROP_ANIMAL = config.getBoolean("animals_can_drop", CONFIG_CAT_DROPS, false, "Can animals drop packs on death");
@@ -180,6 +183,9 @@ public class MineTradingCards {
 		DropHandler.DROP_RATE_STD = config.getInt("pack_drop_rate_standard", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop standard packs");
 		DropHandler.DROP_RATE_EDT = config.getInt("pack_drop_rate_edition", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop set-specific (edition) packs");
 		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
+		
+		// Logging
+		Logs.ENABLE_DEV_LOGS = config.getBoolean("devlog_enabled", CONFIG_CAT_LOGS, false, "Enable developer logs");
 		
 		// Villager
 		MineTradingCardVillagers.CARD_MASTER_TRADE_LIST = config.getStringList("card_master_trades", CONFIG_CAT_VILLAGERS, MineTradingCardVillagers.CARD_MASTER_TRADE_LIST_DEFAULT,
@@ -202,6 +208,10 @@ public class MineTradingCards {
 				);
 		CardMasterHomeHandler.SHOP_WEIGHT = config.getInt("card_shop_weight", CONFIG_CAT_VILLAGERS, 5, 0, 100, "Weighting for selection when villages generate. Farms and wood huts are 3, church is 20.");
 		CardMasterHomeHandler.SHOP_MAX_NUMBER = config.getInt("card_shop_max_number", CONFIG_CAT_VILLAGERS, 1, 0, 32, "Maximum number of card master shops that can spawn per village");
+		
+		// Update Checker
+		ENABLE_UPDATE_CHECKER = config.getBoolean("enable_update_checker", CONFIG_CAT_UPDATES, true, "Displays a client-side chat message on login if there's an update available.");
+		
 		
 		config.save();
 	}

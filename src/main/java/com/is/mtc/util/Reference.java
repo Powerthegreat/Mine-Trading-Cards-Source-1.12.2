@@ -1,10 +1,13 @@
 package com.is.mtc.util;
 
+import net.minecraft.util.text.TextFormatting;
+
 public class Reference {
 	public static final String MODID = "is_mtc";
-	public static final String MOD_VERSION = "2.4.0";
+	public static final String MOD_VERSION = "@VERSION@";
 	public static final String CONFIG_VERSION = "1.1";
 	public static final String NAME = "Mine Trading Cards";
+	public static final String NAME_COLORIZED = TextFormatting.BLUE+"Mine Trading Cards"+TextFormatting.RESET;
 	
 	// Mod compats
 	public static final String VILLAGE_NAMES_MODID = "villagenames";
@@ -29,4 +32,8 @@ public class Reference {
 	public static final int COLOR_BLACK = 0x000000; // 0e
 	// Custom
 	public static final int COLOR_BROWN = 0xad7030;
+	
+	// Update checker
+	public static final String URL = "https://www.curseforge.com/minecraft/mc-mods/mine-trading-cards-open-source-edition";
+	public static final String VERSION_CHECKER_URL = "TBD";
 }
