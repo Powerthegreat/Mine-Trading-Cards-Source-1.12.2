@@ -1,8 +1,10 @@
 package com.is.mtc.root;
 
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.init.MTCItems;
-import com.mojang.realmsclient.gui.ChatFormatting;
+
+import net.minecraft.util.text.TextFormatting;
 
 public class Rarity {
 	public static final int UNSET = -1;
@@ -37,8 +39,9 @@ public class Rarity {
 		string = string.toUpperCase();
 
 		for (int i = 0; i < RCOUNT; ++i) {
-			if (STRINGSUPPERCASE[i].equals(string) || SHORTSTRINGSUPPERCASE[i].equals(string))
+			if (STRINGSUPPERCASE[i].equals(string) || SHORTSTRINGSUPPERCASE[i].equals(string)) {
 				return i;
+			}
 		}
 
 		return UNSET;
@@ -62,19 +65,25 @@ public class Rarity {
 		}
 	}
 
-	public static ChatFormatting toColor(int rarity) {
+	public static TextFormatting toColor(int rarity) {
+		TextFormatting tf;
 		switch (rarity) {
 			case COMMON:
-				return ChatFormatting.GREEN;
+				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_COMMON);
+				return tf!=null ? tf : TextFormatting.GREEN;
 			case UNCOMMON:
-				return ChatFormatting.GOLD;
+				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_UNCOMMON);
+				return tf!=null ? tf : TextFormatting.GOLD;
 			case RARE:
-				return ChatFormatting.RED;
+				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_RARE);
+				return tf!=null ? tf : TextFormatting.RED;
 			case ANCIENT:
-				return ChatFormatting.AQUA;
+				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_ANCIENT);
+				return tf!=null ? tf : TextFormatting.AQUA;
 			case LEGENDARY:
-				return ChatFormatting.DARK_PURPLE;
-
+				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_LEGENDARY);
+				return tf!=null ? tf : TextFormatting.DARK_PURPLE;
+	
 			default:
 				return null;
 		}

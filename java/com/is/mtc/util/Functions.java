@@ -191,6 +191,42 @@ public class Functions {
 			if (Logs.ENABLE_DEV_LOGS) {Logs.devLog("Cleaned "+list.size()+" Entity items within " + aabb.toString());}
         }
 	}
-
     
+    /**
+     * Inputs a color string, either as a decimal integer or a hex integer
+     * as signified by # in the front, and returns it as the proper integer.
+     */
+    public static int parseColorInteger(String colorstring, int defaultcolor) {
+		boolean ishexformat;
+		try {
+			ishexformat=colorstring.indexOf("#")==0;
+			String colorstring_substring=ishexformat?colorstring.substring(1):colorstring;
+			return Integer.parseInt(colorstring_substring, ishexformat ? 16 : 10);
+		}
+		catch (Exception e) {
+			Logs.errLog("Color integer " + colorstring + " is not properly formatted!");
+			return defaultcolor;
+		}
+    }
+    
+    private static final int MINECRAFT_ID_HASH = "minecraft".hashCode();
+    private static final int MINECRAFT_ID_TARGET_HASH = 0x5e8f51;
+    // base 16777216 plus target color int, minus "minecraft" hash 7207341
+    private static final int HASH_COLOR_OFFSET = MINECRAFT_ID_TARGET_HASH - MINECRAFT_ID_HASH + (MINECRAFT_ID_TARGET_HASH - MINECRAFT_ID_HASH >= 0 ? 0 : Reference.COLOR_WHITE);
+    
+    /**
+     * Uses a hash conversion to set a name into a color int
+     * @return
+     */
+    public static int string_to_color_code(String id) {
+    	// Convert into a "safe" int (positive and within 0xFFFFFF)
+    	int safe_int = MathHelper.abs(id.hashCode() + HASH_COLOR_OFFSET)%Reference.COLOR_WHITE;
+    	
+//    	// Decompose into r, g, b
+//    	int r = safe_int>>16;
+//		int g = (safe_int>>8)&255;
+//		int b = safe_int&255;
+    			
+		return safe_int;
+    }
 }

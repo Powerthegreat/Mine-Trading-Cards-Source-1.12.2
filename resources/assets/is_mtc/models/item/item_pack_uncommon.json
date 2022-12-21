@@ -1,6 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "is_mtc:items/item_pack_uncommon"
+    "layer0": "is_mtc:items/pack_grayscale",
+    "layer1": "is_mtc:items/pack_overlay"
   }
 }

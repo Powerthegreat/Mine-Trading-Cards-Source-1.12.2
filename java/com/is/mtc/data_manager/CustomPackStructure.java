@@ -5,30 +5,34 @@ import java.util.Map;
 
 import com.google.gson.JsonElement;
 import com.is.mtc.root.Tools;
+import com.is.mtc.util.Functions;
 
 public class CustomPackStructure {
 	private String name, id;
+	private int color;
 	public Map<String, int[]> categoryQuantities;
 	// Category, quantity, rarity
 	public int customPackNumeralID;
 
-	public CustomPackStructure(JsonElement jsonId, JsonElement jsonName) {
-		setInput(jsonId != null ? jsonId.getAsString() : null, jsonName != null ? jsonName.getAsString() : null);
+	public CustomPackStructure(JsonElement jsonId, JsonElement jsonName, JsonElement jsonColor) {
+		setInput(jsonId != null ? jsonId.getAsString() : null, jsonName != null ? jsonName.getAsString() : null, jsonColor != null ? jsonColor.getAsString() : null);
 
 		categoryQuantities = new LinkedHashMap<String, int[]>();
 	}
 
-	public CustomPackStructure(String id, String name) {
-		setInput(id, name);
+	public CustomPackStructure(String id, String name, String color) {
+		setInput(id, name, color);
 	}
 
-	private void setInput(String id, String name) {
+	private void setInput(String id, String name, String color) {
 		this.id = Tools.clean(id).toLowerCase();
 		this.name = Tools.clean(name);
-
-		if (!Tools.isValidID(this.id))
+		this.color = Functions.parseColorInteger(Tools.clean(color), Functions.string_to_color_code(id));
+		
+		if (!Tools.isValidID(this.id)) {
 			this.id = "";
-
+		}
+		
 		customPackNumeralID = -1;
 	}
 
@@ -48,7 +52,7 @@ public class CustomPackStructure {
 
 	@Override
 	public String toString() {
-		return "{id:" + id + " name:'" + name + "' numeral_id:" + customPackNumeralID + "}";
+		return "{id:" + id + " name:'" + name + "' numeral_id:" + customPackNumeralID  + ", color:" + color + "}";
 	}
 
 	public String getId() {
@@ -57,5 +61,9 @@ public class CustomPackStructure {
 
 	public String getName() {
 		return name;
+	}
+
+	public int getColor() {
+		return color;
 	}
 }

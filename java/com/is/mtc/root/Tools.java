@@ -43,21 +43,19 @@ public class Tools {
 		return matcher.find();
 	}
 
-	public static int randInt(int min, int max) {
-		Random r = new Random();
+	public static int randInt(int min, int max, Random random) {
 
-		return r.nextInt(max - min) + min;
+		return random.nextInt(max - min) + min;
 	}
 
-	public static String generateString(int length) {
-		Random r = new Random();
+	public static String generateString(int length, Random random) {
 		char[] text = new char[length];
 		String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 		for (int i = 0; i < length; i++) {
-			text[i] = characters.charAt(r.nextInt(characters.length()));
+			text[i] = characters.charAt(random.nextInt(characters.length()));
 		}
-
+		
 		return new String(text);
 	}
 

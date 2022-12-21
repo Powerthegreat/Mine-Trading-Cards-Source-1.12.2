@@ -1,6 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "is_mtc:items/item_card_ancient"
+    "layer0": "is_mtc:items/card_grayscale",
+    "layer1": "is_mtc:items/card_overlay"
   }
 }
