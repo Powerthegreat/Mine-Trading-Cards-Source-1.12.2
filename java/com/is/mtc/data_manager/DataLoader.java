@@ -37,8 +37,6 @@ public class DataLoader {
 		return fnf;
 	}
 
-	//-
-
 	public static void readAndLoad() {
 		File editions_folder = new File(MineTradingCards.getDataDir() + "editions/");
 		File cards_folder = new File(MineTradingCards.getDataDir() + "cards/");
@@ -85,8 +83,6 @@ public class DataLoader {
 		Logs.stdLog("MTC data loading is done");
 	}
 
-	// -
-
 	private static void getEditions(File folder) {
 		File[] files = folder.listFiles(createFilenameFilter(".json"));
 		Arrays.sort(files);
@@ -98,7 +94,7 @@ public class DataLoader {
 				FileReader reader = new FileReader(file);
 				JsonParser parser = new JsonParser();
 				JsonObject head = (JsonObject) parser.parse(reader);
-				EditionStructure eStruct = new EditionStructure(head.get("id"), head.get("name"));
+				EditionStructure eStruct = new EditionStructure(head.get("id"), head.get("name"), head.get("color"));
 
 				if (!Databank.registerAnEdition(eStruct))
 					Logs.errLog("Concerned edition file: " + file.getName());
@@ -179,7 +175,7 @@ public class DataLoader {
 				FileReader reader = new FileReader(file);
 				JsonParser parser = new JsonParser();
 				JsonObject head = (JsonObject) parser.parse(reader);
-				CustomPackStructure customPackStructure = new CustomPackStructure(head.get("id"), head.get("name"));
+				CustomPackStructure customPackStructure = new CustomPackStructure(head.get("id"), head.get("name"), head.get("color"));
 
 				JsonArray categories = head.getAsJsonArray("categories");
 				for (int i = 0; i < categories.size(); i++) {

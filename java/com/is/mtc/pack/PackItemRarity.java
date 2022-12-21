@@ -1,18 +1,24 @@
 package com.is.mtc.pack;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
+import com.is.mtc.util.Reference;
 
+import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /*
  * Pack item drop informations
@@ -51,11 +57,11 @@ public class PackItemRarity extends PackItemBase {
 			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 
 		created = new ArrayList<String>();
-		createCards(Rarity.COMMON, tCount[rarity][Rarity.COMMON], created);
-		createCards(Rarity.UNCOMMON, tCount[rarity][Rarity.UNCOMMON], created);
-		createCards(Rarity.RARE, tCount[rarity][Rarity.RARE], created);
-		createCards(Rarity.ANCIENT, tCount[rarity][Rarity.ANCIENT], created);
-		createCards(Rarity.LEGENDARY, tCount[rarity][Rarity.LEGENDARY], created);
+		createCards(Rarity.COMMON, tCount[rarity][Rarity.COMMON], created, world.rand);
+		createCards(Rarity.UNCOMMON, tCount[rarity][Rarity.UNCOMMON], created, world.rand);
+		createCards(Rarity.RARE, tCount[rarity][Rarity.RARE], created, world.rand);
+		createCards(Rarity.ANCIENT, tCount[rarity][Rarity.ANCIENT], created, world.rand);
+		createCards(Rarity.LEGENDARY, tCount[rarity][Rarity.LEGENDARY], created, world.rand);
 
 		if (created.size() > 0) {
 			for (String cdwd : created) {
@@ -71,13 +77,13 @@ public class PackItemRarity extends PackItemBase {
 	}
 
 	@Override
-	protected void createCards(int cardRarity, int count, ArrayList<String> created) {
+	protected void createCards(int cardRarity, int count, ArrayList<String> created, Random random) {
 
 		for (int x = 0; x < count; ++x) { // Generate x cards
 			CardStructure cStruct = null;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
-				cStruct = Databank.generateACard(cardRarity);
+				cStruct = Databank.generateACard(cardRarity, random);
 
 				if (cStruct != null && !created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
 					created.add(cStruct.getCDWD());
@@ -86,4 +92,44 @@ public class PackItemRarity extends PackItemBase {
 			}
 		}
 	}
+	
+	
+	// === ICON LAYERING AND COLORIZATION === //
+	/** 
+	 * From https://github.com/matshou/Generic-Mod
+     */
+	public static class ColorableIcon implements IItemColor 
+	{
+		private int rarity;
+		
+		public ColorableIcon(int r) {
+			rarity = r;
+		}
+		
+		@Override
+	    @SideOnly(Side.CLIENT)
+		public int colorMultiplier(ItemStack stack, int layer) 
+		{
+			if (layer==0)
+	    	{
+		    	switch (this.rarity)
+		    	{
+		    	case Rarity.COMMON:
+		    		return MineTradingCards.PACK_COLOR_COMMON;
+		    	case Rarity.UNCOMMON:
+		    		return MineTradingCards.PACK_COLOR_UNCOMMON;
+		    	case Rarity.RARE:
+		    		return MineTradingCards.PACK_COLOR_RARE;
+		    	case Rarity.ANCIENT:
+		    		return MineTradingCards.PACK_COLOR_ANCIENT;
+		    	case Rarity.LEGENDARY:
+		    		return MineTradingCards.PACK_COLOR_LEGENDARY;
+		    	}
+		    	return Reference.COLOR_BLUE;
+	    	}
+	    	
+	        return -1;
+		}
+	}
+
 }

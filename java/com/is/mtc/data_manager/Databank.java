@@ -9,9 +9,10 @@ import com.is.mtc.root.Rarity;
 
 public class Databank {
 
-	private static Map<String, EditionStructure> editions_by_id;
-	private static Map<String, EditionStructure> editions_by_name;
-	private static Map<Integer, EditionStructure> editions_by_numeral_id;
+	public static Map<String, EditionStructure> editions_by_id;
+	public static Map<String, EditionStructure> editions_by_name;
+	public static Map<Integer, EditionStructure> editions_by_color;
+	public static Map<Integer, EditionStructure> editions_by_numeral_id;
 
 	private static Map<String, CardStructure> cards_by_cdwd;
 
@@ -32,18 +33,19 @@ public class Databank {
 
 	private static Map<String, CustomPackStructure> custom_packs_by_id;
 	private static Map<String, CustomPackStructure> custom_packs_by_name;
+	private static Map<Integer, CustomPackStructure> custom_packs_by_color;
 	private static Map<Integer, CustomPackStructure> custom_packs_by_numeral_id;
-
-	//-
 
 	/// NOTE LinkedHashMap to keep the precise order
 	public static void setup() {
 		editions_by_id = new LinkedHashMap<String, EditionStructure>();
 		editions_by_name = new LinkedHashMap<String, EditionStructure>();
+		editions_by_color = new LinkedHashMap<Integer, EditionStructure>();
 		editions_by_numeral_id = new LinkedHashMap<Integer, EditionStructure>();
 
 		custom_packs_by_id = new LinkedHashMap<String, CustomPackStructure>();
 		custom_packs_by_name = new LinkedHashMap<String, CustomPackStructure>();
+		custom_packs_by_color = new LinkedHashMap<Integer, CustomPackStructure>();
 		custom_packs_by_numeral_id = new LinkedHashMap<Integer, CustomPackStructure>();
 
 		cards_by_cdwd = new LinkedHashMap<String, CardStructure>();
@@ -68,8 +70,6 @@ public class Databank {
 		wracat = new LinkedHashMap<String, Map<Integer, Integer>>();
 	}
 
-	//-
-
 	public static boolean registerAnEdition(EditionStructure eStruct) {
 		if (!eStruct.isValid()) {
 			Logs.errLog("Edition is invalid (Invalid/missing ID or name)");
@@ -84,6 +84,7 @@ public class Databank {
 		// Standard pools
 		editions_by_id.put(eStruct.getId(), eStruct);
 		editions_by_name.put(eStruct.getName(), eStruct);
+		editions_by_color.put(eStruct.getColor(), eStruct);
 
 		eStruct.eNI = editions_by_numeral_id.size();
 		editions_by_numeral_id.put(eStruct.eNI, eStruct);
@@ -120,11 +121,13 @@ public class Databank {
 		return editions_by_name.containsKey(name) ? editions_by_name.get(name) : null;
 	}
 
+	public static EditionStructure getEditionWithColor(int color) {
+		return editions_by_color.containsKey(color) ? editions_by_color.get(color) : null;
+	}
+
 	public static EditionStructure getEditionWithNumeralId(int nid) {
 		return editions_by_numeral_id.containsKey(nid) ? editions_by_numeral_id.get(nid) : null;
 	}
-
-	//-
 
 	public static boolean registerACustomPack(CustomPackStructure cpStruct) {
 		if (!cpStruct.isValid()) {
@@ -140,6 +143,7 @@ public class Databank {
 		// Standard pools
 		custom_packs_by_id.put(cpStruct.getId(), cpStruct);
 		custom_packs_by_name.put(cpStruct.getName(), cpStruct);
+		custom_packs_by_color.put(cpStruct.getColor(), cpStruct);
 
 		cpStruct.customPackNumeralID = custom_packs_by_numeral_id.size();
 		custom_packs_by_numeral_id.put(cpStruct.customPackNumeralID, cpStruct);
@@ -165,7 +169,9 @@ public class Databank {
 		return custom_packs_by_numeral_id.containsKey(nid) ? custom_packs_by_numeral_id.get(nid) : null;
 	}
 
-	//-
+	public static CustomPackStructure getCustomPackWithColor(int nid) {
+		return custom_packs_by_color.containsKey(nid) ? custom_packs_by_color.get(nid) : null;
+	}
 
 	public static boolean registerACard(CardStructure cStruct) {
 		if (!cStruct.isValid()) {
@@ -231,8 +237,7 @@ public class Databank {
 		return cards_by_cdwd.getOrDefault(cdwd, null);
 	}
 
-	public static CardStructure generateACard(int rarity) {
-		Random r;
+	public static CardStructure generateACard(int rarity, Random random) {
 		int i;
 
 		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
@@ -241,8 +246,7 @@ public class Databank {
 		if (cards_by_wrarity.get(rarity).size() <= 0)
 			return null;
 
-		r = new Random();
-		i = r.nextInt(wrarity_tw.get(rarity));
+		i = random.nextInt(wrarity_tw.get(rarity));
 
 		for (Map.Entry<Integer, CardStructure> entry : cards_by_wrarity.get(rarity).entrySet()) {
 			if (i < entry.getKey())
@@ -253,8 +257,7 @@ public class Databank {
 		return null;
 	}
 
-	public static CardStructure generatedACardFromEdition(int rarity, String edition_id) {
-		Random r;
+	public static CardStructure generatedACardFromEdition(int rarity, String edition_id, Random random) {
 		int i;
 
 		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
@@ -266,8 +269,7 @@ public class Databank {
 		if (cards_by_wraed.get(edition_id).get(rarity).size() <= 0) // No cards from the specified rarity in this edition
 			return null;
 
-		r = new Random();
-		i = r.nextInt(wraed.get(edition_id).get(rarity));
+		i = random.nextInt(wraed.get(edition_id).get(rarity));
 
 		for (Map.Entry<Integer, CardStructure> entry : cards_by_wraed.get(edition_id).get(rarity).entrySet()) {
 			if (i < entry.getKey())
@@ -278,8 +280,7 @@ public class Databank {
 		return null;
 	}
 
-	public static CardStructure generatedACardFromCategory(int rarity, String category) {
-		Random r;
+	public static CardStructure generatedACardFromCategory(int rarity, String category, Random random) {
 		int i;
 
 		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
@@ -291,8 +292,7 @@ public class Databank {
 		if (cards_by_wracat.get(category).get(rarity).size() <= 0) // No cards from the specified rarity in this edition
 			return null;
 
-		r = new Random();
-		i = r.nextInt(wracat.get(category).get(rarity));
+		i = random.nextInt(wracat.get(category).get(rarity));
 
 		for (Map.Entry<Integer, CardStructure> entry : cards_by_wracat.get(category).get(rarity).entrySet()) {
 			if (i < entry.getKey())

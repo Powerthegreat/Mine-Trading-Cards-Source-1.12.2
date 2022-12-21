@@ -1,6 +1,7 @@
 package com.is.mtc.card;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -11,8 +12,9 @@ import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import com.is.mtc.util.Reference;
 
+import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,9 +24,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class CardItem extends Item {
+public class CardItem extends Item {//implements IItemColor {
 	
 	private static final String PREFIX = "item_card_";
 	private static final int MAX_DESC_LENGTH = 42;
@@ -43,11 +48,11 @@ public class CardItem extends Item {
 		return rarity;
 	}
 	
-	public static ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct) {
+	public static ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct, Random random) {
 		NBTTagCompound nbtTag = stack.getTagCompound();
 		nbtTag.setString("cdwd", cStruct.getCDWD());
 		if (cStruct.getAssetPath().size() > 0) {
-			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
+			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size(), random));
 		}
 		return stack;
 	}
@@ -87,7 +92,7 @@ public class CardItem extends Item {
 		}
 
 		if (!Tools.hasCDWD(stack)) {
-			CardStructure cStruct = Databank.generateACard(rarity);
+			CardStructure cStruct = Databank.generateACard(rarity, world.rand);
 
 			if (cStruct != null) {
 				if (stack.getCount()!=1) { // Generate a single card from the stack and drop it into inventory
@@ -96,7 +101,7 @@ public class CardItem extends Item {
 						popoffStack.setTagCompound(new NBTTagCompound());
 					}
 					popoffStack.setCount(1);
-					popoffStack = applyCDWDtoStack(popoffStack, cStruct);
+					popoffStack = applyCDWDtoStack(popoffStack, cStruct, world.rand);
 					
 					EntityItem dropped_card = player.entityDropItem(popoffStack, 1);
 					dropped_card.setPickupDelay(0);
@@ -106,7 +111,7 @@ public class CardItem extends Item {
 					}
 				}
 				else { // Add data to the singleton "empty" card 
-					stack = applyCDWDtoStack(stack, cStruct);
+					stack = applyCDWDtoStack(stack, cStruct, world.rand);
 				}
 			} else {
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
@@ -118,7 +123,7 @@ public class CardItem extends Item {
 			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
 			if (cStruct != null) {
 				if (cStruct.getAssetPath().size() > 0) {
-					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size()));
+					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size(), world.rand));
 				}
 			}
 		}
@@ -138,8 +143,8 @@ public class CardItem extends Item {
 		cStruct = Databank.getCardByCDWD(nbt.getString("cdwd"));
 
 		if (cStruct == null) {
-			infos.add(ChatFormatting.RED + "/!\\ Missing client-side data");
-			infos.add(ChatFormatting.GRAY + nbt.getString("cdwd"));
+			infos.add(TextFormatting.RED + "/!\\ Missing client-side data");
+			infos.add(TextFormatting.GRAY + nbt.getString("cdwd"));
 			return;
 		}
 
@@ -147,7 +152,7 @@ public class CardItem extends Item {
 		infos.add("Edition: " + Rarity.toColor(rarity) + Databank.getEditionWithId(cStruct.getEdition()).getName());
 
 		if (!cStruct.getCategory().isEmpty()) {
-			infos.add("Category: " + ChatFormatting.WHITE + cStruct.getCategory());
+			infos.add("Category: " + TextFormatting.WHITE + cStruct.getCategory());
 		}
 		
 		if (!cStruct.getDescription().isEmpty()) {
@@ -159,7 +164,7 @@ public class CardItem extends Item {
 				line = line + " " + word;
 				line = Tools.clean(line);
 				if (line.length() >= MAX_DESC_LENGTH) {
-					infos.add(ChatFormatting.ITALIC + line);
+					infos.add(TextFormatting.ITALIC + line);
 					line = "";
 				}
 			}
@@ -170,5 +175,44 @@ public class CardItem extends Item {
 
 		infos.add("");
 		infos.add(cStruct.numeral + "/" + Databank.getEditionWithId(cStruct.getEdition()).cCount);
+	}
+	
+	
+	// === ICON LAYERING AND COLORIZATION === //
+	/** 
+	 * From https://github.com/matshou/Generic-Mod
+     */
+	public static class ColorableIcon implements IItemColor 
+	{
+		private int rarity;
+		
+		public ColorableIcon(int r) {
+			rarity = r;
+		}
+		
+		@Override
+	    @SideOnly(Side.CLIENT)
+		public int colorMultiplier(ItemStack stack, int layer) 
+		{
+			if (layer==0)
+	    	{
+		    	switch (rarity)
+		    	{
+		    	case Rarity.COMMON:
+		    		return MineTradingCards.CARD_COLOR_COMMON;
+		    	case Rarity.UNCOMMON:
+		    		return MineTradingCards.CARD_COLOR_UNCOMMON;
+		    	case Rarity.RARE:
+		    		return MineTradingCards.CARD_COLOR_RARE;
+		    	case Rarity.ANCIENT:
+		    		return MineTradingCards.CARD_COLOR_ANCIENT;
+		    	case Rarity.LEGENDARY:
+		    		return MineTradingCards.CARD_COLOR_LEGENDARY;
+		    	}
+		    	return Reference.COLOR_GRAY;
+	    	}
+	    	
+	        return -1;
+		}
 	}
 }

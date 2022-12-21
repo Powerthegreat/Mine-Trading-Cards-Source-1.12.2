@@ -64,8 +64,31 @@ public class MineTradingCards {
 	public static final String CONFIG_CAT_DROPS = "drops";
 	public static final String CONFIG_CAT_LOGS = "logs";
 	public static final String CONFIG_CAT_RECIPES = "recipes";
-	public static final String CONFIG_CAT_VILLAGER = "villager";
-
+	public static final String CONFIG_CAT_VILLAGERS = "villagers";
+	public static final String CONFIG_CAT_COLORS = "colors";
+		
+	public static int CARD_COLOR_COMMON = Reference.COLOR_GREEN;
+	public static int CARD_COLOR_UNCOMMON = Reference.COLOR_GOLD;
+	public static int CARD_COLOR_RARE = Reference.COLOR_RED;
+	public static int CARD_COLOR_ANCIENT = Reference.COLOR_AQUA;
+	public static int CARD_COLOR_LEGENDARY = Reference.COLOR_LIGHT_PURPLE;
+	public static String CARD_TOOLTIP_COLOR_COMMON = "green";
+	public static String CARD_TOOLTIP_COLOR_UNCOMMON = "gold";
+	public static String CARD_TOOLTIP_COLOR_RARE = "red";
+	public static String CARD_TOOLTIP_COLOR_ANCIENT = "aqua";
+	public static String CARD_TOOLTIP_COLOR_LEGENDARY = "light_purple";
+	public static int PACK_COLOR_COMMON = Reference.COLOR_GREEN;
+	public static int PACK_COLOR_UNCOMMON = Reference.COLOR_GOLD;
+	public static int PACK_COLOR_RARE = Reference.COLOR_RED;
+	public static int PACK_COLOR_ANCIENT = Reference.COLOR_AQUA;
+	public static int PACK_COLOR_LEGENDARY = Reference.COLOR_LIGHT_PURPLE;
+	public static int PACK_COLOR_STANDARD = Reference.COLOR_BLUE;
+	
+	public static final String COLOR_ITEM_DESCRIPTION_1 = "Color for ";
+	public static final String COLOR_ITEM_DESCRIPTION_2 = "Entered as a decimal integer, or as a hexadecimal by putting # in front.";
+	public static final String COLOR_TOOLTIP_1 = "Tooltip color for ";
+	public static final String COLOR_TOOLTIP_2 = " cards, using \"friendly\" Minecraft color name";
+	
 	// Mod intercompatibility stuff
 	public static boolean hasVillageNamesInstalled = false;
 	
@@ -159,7 +182,7 @@ public class MineTradingCards {
 		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
 		
 		// Villager
-		MineTradingCardVillagers.CARD_MASTER_TRADE_LIST = config.getStringList("card_master_trades", CONFIG_CAT_VILLAGER, MineTradingCardVillagers.CARD_MASTER_TRADE_LIST_DEFAULT,
+		MineTradingCardVillagers.CARD_MASTER_TRADE_LIST = config.getStringList("card_master_trades", CONFIG_CAT_VILLAGERS, MineTradingCardVillagers.CARD_MASTER_TRADE_LIST_DEFAULT,
 				"List of possible Card Master trades. Entries are of the form:"
 						+ "\nsellitem|amount|buyitem1|amount|buyitem2|amount"
 						+ "\n\"amount\" is either an integer, or a range like 1-3."
@@ -168,7 +191,7 @@ public class MineTradingCards {
 						+ "\niron_ingot, gold_ingot, emerald, diamond, [common/uncommon/rare/ancient/legendary/standard/edition/custom]_pack or [common/uncommon/rare/ancient/legendary]_card."
 						+ "\nYou also append \"_random\" at the end of a _card entry (e.g. common_card_random) in order to generate a random card for sale (or requested)."
 				);
-		MineTradingCardVillagers.CARD_TRADER_TRADE_LIST = config.getStringList("card_trader_trades", CONFIG_CAT_VILLAGER, MineTradingCardVillagers.CARD_TRADER_TRADE_LIST_DEFAULT,
+		MineTradingCardVillagers.CARD_TRADER_TRADE_LIST = config.getStringList("card_trader_trades", CONFIG_CAT_VILLAGERS, MineTradingCardVillagers.CARD_TRADER_TRADE_LIST_DEFAULT,
 				"List of possible Card Trader trades. Entries are of the form:"
 						+ "\nsellitem|amount|buyitem1|amount|buyitem2|amount"
 						+ "\n\"amount\" is either an integer, or a range like 1-3."
@@ -177,8 +200,8 @@ public class MineTradingCards {
 						+ "\niron_ingot, gold_ingot, emerald, diamond, [common/uncommon/rare/ancient/legendary/standard/edition/custom]_pack or [common/uncommon/rare/ancient/legendary]_card."
 						+ "\nYou also append \"_random\" at the end of a _card entry (e.g. common_card_random) in order to generate a random card for sale (or requested)."
 				);
-		CardMasterHomeHandler.SHOP_WEIGHT = config.getInt("card_shop_weight", CONFIG_CAT_VILLAGER, 5, 0, 100, "Weighting for selection when villages generate. Farms and wood huts are 3, church is 20.");
-		CardMasterHomeHandler.SHOP_MAX_NUMBER = config.getInt("card_shop_max_number", CONFIG_CAT_VILLAGER, 1, 0, 32, "Maximum number of card master shops that can spawn per village");
+		CardMasterHomeHandler.SHOP_WEIGHT = config.getInt("card_shop_weight", CONFIG_CAT_VILLAGERS, 5, 0, 100, "Weighting for selection when villages generate. Farms and wood huts are 3, church is 20.");
+		CardMasterHomeHandler.SHOP_MAX_NUMBER = config.getInt("card_shop_max_number", CONFIG_CAT_VILLAGERS, 1, 0, 32, "Maximum number of card master shops that can spawn per village");
 		
 		config.save();
 	}
