@@ -1,9 +1,11 @@
 package com.is.mtc.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import com.is.mtc.root.Logs;
 
@@ -228,5 +230,44 @@ public class Functions {
 //		int b = safe_int&255;
     			
 		return safe_int;
+    }
+    
+    /**
+     * Inputs an array of objects and a corresponding array of weights, and returns a randomly-selected element
+     * with a probability proportional to its weight.
+     * 
+     * These inputs must be equal length. If they are not, you get back null.
+     * Additionally, and this goes without saying: the individual weights must be non-negative and their sum must be positive.
+     * 
+     * Adapted from https://stackoverflow.com/questions/6737283/weighted-randomness-in-java
+     */
+    public static Object weightedRandom(Object elementArray, double[] weightArray, Random random)
+    {
+    	if (Array.getLength(elementArray) != weightArray.length) {return null;}
+    	else
+    	{
+    		// Compute the total weight of all items together
+    		double totalWeight = 0D;
+    		for (int i=0; i<weightArray.length; i++ )
+    		{
+    			totalWeight += weightArray[i];
+    		}
+    		if (totalWeight <= 0) {return null;}
+    		
+    		// Now choose a random item
+    		int randomIndex = -1;
+    		double randomObject = random.nextDouble() * totalWeight;
+    		for (int i = 0; i < Array.getLength(elementArray); ++i)
+    		{
+    			randomObject -= weightArray[i];
+    		    if (randomObject <= 0.0d)
+    		    {
+    		        randomIndex = i;
+    		        break;
+    		    }
+    		}
+    		
+    		return Array.get(elementArray, randomIndex);
+    	}
     }
 }

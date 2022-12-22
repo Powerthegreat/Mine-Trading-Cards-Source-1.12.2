@@ -22,6 +22,7 @@ import com.is.mtc.proxy.CommonProxy;
 import com.is.mtc.root.CC_CreateCard;
 import com.is.mtc.root.CC_ForceCreateCard;
 import com.is.mtc.root.Logs;
+import com.is.mtc.util.Functions;
 import com.is.mtc.util.Reference;
 import com.is.mtc.version.DevVersionWarning;
 import com.is.mtc.version.VersionChecker;
@@ -142,7 +143,7 @@ public class MineTradingCards {
 		simpleNetworkWrapper.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
 		simpleNetworkWrapper.registerMessage(MTCMessageUpdateDisplayerHandler.class, MTCMessageUpdateDisplayer.class, 1, Side.CLIENT);
 		simpleNetworkWrapper.registerMessage(MTCMessageRequestUpdateDisplayerHandler.class, MTCMessageRequestUpdateDisplayer.class, 2, Side.SERVER);
-
+		
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
@@ -153,7 +154,6 @@ public class MineTradingCards {
 
 		MapGenStructureIO.registerStructureComponent(CardMasterHome.class, "Mtc_Cm_House"); // Register the house to the generator with a typed id
 		// Registers the Card Master villager's trades, and the creation handler for its home
-		//VillagerRegistry.instance().registerVillageTradeHandler(VillageHandler.TRADER_ID, new VillageHandler());
 		VillagerRegistry.instance().registerVillageCreationHandler(new CardMasterHomeHandler());
 	}
 
@@ -169,25 +169,76 @@ public class MineTradingCards {
 		Configuration config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), Reference.CONFIG_VERSION, false);
 		config.load();
 
-		// Drops toggle
-		DropHandler.CAN_DROP_MOB = config.getBoolean("mobs_can_drop", CONFIG_CAT_DROPS, true, "Can mobs drop packs on death");
-		DropHandler.CAN_DROP_ANIMAL = config.getBoolean("animals_can_drop", CONFIG_CAT_DROPS, false, "Can animals drop packs on death");
-		DropHandler.CAN_DROP_PLAYER = config.getBoolean("players_can_drop", CONFIG_CAT_DROPS, false, "Can players drop packs on death");
-		// Tiered pack drop rates
-		DropHandler.DROP_RATE_COM = config.getInt("pack_drop_rate_common", CONFIG_CAT_DROPS, 16, 0, Integer.MAX_VALUE, "Chance out of X to drop common packs");
-		DropHandler.DROP_RATE_UNC = config.getInt("pack_drop_rate_uncommon", CONFIG_CAT_DROPS, 32, 0, Integer.MAX_VALUE, "Chance out of X to drop uncommon packs");
-		DropHandler.DROP_RATE_RAR = config.getInt("pack_drop_rate_rare", CONFIG_CAT_DROPS, 48, 0, Integer.MAX_VALUE, "Chance out of X to drop rare packs");
-		DropHandler.DROP_RATE_ANC = config.getInt("pack_drop_rate_ancient", CONFIG_CAT_DROPS, 64, 0, Integer.MAX_VALUE, "Chance out of X to drop ancient packs");
-		DropHandler.DROP_RATE_LEG = config.getInt("pack_drop_rate_legendary", CONFIG_CAT_DROPS, 256, 0, Integer.MAX_VALUE, "Chance out of X to drop legendary packs");
-		// Non-tiered pack drop rates
-		DropHandler.DROP_RATE_STD = config.getInt("pack_drop_rate_standard", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop standard packs");
-		DropHandler.DROP_RATE_EDT = config.getInt("pack_drop_rate_edition", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop set-specific (edition) packs");
-		DropHandler.DROP_RATE_CUSTOM = config.getInt("pack_drop_rate_custom", CONFIG_CAT_DROPS, 40, 0, Integer.MAX_VALUE, "Chance out of X to drop custom packs");
+		// === Colors ===
+		// Cards
+		CARD_COLOR_COMMON = Functions.parseColorInteger(config.getString("card_color_common", CONFIG_CAT_COLORS, "#55ff55", COLOR_ITEM_DESCRIPTION_1+"common cards. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_GREEN);
+		CARD_COLOR_UNCOMMON = Functions.parseColorInteger(config.getString("card_color_uncommon", CONFIG_CAT_COLORS, "#ffaa00", COLOR_ITEM_DESCRIPTION_1+"uncommon cards. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_GOLD);
+		CARD_COLOR_RARE = Functions.parseColorInteger(config.getString("card_color_rare", CONFIG_CAT_COLORS, "#ff5555", COLOR_ITEM_DESCRIPTION_1+"rare cards. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_RED);
+		CARD_COLOR_ANCIENT = Functions.parseColorInteger(config.getString("card_color_ancient", CONFIG_CAT_COLORS, "#55ffff", COLOR_ITEM_DESCRIPTION_1+"ancient cards. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_AQUA);
+		CARD_COLOR_LEGENDARY = Functions.parseColorInteger(config.getString("card_color_legendary", CONFIG_CAT_COLORS, "#ff55ff", COLOR_ITEM_DESCRIPTION_1+"legendary cards. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_LIGHT_PURPLE);
+		// Tooltips
+		CARD_TOOLTIP_COLOR_COMMON = config.getString("card_tooltip_color_common", CONFIG_CAT_COLORS, "green", COLOR_TOOLTIP_1+"common"+COLOR_TOOLTIP_2);
+		CARD_TOOLTIP_COLOR_UNCOMMON = config.getString("card_tooltip_color_uncommon", CONFIG_CAT_COLORS, "gold", COLOR_TOOLTIP_1+"uncommon"+COLOR_TOOLTIP_2);
+		CARD_TOOLTIP_COLOR_RARE = config.getString("card_tooltip_color_rare", CONFIG_CAT_COLORS, "red", COLOR_TOOLTIP_1+"rare"+COLOR_TOOLTIP_2);
+		CARD_TOOLTIP_COLOR_ANCIENT = config.getString("card_tooltip_color_ancient", CONFIG_CAT_COLORS, "aqua", COLOR_TOOLTIP_1+"ancient"+COLOR_TOOLTIP_2);
+		CARD_TOOLTIP_COLOR_LEGENDARY = config.getString("card_tooltip_color_legendary", CONFIG_CAT_COLORS, "light_purple", COLOR_TOOLTIP_1+"legendary"+COLOR_TOOLTIP_2);
+		// Packs
+		PACK_COLOR_COMMON = Functions.parseColorInteger(config.getString("pack_color_common", CONFIG_CAT_COLORS, "#55ff55", COLOR_ITEM_DESCRIPTION_1+"common packs. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_GREEN);
+		PACK_COLOR_UNCOMMON = Functions.parseColorInteger(config.getString("pack_color_uncommon", CONFIG_CAT_COLORS, "#ffaa00", COLOR_ITEM_DESCRIPTION_1+"uncommon packs. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_GOLD);
+		PACK_COLOR_RARE = Functions.parseColorInteger(config.getString("pack_color_rare", CONFIG_CAT_COLORS, "#ff5555", COLOR_ITEM_DESCRIPTION_1+"rare packs. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_RED);
+		PACK_COLOR_ANCIENT = Functions.parseColorInteger(config.getString("pack_color_ancient", CONFIG_CAT_COLORS, "#55ffff", COLOR_ITEM_DESCRIPTION_1+"ancient packs. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_AQUA);
+		PACK_COLOR_LEGENDARY = Functions.parseColorInteger(config.getString("pack_color_legendary", CONFIG_CAT_COLORS, "#ff55ff", COLOR_ITEM_DESCRIPTION_1+"legendary packs. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_LIGHT_PURPLE);
+		PACK_COLOR_STANDARD = Functions.parseColorInteger(config.getString("pack_color_standard", CONFIG_CAT_COLORS, "#5555ff", COLOR_ITEM_DESCRIPTION_1+"standard packs. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_BLUE);
 		
-		// Logging
+		// === Drops === 
+		// Drops toggle
+		DropHandler.CAN_DROP_CARDS_MOB = config.getBoolean("mobs_can_drop_cards", CONFIG_CAT_DROPS, true, "Mobs will drop cards on death.");
+		DropHandler.CAN_DROP_CARDS_ANIMAL = config.getBoolean("animals_can_drop_cards", CONFIG_CAT_DROPS, false, "Animals will drop cards on death.");
+		DropHandler.CAN_DROP_CARDS_PLAYER = config.getBoolean("players_can_drop_cards", CONFIG_CAT_DROPS, false, "Players will drop cards on death.");
+		DropHandler.CAN_DROP_PACKS_MOB = config.getBoolean("mobs_can_drop_packs", CONFIG_CAT_DROPS, true, "Mobs will drop packs on death.");
+		DropHandler.CAN_DROP_PACKS_ANIMAL = config.getBoolean("animals_can_drop_packs", CONFIG_CAT_DROPS, false, "Animals will drop packs on death.");
+		DropHandler.CAN_DROP_PACKS_PLAYER = config.getBoolean("players_can_drop_packs", CONFIG_CAT_DROPS, false, "Players will drop packs on death.");
+		// Tiered card drop rates
+		DropHandler.CARD_DROP_RATE_COM = config.getFloat("card_drop_rate_common", CONFIG_CAT_DROPS, 16, 0, Float.MAX_VALUE, "Chance out of X to drop common cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_UNC = config.getFloat("card_drop_rate_uncommon", CONFIG_CAT_DROPS, 32, 0, Float.MAX_VALUE, "Chance out of X to drop uncommon cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_RAR = config.getFloat("card_drop_rate_rare", CONFIG_CAT_DROPS, 48, 0, Float.MAX_VALUE, "Chance out of X to drop rare cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_ANC = config.getFloat("card_drop_rate_ancient", CONFIG_CAT_DROPS, 64, 0, Float.MAX_VALUE, "Chance out of X to drop ancient cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_LEG = config.getFloat("card_drop_rate_legendary", CONFIG_CAT_DROPS, 256, 0, Float.MAX_VALUE, "Chance out of X to drop legendary cards. Set to 0 to disable.");
+		// Tiered pack drop rates
+		DropHandler.PACK_DROP_RATE_COM = config.getFloat("pack_drop_rate_common", CONFIG_CAT_DROPS, 16, 0, Float.MAX_VALUE, "Chance out of X to drop common packs. Set to 0 to disable.");
+		DropHandler.PACK_DROP_RATE_UNC = config.getFloat("pack_drop_rate_uncommon", CONFIG_CAT_DROPS, 32, 0, Float.MAX_VALUE, "Chance out of X to drop uncommon packs. Set to 0 to disable.");
+		DropHandler.PACK_DROP_RATE_RAR = config.getFloat("pack_drop_rate_rare", CONFIG_CAT_DROPS, 48, 0, Float.MAX_VALUE, "Chance out of X to drop rare packs. Set to 0 to disable.");
+		DropHandler.PACK_DROP_RATE_ANC = config.getFloat("pack_drop_rate_ancient", CONFIG_CAT_DROPS, 64, 0, Float.MAX_VALUE, "Chance out of X to drop ancient packs. Set to 0 to disable.");
+		DropHandler.PACK_DROP_RATE_LEG = config.getFloat("pack_drop_rate_legendary", CONFIG_CAT_DROPS, 256, 0, Float.MAX_VALUE, "Chance out of X to drop legendary packs. Set to 0 to disable.");
+		// Non-tiered pack drop rates
+		DropHandler.PACK_DROP_RATE_STD = config.getFloat("pack_drop_rate_standard", CONFIG_CAT_DROPS, 40, 0, Float.MAX_VALUE, "Chance out of X to drop standard packs. Set to 0 to disable.");
+		DropHandler.PACK_DROP_RATE_EDT = config.getFloat("pack_drop_rate_edition", CONFIG_CAT_DROPS, 40, 0, Float.MAX_VALUE, "Chance out of X to drop set-specific (edition) packs. Set to 0 to disable.");
+		DropHandler.PACK_DROP_RATE_CUS = config.getFloat("pack_drop_rate_custom", CONFIG_CAT_DROPS, 40, 0, Float.MAX_VALUE, "Chance out of X to drop custom packs. Set to 0 to disable.");
+		// Other
+		DropHandler.ONLY_ONE_DROP = config.getBoolean("only_one_drop", CONFIG_CAT_DROPS, false, "If true, entities will not drop more than one MTC item at once.");
+		// Boss drops
+		DropHandler.ENDER_DRAGON_DROPS = config.getStringList("ender_dragon_drops", CONFIG_CAT_DROPS, DropHandler.ENDER_DRAGON_DROPS_DEFAULT,
+				"List of MTC drops from the Ender Dragon. Entries are of the form:"
+				+ "\ndrop_item:float_amount"
+				+ "\nPossible drop_item values are:"
+				+ "\n[common/uncommon/rare/ancient/legendary/standard/edition/custom]_pack or [common/uncommon/rare/ancient/legendary]_card."
+				+ "\nfloat_amount is an either an integer representing the number of this item to drop, or a float like 4.7, where e.g. 70%, 5 will be dropped; otherwise 4 will."
+				+ "\nThis list applies even if \"can_drop\" is false."
+				);
+		// Boss drops
+		DropHandler.BOSS_DROPS = config.getStringList("boss_drops", CONFIG_CAT_DROPS, DropHandler.BOSS_DROPS_DEFAULT,
+				"List of MTC drops from the bosses that aren't the Ender Dragon. Entries are of the form:"
+				+ "\ndrop_item:float_amount"
+				+ "\nPossible drop_item values are:"
+				+ "\n[common/uncommon/rare/ancient/legendary/standard/edition/custom]_pack or [common/uncommon/rare/ancient/legendary]_card."
+				+ "\nfloat_amount is an either an integer representing the number of this item to drop, or a float like 4.7, where e.g. 70%, 5 will be dropped; otherwise 4 will."
+				+ "\nThis list applies even if \"can_drop\" is false."
+				);
+		
+		// === Logging ===
 		Logs.ENABLE_DEV_LOGS = config.getBoolean("devlog_enabled", CONFIG_CAT_LOGS, false, "Enable developer logs");
 		
-		// Villager
+		// === Villager ===
 		MineTradingCardVillagers.CARD_MASTER_TRADE_LIST = config.getStringList("card_master_trades", CONFIG_CAT_VILLAGERS, MineTradingCardVillagers.CARD_MASTER_TRADE_LIST_DEFAULT,
 				"List of possible Card Master trades. Entries are of the form:"
 						+ "\nsellitem|amount|buyitem1|amount|buyitem2|amount"
@@ -209,7 +260,7 @@ public class MineTradingCards {
 		CardMasterHomeHandler.SHOP_WEIGHT = config.getInt("card_shop_weight", CONFIG_CAT_VILLAGERS, 5, 0, 100, "Weighting for selection when villages generate. Farms and wood huts are 3, church is 20.");
 		CardMasterHomeHandler.SHOP_MAX_NUMBER = config.getInt("card_shop_max_number", CONFIG_CAT_VILLAGERS, 1, 0, 32, "Maximum number of card master shops that can spawn per village");
 		
-		// Update Checker
+		// === Update Checker ===
 		ENABLE_UPDATE_CHECKER = config.getBoolean("enable_update_checker", CONFIG_CAT_UPDATES, true, "Displays a client-side chat message on login if there's an update available.");
 		
 		
