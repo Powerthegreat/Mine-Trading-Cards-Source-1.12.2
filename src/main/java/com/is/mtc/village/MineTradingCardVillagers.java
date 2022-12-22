@@ -109,53 +109,53 @@ public class MineTradingCardVillagers {
 				item = Items.DIAMOND;
 				break;
 			// Packs
-			case "common_pack":
+			case Reference.KEY_PACK_COM:
 				item = MTCItems.packCommon;
 				break;
-			case "uncommon_pack":
+			case Reference.KEY_PACK_UNC:
 				item = MTCItems.packUncommon;
 				break;
-			case "rare_pack":
+			case Reference.KEY_PACK_RAR:
 				item = MTCItems.packRare;
 				break;
-			case "ancient_pack":
+			case Reference.KEY_PACK_ANC:
 				item = MTCItems.packAncient;
 				break;
-			case "legendary_pack":
+			case Reference.KEY_PACK_LEG:
 				item = MTCItems.packLegendary;
 				break;
-			case "standard_pack":
+			case Reference.KEY_PACK_STD:
 				item = MTCItems.packStandard;
 				break;
-			case "edition_pack":
+			case Reference.KEY_PACK_EDT:
 				item = MTCItems.packEdition;
 				break;
-			case "custom_pack":
+			case Reference.KEY_PACK_CUS:
 				item = MTCItems.packCustom;
 				break;
 			// Cards
-			case "common_card":
-			case "common_card_random":
+			case Reference.KEY_CARD_COM:
+			case Reference.KEY_CARD_COM+"_random":
 				item = MTCItems.cardCommon;
 				rarity = Rarity.COMMON;
 				break;
-			case "uncommon_card":
-			case "uncommon_card_random":
+			case Reference.KEY_CARD_UNC:
+			case Reference.KEY_CARD_UNC+"_random":
 				item = MTCItems.cardUncommon;
 				rarity = Rarity.UNCOMMON;
 				break;
-			case "rare_card":
-			case "rare_card_random":
+			case Reference.KEY_CARD_RAR:
+			case Reference.KEY_CARD_RAR+"random":
 				item = MTCItems.cardRare;
 				rarity = Rarity.RARE;
 				break;
-			case "ancient_card":
-			case "ancient_card_random":
+			case Reference.KEY_CARD_ANC:
+			case Reference.KEY_CARD_ANC+"_random":
 				item = MTCItems.cardAncient;
 				rarity = Rarity.ANCIENT;
 				break;
-			case "legendary_card":
-			case "legendary_card_random":
+			case Reference.KEY_CARD_LEG:
+			case Reference.KEY_CARD_LEG+"_random":
 				item = MTCItems.cardLegendary;
 				rarity = Rarity.LEGENDARY;
 				break;
