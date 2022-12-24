@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 public class PackItemBase extends Item {
 
-	protected static final int RETRY = 5;
+	protected static final int RETRY = 50;
 
 	public PackItemBase() {
 		setCreativeTab(MineTradingCards.MODTAB);

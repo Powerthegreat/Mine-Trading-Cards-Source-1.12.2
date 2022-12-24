@@ -35,7 +35,9 @@ public class CardItem extends Item {//implements IItemColor {
 	private static final int MAX_DESC_LENGTH = 42;
 
 	private int rarity;
-
+	
+	public static final int[] CARD_RARITY_ARRAY = new int[] {Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE, Rarity.ANCIENT, Rarity.LEGENDARY};
+	
 	public CardItem(int r) {
 		setUnlocalizedName(PREFIX + Rarity.toString(r).toLowerCase());
 		setRegistryName(PREFIX + Rarity.toString(r).toLowerCase());
