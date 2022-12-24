@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.is.mtc.MineTradingCards;
+import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
+import com.is.mtc.util.Functions;
 import com.is.mtc.util.Reference;
 
 import net.minecraft.client.renderer.color.IItemColor;
@@ -16,53 +18,112 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-/*
- * Pack item drop informations
- * Drops up to 10 cards
- * cural: See table
- * Standard: 7, 2, 1 (Rare have a chance to be ancient or legendary)
- * Edition: Same as standard, but only from one edition
- */
-
 public class PackItemRarity extends PackItemBase {
-
-	private static final int[] cCount = new int[]{7, 2, 1, 0, 0};
-	private static final int[] uCount = new int[]{6, 3, 1, 0, 0};
-	private static final int[] rCount = new int[]{5, 3, 2, 0, 0};
-	private static final int[] aCount = new int[]{3, 3, 3, 1, 0};
-	private static final int[] lCount = new int[]{0, 0, 0, 0, 1};
-	private static final int[][] tCount = {cCount, uCount, rCount, aCount, lCount};
-
-	private static final String _str = "item_pack_";
+	
+	public static final String[] COMMON_PACK_CONTENT_DEFAULT = new String[] {
+			"7x",
+			"2x0:1:0:0:0",
+			"1x0:0:1:0:0",
+	};
+	public static final String[] UNCOMMON_PACK_CONTENT_DEFAULT = new String[] {
+			"6x1:0:0:0:0",
+			"3x",
+			"1x0:0:1:0:0",
+	};
+	public static final String[] RARE_PACK_CONTENT_DEFAULT = new String[] {
+			"5x1:0:0:0:0",
+			"3x0:1:0:0:0",
+			"2x",
+	};
+	public static final String[] ANCIENT_PACK_CONTENT_DEFAULT = new String[] {
+			"3x1:0:0:0:0",
+			"3x0:1:0:0:0",
+			"3x0:0:1:0:0",
+			"1x",
+	};
+	public static final String[] LEGENDARY_PACK_CONTENT_DEFAULT = new String[] {
+			"1x",
+	};
+	public static String[] COMMON_PACK_CONTENT = COMMON_PACK_CONTENT_DEFAULT;
+	public static String[] UNCOMMON_PACK_CONTENT = UNCOMMON_PACK_CONTENT_DEFAULT;
+	public static String[] RARE_PACK_CONTENT = RARE_PACK_CONTENT_DEFAULT;
+	public static String[] ANCIENT_PACK_CONTENT = ANCIENT_PACK_CONTENT_DEFAULT;
+	public static String[] LEGENDARY_PACK_CONTENT = LEGENDARY_PACK_CONTENT_DEFAULT;
+	
+	private static final String ITEM_PACK_UNLOC_PREFIX = "item_pack_";
 
 	private int rarity;
 
 	public PackItemRarity(int r) {
-		setUnlocalizedName(_str + Rarity.toString(r).toLowerCase());
-		setRegistryName(_str + Rarity.toString(r).toLowerCase());
-		//setTextureName(MineTradingCards.MODID + ":" + _str + Rarity.toString(r).toLowerCase());
+		setUnlocalizedName(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
+		setRegistryName(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
 
 		rarity = r;
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		if (world.isRemote) {return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));} // Don't do this on the client side
+		
 		ArrayList<String> created;
-
-		if (world.isRemote)
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
-
+		Random random = world.rand;
+		
+		// Figure out how many of each card rarity to create
+		
+		int[] card_set_to_create = new int[] {0,0,0,0,0}; // Set of cards that will come out of the pack
+		String[][] set_distribution_array = new String[][] {COMMON_PACK_CONTENT, UNCOMMON_PACK_CONTENT, RARE_PACK_CONTENT, ANCIENT_PACK_CONTENT, LEGENDARY_PACK_CONTENT};
+		
+		for (String entry : set_distribution_array[rarity])
+		{
+			try {
+				double[] card_weighted_dist = new double[] {0,0,0,0,0}; // Distribution used when a card is randomized
+				
+				// Split entry
+				String[] split_entry = entry.toLowerCase().trim().split("x");
+				
+				float count = MathHelper.clamp(Float.parseFloat(split_entry[0]), 0F, 64F);
+				int drop_count_characteristic = (int) count;
+				float drop_count_mantissa = count % 1;
+				
+				if (split_entry.length>1) {
+					String[] distribution_split = split_entry[1].split(":");
+					
+					for (int i=0; i<distribution_split.length; i++) {
+						card_weighted_dist[i]=Integer.parseInt(distribution_split[i].trim());
+					}
+				}
+				else {
+					card_weighted_dist[rarity]=1;
+				}
+				
+				// Repeat for the number of cards prescribed
+				for (int i=0; i<drop_count_characteristic + (random.nextFloat()<drop_count_mantissa ? 1 : 0); i++)
+				{
+					Object chosen_rarity = Functions.weightedRandom(CardItem.CARD_RARITY_ARRAY, card_weighted_dist, random);
+					
+					if (chosen_rarity!=null) {
+						card_set_to_create[(Integer)chosen_rarity]++;
+					}
+				}
+			}
+			catch (Exception e) {
+				Logs.errLog("Something went wrong parsing pack contents line: " + entry);
+			}
+		}
+		
+		// Actually create the cards
+		
 		created = new ArrayList<String>();
-		createCards(Rarity.COMMON, tCount[rarity][Rarity.COMMON], created, world.rand);
-		createCards(Rarity.UNCOMMON, tCount[rarity][Rarity.UNCOMMON], created, world.rand);
-		createCards(Rarity.RARE, tCount[rarity][Rarity.RARE], created, world.rand);
-		createCards(Rarity.ANCIENT, tCount[rarity][Rarity.ANCIENT], created, world.rand);
-		createCards(Rarity.LEGENDARY, tCount[rarity][Rarity.LEGENDARY], created, world.rand);
-
+		
+		for (int rarity : CardItem.CARD_RARITY_ARRAY) {
+			createCards(rarity, card_set_to_create[rarity], created, world.rand);
+		}
+		
 		if (created.size() > 0) {
 			for (String cdwd : created) {
 				spawnCard(player, world, cdwd);
@@ -82,17 +143,16 @@ public class PackItemRarity extends PackItemBase {
 		for (int x = 0; x < count; ++x) { // Generate x cards
 			CardStructure cStruct = null;
 
-			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
+			for (int y = 0; y < RETRY; ++y) { // Retry y times until...
 				cStruct = Databank.generateACard(cardRarity, random);
 
-				if (cStruct != null && !created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
+				if (cStruct != null && !created.contains(cStruct.getCDWD())) { // ... card was not already created. Duplicate prevention
 					created.add(cStruct.getCDWD());
 					break;
 				}
 			}
 		}
 	}
-	
 	
 	// === ICON LAYERING AND COLORIZATION === //
 	/** 

@@ -6,11 +6,12 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.data_manager.EditionStructure;
 import com.is.mtc.root.Logs;
-import com.is.mtc.root.Rarity;
+import com.is.mtc.util.Functions;
 import com.is.mtc.util.Reference;
 
 import net.minecraft.client.renderer.color.IItemColor;
@@ -22,28 +23,26 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PackItemEdition extends PackItemBase {
-
-	private static final int[] cCount = {7, 2, 1};
-	private static final int[] rWeight = {25, 29, 30};
-	private static final int rtWeight = rWeight[2];
+	
+	public static String[] EDITION_PACK_CONTENT = PackItemStandard.STANDARD_PACK_CONTENT_DEFAULT;
 	
 	private static final String EDITION_ID_KEY = "edition_id";
 	
 	public PackItemEdition() {
 		setUnlocalizedName("item_pack_edition");
 		setRegistryName("item_pack_edition");
-		//setTextureName(MineTradingCards.MODID + ":item_pack_edition");
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, World w, Entity player, int par_4, boolean par_5) {
-		Random r = w.rand;
+	public void onUpdate(ItemStack stack, World world, Entity player, int par_4, boolean par_5) {
+		Random r = world.rand;
 		
 		if (!stack.hasTagCompound())
 			stack.setTagCompound(new NBTTagCompound());
@@ -71,6 +70,7 @@ public class PackItemEdition extends PackItemBase {
 			return super.getItemStackDisplayName(stack);
 	}
 
+	@Override
 	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
 		EditionStructure eStruct;
 		NBTTagCompound nbt;
@@ -92,41 +92,71 @@ public class PackItemEdition extends PackItemBase {
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		ArrayList<String> created;
-		EditionStructure eStruct;
-		NBTTagCompound nbt;
-		Random random = world.rand;
-		int i;
-
-		if (world.isRemote)
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
-
+		if (world.isRemote) {return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));} // Don't do this on the client side
+		
 		if (!player.getHeldItem(hand).hasTagCompound() || !player.getHeldItem(hand).getTagCompound().hasKey(EDITION_ID_KEY)) {
 			Logs.errLog("PackItemEdition: Missing NBT or NBTTag");
 			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		}
-
+		
+		ArrayList<String> created;
+		Random random = world.rand;
+		NBTTagCompound nbt;
 		nbt = player.getHeldItem(hand).getTagCompound();
+		EditionStructure eStruct;
 		eStruct = Databank.getEditionWithId(player.getHeldItem(hand).getTagCompound().getString(EDITION_ID_KEY));
-
+		
 		if (eStruct == null) {
 			Logs.chatMessage(player, "The edition this pack is linked to does not exist, thus zero cards were generated");
 			Logs.errLog("PackItemEdition: Edition is missing");
 			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 		}
+		
+		// Figure out how many of each card rarity to create
+		
+		int[] card_set_to_create = new int[] {0,0,0,0,0}; // Set of cards that will come out of the pack
 
+		for (String entry : EDITION_PACK_CONTENT)
+		{
+			try {
+				double[] card_weighted_dist = new double[] {0,0,0,0,0}; // Distribution used when a card is randomized
+				
+				// Split entry
+				String[] split_entry = entry.toLowerCase().trim().split("x");
+				
+				float count = MathHelper.clamp(Float.parseFloat(split_entry[0]), 0F, 64F);
+				int drop_count_characteristic = (int) count;
+				float drop_count_mantissa = count % 1;
+				
+				String[] distribution_split = split_entry[1].split(":");
+				
+				for (int i=0; i<distribution_split.length; i++) {
+					card_weighted_dist[i]=Integer.parseInt(distribution_split[i].trim());
+				}
+				
+				// Repeat for the number of cards prescribed
+				for (int i=0; i<drop_count_characteristic + (random.nextFloat()<drop_count_mantissa ? 1 : 0); i++)
+				{
+					Object chosen_rarity = Functions.weightedRandom(CardItem.CARD_RARITY_ARRAY, card_weighted_dist, random);
+					
+					if (chosen_rarity!=null) {
+						card_set_to_create[(Integer)chosen_rarity]++;
+					}
+				}
+			}
+			catch (Exception e) {
+				Logs.errLog("Something went wrong parsing edition_pack_contents line: " + entry);
+			}
+		}
+
+		// Actually create the cards
+		
 		created = new ArrayList<String>();
-		createCards(eStruct.getId(), Rarity.COMMON, cCount[Rarity.COMMON], created, random);
-		createCards(eStruct.getId(), Rarity.UNCOMMON, cCount[Rarity.UNCOMMON], created, random);
 
-		i = random.nextInt(rtWeight);
-		if (i < rWeight[0])
-			createCards(eStruct.getId(), Rarity.RARE, cCount[Rarity.RARE], created, random);
-		else if (i < rWeight[1])
-			createCards(eStruct.getId(), Rarity.ANCIENT, cCount[Rarity.RARE], created, random);
-		else if (i < rWeight[2])
-			createCards(eStruct.getId(), Rarity.LEGENDARY, cCount[Rarity.RARE], created, random);
-
+		for (int rarity : CardItem.CARD_RARITY_ARRAY) {
+			createCards(eStruct.getId(), rarity, card_set_to_create[rarity], created, world.rand);
+		}
+		
 		if (created.size() > 0) {
 			for (String cdwd : created) {
 				spawnCard(player, world, cdwd);
