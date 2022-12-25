@@ -12,6 +12,12 @@ public class Reference {
 	// Mod compats
 	public static final String VILLAGE_NAMES_MODID = "villagenames";
 	
+	// Configs
+	public static final String FML_GAME_RESTART_TITLE_GUI_ADDRESS = "fml.configgui.gameRestartTitle";
+	public static final String FML_GAME_RESTART_REQUIRED_GUI_ADDRESS = "fml.configgui.gameRestartRequired";
+	public static final String FML_GAME_CONFIRM_RESTART_GUI_ADDRESS = "fml.configgui.confirmRestartMessage";
+	public static final String GUI_FACTORY = "com.is.mtc.gui.MTCGuiFactory";
+	
 	// Colors
 	// Minecraft chat formatting
 	public static final int COLOR_DARK_RED = 0xAA0000; // 4

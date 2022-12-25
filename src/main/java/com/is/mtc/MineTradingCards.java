@@ -53,20 +53,26 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = Reference.MODID, version = Reference.MOD_VERSION, name = Reference.NAME)
+@Mod(
+		modid = Reference.MODID,
+		name = Reference.NAME,
+		version = Reference.MOD_VERSION,
+		guiFactory = Reference.GUI_FACTORY
+		)
 public class MineTradingCards {
 	// The instance of the mod class that forge uses
 	@Instance(Reference.MODID)
 	public static MineTradingCards INSTANCE;
-
+	
 	// Whether the proxy is remote
 	public static boolean PROXY_IS_REMOTE = false;
 	
 	// The directories that MTC works with
 	private static String DATA_DIR = "";
-	private static String CONF_DIR = "";
-
+	public static String CONF_DIR = "";
+	
 	// Configuration stuff
+	public static Configuration config;
 	public static final String CONFIG_CAT_COLORS = "colors";
 	public static final String CONFIG_CAT_DROPS = "drops";
 	public static final String CONFIG_CAT_LOGS = "logs";
@@ -146,7 +152,7 @@ public class MineTradingCards {
 		// Runs the initialisation from the proxy, then defines the items and blocks
 		PROXY.init(event);
 	}
-
+	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		// Runs the postinitialisation from the proxy, then registers the items and blocks
@@ -180,9 +186,12 @@ public class MineTradingCards {
 
 	private void readConfig(FMLPreInitializationEvent event) {
 		// Loads from the configuration file
-		Configuration config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), Reference.CONFIG_VERSION, false);
+		config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), Reference.CONFIG_VERSION, false);
 		config.load();
-
+		saveConfig();
+	}
+	
+	public static void saveConfig() {
 		// === Colors ===
 		// Cards
 		CARD_COLOR_COMMON = Functions.parseColorInteger(config.getString("card_color_common", CONFIG_CAT_COLORS, "#55ff55", COLOR_ITEM_DESCRIPTION_1+"common cards. "+COLOR_ITEM_DESCRIPTION_2).trim(), Reference.COLOR_GREEN);
@@ -213,11 +222,11 @@ public class MineTradingCards {
 		DropHandler.CAN_DROP_PACKS_ANIMAL = config.getBoolean("animals_can_drop_packs", CONFIG_CAT_DROPS, false, "Animals will drop packs on death.");
 		DropHandler.CAN_DROP_PACKS_PLAYER = config.getBoolean("players_can_drop_packs", CONFIG_CAT_DROPS, false, "Players will drop packs on death.");
 		// Tiered card drop rates
-		DropHandler.CARD_DROP_RATE_COM = config.getFloat("card_drop_rate_common", CONFIG_CAT_DROPS, 16, 0, Float.MAX_VALUE, "Chance out of X to drop common cards. Set to 0 to disable.");
-		DropHandler.CARD_DROP_RATE_UNC = config.getFloat("card_drop_rate_uncommon", CONFIG_CAT_DROPS, 32, 0, Float.MAX_VALUE, "Chance out of X to drop uncommon cards. Set to 0 to disable.");
-		DropHandler.CARD_DROP_RATE_RAR = config.getFloat("card_drop_rate_rare", CONFIG_CAT_DROPS, 48, 0, Float.MAX_VALUE, "Chance out of X to drop rare cards. Set to 0 to disable.");
-		DropHandler.CARD_DROP_RATE_ANC = config.getFloat("card_drop_rate_ancient", CONFIG_CAT_DROPS, 64, 0, Float.MAX_VALUE, "Chance out of X to drop ancient cards. Set to 0 to disable.");
-		DropHandler.CARD_DROP_RATE_LEG = config.getFloat("card_drop_rate_legendary", CONFIG_CAT_DROPS, 256, 0, Float.MAX_VALUE, "Chance out of X to drop legendary cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_COM = config.getFloat("card_drop_rate_common", CONFIG_CAT_DROPS, 0, 0, Float.MAX_VALUE, "Chance out of X to drop common cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_UNC = config.getFloat("card_drop_rate_uncommon", CONFIG_CAT_DROPS, 0, 0, Float.MAX_VALUE, "Chance out of X to drop uncommon cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_RAR = config.getFloat("card_drop_rate_rare", CONFIG_CAT_DROPS, 0, 0, Float.MAX_VALUE, "Chance out of X to drop rare cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_ANC = config.getFloat("card_drop_rate_ancient", CONFIG_CAT_DROPS, 0, 0, Float.MAX_VALUE, "Chance out of X to drop ancient cards. Set to 0 to disable.");
+		DropHandler.CARD_DROP_RATE_LEG = config.getFloat("card_drop_rate_legendary", CONFIG_CAT_DROPS, 0, 0, Float.MAX_VALUE, "Chance out of X to drop legendary cards. Set to 0 to disable.");
 		// Tiered pack drop rates
 		DropHandler.PACK_DROP_RATE_COM = config.getFloat("pack_drop_rate_common", CONFIG_CAT_DROPS, 16, 0, Float.MAX_VALUE, "Chance out of X to drop common packs. Set to 0 to disable.");
 		DropHandler.PACK_DROP_RATE_UNC = config.getFloat("pack_drop_rate_uncommon", CONFIG_CAT_DROPS, 32, 0, Float.MAX_VALUE, "Chance out of X to drop uncommon packs. Set to 0 to disable.");
@@ -287,9 +296,9 @@ public class MineTradingCards {
 		
 		// === Update Checker ===
 		ENABLE_UPDATE_CHECKER = config.getBoolean("enable_update_checker", CONFIG_CAT_UPDATES, true, "Displays a client-side chat message on login if there's an update available.");
+
 		
-		
-		config.save();
+		if (config.hasChanged()) config.save();
 	}
 
 	public static String getDataDir() {

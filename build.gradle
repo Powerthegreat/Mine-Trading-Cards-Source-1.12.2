@@ -23,7 +23,7 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.5.2847"
     runDir = "run"
-	replaceIn 'com/is/mtc/util/Reference.java'
+	replaceIn 'src/main/java/com/is/mtc/util/Reference.java'
 	replace '@VERSION@', project.version
     mappings = "snapshot_20171003"
 }
