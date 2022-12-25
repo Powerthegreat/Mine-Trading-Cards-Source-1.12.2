@@ -131,6 +131,10 @@ public class MineTradingCards {
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+
+		// Display 
+        event.getModMetadata().logoFile = "mtc_banner.png";
+        
 		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
 		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
 		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
