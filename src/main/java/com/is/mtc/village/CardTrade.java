@@ -80,7 +80,6 @@ public class CardTrade implements EntityVillager.ITradeList {
 		CardStructure cStruct = Databank.generateACard(((CardItem)stack.getItem()).getCardRarity(), random);
 		if (cStruct != null) {
 			stack.setTagCompound(new NBTTagCompound());
-			stack = CardItem.applyCDWDtoStack(stack, cStruct, random);
 		}
 		return stack;
 	}

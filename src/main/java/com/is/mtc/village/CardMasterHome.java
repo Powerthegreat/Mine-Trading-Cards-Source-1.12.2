@@ -444,8 +444,6 @@ public class CardMasterHome extends StructureVillagePieces.Village {
         			CardStructure cStruct = Databank.generateACard(cardIsUncommon ? Rarity.UNCOMMON : Rarity.COMMON, random);
         			if (cStruct != null) {
         				displaystack.setTagCompound(new NBTTagCompound());
-        				displaystack = CardItem.applyCDWDtoStack(displaystack, cStruct, random);
-        				
         				((DisplayerBlockTileEntity) te).setStackIntoSlot(displaystack, 0, false);
         			}
             	}

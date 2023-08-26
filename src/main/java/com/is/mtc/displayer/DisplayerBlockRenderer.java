@@ -88,15 +88,10 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 			CardItem cardItem = (CardItem) stack.getItem();
 			CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
-			if (cStruct == null || cStruct.getDynamicTexture() == null) { // Card not registered or unregistered illustration, use item image instead
+			if (cStruct == null || cStruct.getAssetLocation() == null) { // Card not registered or unregistered illustration, use item image instead
 				bindTexture(new ResourceLocation(Reference.MODID + ":textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
 			} else {
-				cStruct.preloadResource(instance.renderEngine, stack.getTagCompound().getInteger("assetnumber"));
-				if (cStruct.getResourceLocation() != null) {
-					bindTexture(cStruct.getResourceLocation());
-				} else {
-					bindTexture(new ResourceLocation(Reference.MODID + ":textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
-				}
+				bindTexture(cStruct.getAssetLocation());
 			}
 
 			tessellator.getBuffer().color(1f, 1f, 1f, 1f);

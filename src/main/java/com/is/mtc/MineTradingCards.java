@@ -69,6 +69,7 @@ public class MineTradingCards {
 	
 	// The directories that MTC works with
 	private static String DATA_DIR = "";
+	public static String ASSET_DIR = "";
 	public static String CONF_DIR = "";
 	
 	// Configuration stuff
@@ -104,7 +105,7 @@ public class MineTradingCards {
 	public static final String COLOR_TOOLTIP_1 = "Tooltip color for ";
 	public static final String COLOR_TOOLTIP_2 = " cards, using \"friendly\" Minecraft color name";
 	
-	// Mod intercompatibility stuff
+	// Mod compatibility stuff
 	public static boolean hasVillageNamesInstalled = false;
 	
 	// The proxy, either a combined client or a dedicated server
@@ -128,7 +129,7 @@ public class MineTradingCards {
 		+ "For example: 0:1:0:0:1 has an equal chance of being an Uncommon or Legendary card. 2:1:1:1:1 can be any rarity, but is twice as likely to be "+rarity+" as the other rarities."
 		+ (allowNx ? "\nFor Nx formatting, the weighting portion is omitted. All cards genrerated are "+rarity+", because this is a "+rarity+" pack. N can be an integer or a float, as explained above." : "");
 	}
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 
@@ -137,6 +138,7 @@ public class MineTradingCards {
         
 		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
 		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
+		ASSET_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
 		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
 		MTCItems.init();
 

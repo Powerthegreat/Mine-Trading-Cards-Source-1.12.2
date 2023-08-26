@@ -71,7 +71,7 @@ public class GuiHandler implements IGuiHandler {
 				if (Tools.hasCDWD(stack)) {
 					CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
-					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card registered and dynamic texture (illustration) exists
+					if (cStruct != null && cStruct.getAssetLocation() != null) { // Card registered and dynamic texture (illustration) exists
 						return new CardItemInterface(stack);
 					} else {
 						Logs.chatMessage(player, "Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));

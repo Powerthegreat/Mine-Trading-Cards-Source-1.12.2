@@ -49,15 +49,6 @@ public class CardItem extends Item {//implements IItemColor {
 	public int getCardRarity() {
 		return rarity;
 	}
-	
-	public static ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct, Random random) {
-		NBTTagCompound nbtTag = stack.getTagCompound();
-		nbtTag.setString("cdwd", cStruct.getCDWD());
-		if (cStruct.getAssetPath().size() > 0) {
-			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size(), random));
-		}
-		return stack;
-	}
 
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
@@ -103,7 +94,6 @@ public class CardItem extends Item {//implements IItemColor {
 						popoffStack.setTagCompound(new NBTTagCompound());
 					}
 					popoffStack.setCount(1);
-					popoffStack = applyCDWDtoStack(popoffStack, cStruct, world.rand);
 					
 					EntityItem dropped_card = player.entityDropItem(popoffStack, 1);
 					dropped_card.setPickupDelay(0);
@@ -112,23 +102,12 @@ public class CardItem extends Item {//implements IItemColor {
 						stack.shrink(1);
 					}
 				}
-				else { // Add data to the singleton "empty" card 
-					stack = applyCDWDtoStack(stack, cStruct, world.rand);
-				}
 			} else {
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
 			}
 		}
 
 		NBTTagCompound nbtTag = stack.getTagCompound();
-		if (!nbtTag.hasKey("assetnumber")) {
-			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
-			if (cStruct != null) {
-				if (cStruct.getAssetPath().size() > 0) {
-					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getAssetPath().size(), world.rand));
-				}
-			}
-		}
 
 		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}

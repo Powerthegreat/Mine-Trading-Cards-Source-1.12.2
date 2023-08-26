@@ -3,6 +3,7 @@ package com.is.mtc.data_manager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,32 +31,37 @@ public class CardStructure {
 
 	private String name, category, /*assetPath, */
 			desc;
-	private List<String> assetPath = new ArrayList<>();
 	private int weight;
-
-	private List<DynamicTexture> dytex = new ArrayList<>();
+	private ResourceLocation assetLocation;
 	private ResourceLocation relo;
 
-	public CardStructure(JsonElement jsonId, JsonElement jsonEdition, JsonElement jsonRarity) {
+	public CardStructure(Path filePath, JsonElement jsonId, JsonElement jsonEdition, JsonElement jsonRarity) {
 		setInput(jsonId != null ? jsonId.getAsString() : null,
 				jsonEdition != null ? jsonEdition.getAsString() : null,
 				jsonRarity != null ? jsonRarity.getAsString() : null);
+		setAssetLocation(filePath);
 	}
 
 	public CardStructure(String id, String edition, String rarity) {
 		setInput(id, edition, rarity);
 	}
 
-	public boolean setSecondaryInput(JsonElement jName, JsonElement jCategory, JsonElement jWeight,
+	public boolean setSecondaryInput(Path filePath, JsonElement jName, JsonElement jCategory, JsonElement jWeight,
 									 JsonElement jAssetPath, JsonElement jDesc) {
-		return setSecondaryInput(jName != null ? jName.getAsString() : null,
+		return setSecondaryInput(filePath,jName != null ? jName.getAsString() : null,
 				jCategory != null ? jCategory.getAsString() : null,
 				jWeight != null ? jWeight.getAsInt() : 0,
-				jAssetPath != null ? Arrays.asList(jAssetPath.getAsString().split(":")) : null,
+				jAssetPath != null ? jAssetPath.getAsString().split(":")[0] : null,
 				jDesc != null ? jDesc.getAsString() : null);
 	}
 
-	public boolean setSecondaryInput(String name, String category, int weight, List<String> assetPath, String desc) {
+	public boolean setSecondaryInput(Path filePath, String name, String category, int weight, String assetPath, String desc) {
+		if(assetPath==null){
+			setAssetLocation(filePath);
+		} else {
+				assetLocation = new ResourceLocation("is_mtc", "textures/cards/"+assetPath+".png");
+		}
+
 		this.weight = (int) Tools.clamp(0, weight, Integer.MAX_VALUE);
 		this.category = Tools.clean(category);
 
@@ -63,35 +69,7 @@ public class CardStructure {
 			return true;
 
 		this.name = Tools.clean(name);
-		this.assetPath = new ArrayList<>();
-		for (String asset : assetPath) {
-			this.assetPath.add(Tools.clean(asset));
-		}
-		//this.assetPath = Tools.clean(assetPath);
 		this.desc = Tools.clean(desc);
-
-		if (!this.assetPath.isEmpty()) {
-			dytex = new ArrayList<>();
-
-			for (String asset : this.assetPath) {
-				if (!asset.isEmpty()) {
-					File assetFile = new File(MineTradingCards.getDataDir() + "assets/", asset + ".png");
-
-					try {
-						BufferedImage image = ImageIO.read(assetFile);
-						dytex.add(new DynamicTexture(image));
-					} catch (IOException e) {
-						Logs.errLog("Missing texture at: '" + assetFile.getAbsolutePath() + "'");
-						//dytex = null;
-
-						//return false;
-					}
-				}
-			}
-
-			return !dytex.isEmpty();
-		}
-
 		return true;
 	}
 
@@ -111,10 +89,15 @@ public class CardStructure {
 			this.id = "";
 		if (!Tools.isValidID(this.edition))
 			this.edition = "";
-
-		dytex = null;
 		relo = null;
 		numeral = 0;
+	}
+
+	private void setAssetLocation(Path filePath){
+		//Logs.stdLog(filePath.toString());
+		String assetPath = filePath.getParent().getFileName().toString() + "/" + filePath.getFileName().toString().split("\\.")[0]+".png";
+		Logs.stdLog(assetPath);
+		assetLocation = new ResourceLocation("is_mtc","textures/cards/"+assetPath);
 	}
 
 	public boolean isValid() {
@@ -124,21 +107,7 @@ public class CardStructure {
 	@Override
 	public String toString() {
 		return "{id:" + id + " edition:" + edition + " rarity:" + Rarity.toString(rarity) + " numeral:" + numeral + "} " +
-				"[name:'" + name + "' category:'" + category + "' weight:" + weight + " asset_path:" + assetPath + "]";
-	}
-
-	public void preloadResource(TextureManager tema, int assetNumber) {
-		if (dytex == null)
-			return;
-
-		if (assetNumber > dytex.size())
-			return;
-
-		try {
-			relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));
-		} catch (Exception e) {
-			relo = null;
-		}
+				"[name:'" + name + "' category:'" + category + "' weight:" + weight + "]";
 	}
 
 	public String getId() {
@@ -165,23 +134,15 @@ public class CardStructure {
 		return weight;
 	}
 
-	public List<String> getAssetPath() {
-		return assetPath;
-	}
-
 	public String getDescription() {
 		return desc;
 	}
 
-	public List<DynamicTexture> getDynamicTexture() {
-		return dytex;
-	}
-
-	public ResourceLocation getResourceLocation() {
-		return relo;
-	}
-
 	public String getCDWD() {
 		return id + " " + edition + " " + rarity;
+	}
+
+	public ResourceLocation getAssetLocation() {
+		return assetLocation;
 	}
 }

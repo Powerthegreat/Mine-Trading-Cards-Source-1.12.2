@@ -1,18 +1,19 @@
 package com.is.mtc.data_manager;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.is.mtc.*;
 import com.is.mtc.root.Tools;
 
 public class CDFCardStructure {
 
 	private String id, edition;
 	private String rarity;
-
+	private String illustrationPath;
 	private String name, category, /*assetPath, */
 			description;
-	private List<String> assetPath;
 	private int weight;
 
 	public CDFCardStructure() {
@@ -22,8 +23,8 @@ public class CDFCardStructure {
 
 		name = "";
 		category = "";
-		assetPath = new ArrayList<>();
 		weight = 0;
+		//TODO try to find the asset file and if found then assign to the assetLocation File
 	}
 
 	public void giveArgument(String argument) {
@@ -51,7 +52,7 @@ public class CDFCardStructure {
 		else if (args[0].equals("illustrationpath") || args[0].equals("asset")) {
 			String[] tempPathList = args[1].split(":");
 			for (String asset : tempPathList) {
-				assetPath.add(Tools.clean(asset));
+				illustrationPath = asset;
 			}
 		} else if (args[0].equals("description"))
 			description = args[1];
@@ -81,11 +82,11 @@ public class CDFCardStructure {
 		return weight;
 	}
 
-	public List<String> getAssetPath() {
-		return assetPath;
-	}
-
 	public String getDescription() {
 		return description;
+	}
+
+	public String getIllustrationPath() {
+		return illustrationPath;
 	}
 }

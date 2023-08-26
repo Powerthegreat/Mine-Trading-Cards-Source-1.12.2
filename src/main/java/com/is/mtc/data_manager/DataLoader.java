@@ -131,7 +131,7 @@ public class DataLoader {
 
 					cStruct = new CardStructure(cdfStruct.getId(), cdfStruct.getEdition(), cdfStruct.getRarity());
 
-					if (!cStruct.setSecondaryInput(cdfStruct.getName(), cdfStruct.getCategory(), cdfStruct.getWeight(), cdfStruct.getAssetPath(), cdfStruct.getDescription()))
+					if (!cStruct.setSecondaryInput(file.toPath(), cdfStruct.getName(), cdfStruct.getCategory(), cdfStruct.getWeight(), cdfStruct.getIllustrationPath(), cdfStruct.getDescription()))
 						Logs.errLog("Concerned card file: " + file.getName());
 
 					if (!Databank.registerACard(cStruct))
@@ -149,9 +149,9 @@ public class DataLoader {
 
 					reader.close();
 
-					CardStructure cStruct = new CardStructure(head.get("id"), head.get("edition"), head.get("rarity"));
+					CardStructure cStruct = new CardStructure(file.toPath(), head.get("id"), head.get("edition"), head.get("rarity"));
 
-					if (!cStruct.setSecondaryInput(head.get("name"), head.get("category"), head.get("weight"), head.get("asset"), head.get("description")))
+					if (!cStruct.setSecondaryInput(file.toPath(), head.get("name"), head.get("category"), head.get("weight"), head.get("asset"), head.get("description")))
 						Logs.errLog("Concerned card file: " + file.getName());
 
 					if (!Databank.registerACard(cStruct))
