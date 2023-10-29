@@ -11,6 +11,7 @@ import com.is.mtc.pack.PackItemRarity;
 import com.is.mtc.pack.PackItemStandard;
 import com.is.mtc.root.Rarity;
 
+import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -72,9 +73,9 @@ public class MTCItems {
 		packCustom = new PackItemCustom();
 		binder = new BinderItem();
 		displayerBlock = new DisplayerBlock();
-		displayerItemBlock = new ItemBlock(displayerBlock).setRegistryName("block_displayer");
+		displayerItemBlock = new ItemBlock(displayerBlock).setRegistryName(Reference.MODID, "block_displayer");
 		monoDisplayerBlock = new MonoDisplayerBlock();
-		monoDisplayerItemBlock = new ItemBlock(monoDisplayerBlock).setRegistryName("block_monodisplayer");
+		monoDisplayerItemBlock = new ItemBlock(monoDisplayerBlock).setRegistryName(Reference.MODID, "block_monodisplayer");
 	}
 
 	@SubscribeEvent

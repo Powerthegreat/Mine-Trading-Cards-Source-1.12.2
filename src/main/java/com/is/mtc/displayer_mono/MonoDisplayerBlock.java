@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 
+import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
@@ -33,8 +34,8 @@ public class MonoDisplayerBlock extends Block {
 
 		setLightLevel(0.9375F);
 
-		setUnlocalizedName("block_monodisplayer");
-		setRegistryName("block_monodisplayer");
+		setTranslationKey("block_monodisplayer");
+		setRegistryName(Reference.MODID, "block_monodisplayer");
 		//setBlockName("block_monodisplayer");
 		//setBlockTextureName(MineTradingCards.MODID + ":block_monodisplayer");
 		setCreativeTab(MineTradingCards.MODTAB);
@@ -51,7 +52,7 @@ public class MonoDisplayerBlock extends Block {
 	}
 
 	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
+		EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
 
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;

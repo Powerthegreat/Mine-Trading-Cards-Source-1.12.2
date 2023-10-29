@@ -31,8 +31,8 @@ public class PackItemCustom extends PackItemBase {
 	private static final String CUSTOM_PACK_ID_KEY = "custom_pack_id";
 	
 	public PackItemCustom() {
-		setUnlocalizedName("item_pack_custom");
-		setRegistryName("item_pack_custom");
+		setTranslationKey("item_pack_custom");
+		setRegistryName(Reference.MODID, "item_pack_custom");
 	}
 	
 	@Override

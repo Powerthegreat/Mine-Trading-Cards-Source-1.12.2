@@ -114,7 +114,7 @@ public class MineTradingCards {
 
 	// The creative tab that the mod uses
 	public static CreativeTabs MODTAB = new CreativeTabs("tab_mtc") {
-		public ItemStack getTabIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(MTCItems.packStandard);
 		}
 	};

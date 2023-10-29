@@ -8,6 +8,7 @@ import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Tools;
 
+import com.is.mtc.util.Reference;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -28,8 +29,8 @@ public class BinderItem extends Item {
 	public static final String[] MODE_STR = {"Standard", "Fill"/*, "Slot"*/};
 
 	public BinderItem() {
-		setUnlocalizedName("item_binder");
-		setRegistryName("item_binder");
+		setTranslationKey("item_binder");
+		setRegistryName(Reference.MODID, "item_binder");
 		setCreativeTab(MineTradingCards.MODTAB);
 	}
 

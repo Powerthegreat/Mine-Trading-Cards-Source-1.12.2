@@ -60,8 +60,8 @@ public class PackItemRarity extends PackItemBase {
 	private int rarity;
 
 	public PackItemRarity(int r) {
-		setUnlocalizedName(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
-		setRegistryName(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
+		setTranslationKey(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
+		setRegistryName(Reference.MODID, ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
 
 		rarity = r;
 	}

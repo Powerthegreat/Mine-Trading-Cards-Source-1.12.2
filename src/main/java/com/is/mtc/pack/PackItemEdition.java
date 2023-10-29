@@ -36,8 +36,8 @@ public class PackItemEdition extends PackItemBase {
 	private static final String EDITION_ID_KEY = "edition_id";
 	
 	public PackItemEdition() {
-		setUnlocalizedName("item_pack_edition");
-		setRegistryName("item_pack_edition");
+		setTranslationKey("item_pack_edition");
+		setRegistryName(Reference.MODID, "item_pack_edition");
 	}
 
 	@Override

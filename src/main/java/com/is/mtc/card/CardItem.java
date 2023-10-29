@@ -39,8 +39,8 @@ public class CardItem extends Item {//implements IItemColor {
 	public static final int[] CARD_RARITY_ARRAY = new int[] {Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE, Rarity.ANCIENT, Rarity.LEGENDARY};
 	
 	public CardItem(int r) {
-		setUnlocalizedName(PREFIX + Rarity.toString(r).toLowerCase());
-		setRegistryName(PREFIX + Rarity.toString(r).toLowerCase());
+		setTranslationKey(PREFIX + Rarity.toString(r).toLowerCase());
+		setRegistryName(Reference.MODID, PREFIX + Rarity.toString(r).toLowerCase());
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		rarity = r;

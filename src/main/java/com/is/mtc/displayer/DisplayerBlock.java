@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 
+import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -28,8 +29,8 @@ public class DisplayerBlock extends Block {
 
 		setLightLevel(0.9375F);
 
-		setUnlocalizedName("block_displayer");
-		setRegistryName("block_displayer");
+		setTranslationKey("block_displayer");
+		setRegistryName(Reference.MODID, "block_displayer");
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		setHardness(5.0F);

@@ -8,6 +8,7 @@ import com.is.mtc.card.CardItem;
 import com.is.mtc.root.Logs;
 import com.is.mtc.util.Functions;
 
+import com.is.mtc.util.Reference;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,8 +30,8 @@ public class PackItemStandard extends PackItemBase {
 	public static String[] STANDARD_PACK_CONTENT = STANDARD_PACK_CONTENT_DEFAULT;
 	
 	public PackItemStandard() {
-		setUnlocalizedName("item_pack_standard");
-		setRegistryName("item_pack_standard");
+		setTranslationKey("item_pack_standard");
+		setRegistryName(Reference.MODID, "item_pack_standard");
 	}
 
 	@Override
