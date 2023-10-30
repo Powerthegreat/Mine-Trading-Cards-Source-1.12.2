@@ -136,7 +136,7 @@ public class MineTradingCards {
         event.getModMetadata().logoFile = "mtc_banner.png";
         
 		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
-		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/mtc/";
+		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/resourcepacks/";
 		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
 		MTCItems.init();
 

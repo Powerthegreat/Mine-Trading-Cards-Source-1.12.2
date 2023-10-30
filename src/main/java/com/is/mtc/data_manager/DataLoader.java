@@ -38,31 +38,58 @@ public class DataLoader {
 	}
 
 	public static void readAndLoad() {
-		File editions_folder = new File(MineTradingCards.getDataDir() + "editions/");
-		File cards_folder = new File(MineTradingCards.getDataDir() + "cards/");
-		File custom_packs_folder = new File(MineTradingCards.getDataDir() + "packs/");
+		File resourcesFolder = new File(MineTradingCards.getDataDir());
+		List<File> editions_folders = new ArrayList<>();
+		List<File> cards_folders = new ArrayList<>();
+		List<File> custom_packs_folders = new ArrayList<>();
+
+		if (resourcesFolder.exists() && resourcesFolder.isDirectory()) {
+			for (File resourcePack : resourcesFolder.listFiles()) { // Iterate through resource packs for valid MTC folders
+				if (resourcePack.exists() && resourcePack.isDirectory()) {
+					File editions_folder = new File(resourcePack.getPath() + "/assets/is_mtc/mtc/editions/");
+					File cards_folder = new File(resourcePack.getPath() + "/assets/is_mtc/mtc/cards/");
+					File custom_packs_folder = new File(resourcePack.getPath() + "/assets/is_mtc/mtc/packs/");
+
+					if (editions_folder.exists() && editions_folder.isDirectory()) {
+						editions_folders.add(editions_folder);
+					}
+
+					if (cards_folder.exists() && cards_folder.isDirectory()) {
+						cards_folders.add(cards_folder);
+					}
+
+					if (custom_packs_folder.exists() && custom_packs_folder.isDirectory()) {
+						custom_packs_folders.add(custom_packs_folder);
+					}
+				}
+			}
+		}
 
 		Logs.stdLog("MTC is now reading and loading data");
-		if (!editions_folder.exists()) {
+		if (editions_folders.isEmpty()) {
 			Logs.errLog("Editions folder not found. Cards and informations will be missing");
-			Logs.errLog("Expected path: " + editions_folder.getAbsolutePath());
+			Logs.errLog("Expected path: <Resource Pack>/assets/is_mtc/mtc/editions/");
 
 			return;
 		}
 
-		if (!cards_folder.exists()) {
+		if (cards_folders.isEmpty()) {
 			Logs.errLog("Cards folder not found. Cards data and informations will be missing");
-			Logs.errLog("Expected path: " + cards_folder.getAbsolutePath());
+			Logs.errLog("Expected path: <Resource Pack>/assets/is_mtc/mtc/cards/");
 
 			return;
 		}
 
 		Logs.stdLog("Loading editions");
-		getEditions(editions_folder);
+		for (File editions_folder : editions_folders) {
+			getEditions(editions_folder);
+		}
 		Logs.stdLog("Done loading editions");
 
 		Logs.stdLog("Loading cards");
-		getCards(cards_folder);
+		for (File cards_folder : cards_folders) {
+			getCards(cards_folder);
+		}
 		Logs.stdLog("Done loading cards");
 
 		for (int i = 0; i < Databank.getEditionsCount(); ++i) {
@@ -71,12 +98,14 @@ public class DataLoader {
 			Logs.stdLog(eStruct.toString());
 		}
 
-		if (!custom_packs_folder.exists()) {
+		if (custom_packs_folders.isEmpty()) {
 			Logs.errLog("Custom packs folder not found. No custom packs will be loaded.");
-			Logs.errLog("Expected path: " + custom_packs_folder.getAbsolutePath());
+			Logs.errLog("Expected path: <Resource Pack>/assets/is_mtc/mtc/packs/");
 		} else {
 			Logs.stdLog("Loading custom packs");
-			getPacks(custom_packs_folder);
+			for (File custom_packs_folder : custom_packs_folders) {
+				getPacks(custom_packs_folder);
+			}
 			Logs.stdLog("Done loading custom packs");
 		}
 
@@ -131,7 +160,7 @@ public class DataLoader {
 
 					cStruct = new CardStructure(cdfStruct.getId(), cdfStruct.getEdition(), cdfStruct.getRarity());
 
-					if (!cStruct.setSecondaryInput(cdfStruct.getName(), cdfStruct.getCategory(), cdfStruct.getWeight(), cdfStruct.getAssetPath(), cdfStruct.getDescription()))
+					if (!cStruct.setSecondaryInput(cdfStruct.getName(), cdfStruct.getCategory(), cdfStruct.getWeight(), cdfStruct.getAssetPaths(), cdfStruct.getDescription()))
 						Logs.errLog("Concerned card file: " + file.getName());
 
 					if (!Databank.registerACard(cStruct))

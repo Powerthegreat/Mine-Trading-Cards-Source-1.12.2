@@ -1,24 +1,17 @@
 package com.is.mtc.displayer;
 
-import static net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import org.lwjgl.opengl.GL11;
 
-import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
-import com.is.mtc.util.Reference;
 
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerBlockTileEntity> {
 	public void render(DisplayerBlockTileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
@@ -33,47 +26,93 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 
 		// Facing north face
 		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		if (bindTextureForSlot(tessellator, tileEntity, 0)) {
+		int bindTextureResult = bindTextureForSlot(tessellator, tileEntity, 0);
+		if (bindTextureResult == 0) {
 			bufferBuilder.normal(0, 0, -1);
 			bufferBuilder.pos(0, 0, 0 - 0.01).tex(1, 1).endVertex();
 			bufferBuilder.pos(0, 1, 0 - 0.01).tex(1, 0).endVertex();
 			bufferBuilder.pos(1, 1, 0 - 0.01).tex(0, 0).endVertex();
 			bufferBuilder.pos(1, 0, 0 - 0.01).tex(0, 1).endVertex();
+			tessellator.draw();
+		} else if (bindTextureResult == 1) {
+			tessellator.draw();
+			RenderHelper.enableStandardItemLighting();
+			GlStateManager.translate(0.5, 0.5, 0);
+			Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(0), ItemCameraTransforms.TransformType.FIXED);
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.translate(-0.5, -0.5, 0);
+		} else {
+			tessellator.draw();
 		}
-		tessellator.draw();
 
 		// Facing south face
 		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		if (bindTextureForSlot(tessellator, tileEntity, 1)) {
+		bindTextureResult = bindTextureForSlot(tessellator, tileEntity, 1);
+		if (bindTextureResult == 0) {
 			bufferBuilder.normal(0, 0, 1);
 			bufferBuilder.pos(0, 0, 1.01).tex(0, 1).endVertex();
 			bufferBuilder.pos(1, 0, 1.01).tex(1, 1).endVertex();
 			bufferBuilder.pos(1, 1, 1.01).tex(1, 0).endVertex();
 			bufferBuilder.pos(0, 1, 1.01).tex(0, 0).endVertex();
+			tessellator.draw();
+		} else if (bindTextureResult == 1) {
+			tessellator.draw();
+			RenderHelper.enableStandardItemLighting();
+			GlStateManager.translate(0.5, 0.5, 1);
+			GlStateManager.rotate(180, 0, 1, 0);
+			Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(1), ItemCameraTransforms.TransformType.FIXED);
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.rotate(-180, 0, 1, 0);
+			GlStateManager.translate(-0.5, -0.5, -1);
+		} else {
+			tessellator.draw();
 		}
-		tessellator.draw();
 
 		// Facing east face
 		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		if (bindTextureForSlot(tessellator, tileEntity, 2)) {
+		bindTextureResult = bindTextureForSlot(tessellator, tileEntity, 2);
+		if (bindTextureResult == 0) {
 			bufferBuilder.normal(1, 0, 0);
 			bufferBuilder.pos(1.01, 0, 0).tex(1, 1).endVertex();
 			bufferBuilder.pos(1.01, 1, 0).tex(1, 0).endVertex();
 			bufferBuilder.pos(1.01, 1, 1).tex(0, 0).endVertex();
 			bufferBuilder.pos(1.01, 0, 1).tex(0, 1).endVertex();
+			tessellator.draw();
+		} else if (bindTextureResult == 1) {
+			tessellator.draw();
+			RenderHelper.enableStandardItemLighting();
+			GlStateManager.translate(1, 0.5, 0.5);
+			GlStateManager.rotate(-90, 0, 1, 0);
+			Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(2), ItemCameraTransforms.TransformType.FIXED);
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.rotate(90, 0, 1, 0);
+			GlStateManager.translate(-1, -0.5, -0.5);
+		} else {
+			tessellator.draw();
 		}
-		tessellator.draw();
 
 		// Facing west face
 		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		if (bindTextureForSlot(tessellator, tileEntity, 3)) {
+		bindTextureResult = bindTextureForSlot(tessellator, tileEntity, 3);
+		if (bindTextureResult == 0) {
 			bufferBuilder.normal(-1, 0, 0);
 			bufferBuilder.pos(0 - 0.01, 0, 0).tex(0, 1).endVertex();
 			bufferBuilder.pos(0 - 0.01, 0, 1).tex(1, 1).endVertex();
 			bufferBuilder.pos(0 - 0.01, 1, 1).tex(1, 0).endVertex();
 			bufferBuilder.pos(0 - 0.01, 1, 0).tex(0, 0).endVertex();
+			tessellator.draw();
+		} else if (bindTextureResult == 1) {
+			tessellator.draw();
+			RenderHelper.enableStandardItemLighting();
+			GlStateManager.translate(0, 0.5, 0.5);
+			GlStateManager.rotate(90, 0, 1, 0);
+			Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(3), ItemCameraTransforms.TransformType.FIXED);
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.rotate(-90, 0, 1, 0);
+			GlStateManager.translate(0, -0.5, -0.5);
+		} else {
+			tessellator.draw();
 		}
-		tessellator.draw();
 
 		GlStateManager.disableAlpha();
 		GlStateManager.enableBlend();
@@ -81,29 +120,22 @@ public class DisplayerBlockRenderer extends TileEntitySpecialRenderer<DisplayerB
 		GlStateManager.popMatrix();
 	}
 
-	private boolean bindTextureForSlot(Tessellator tessellator, DisplayerBlockTileEntity displayerBlockTileEntity, int slot) {
+	private int bindTextureForSlot(Tessellator tessellator, DisplayerBlockTileEntity displayerBlockTileEntity, int slot) {
 		ItemStack stack = displayerBlockTileEntity.getStackInSlot(slot);
 
 		if (Tools.isValidCard(stack)) {
-			CardItem cardItem = (CardItem) stack.getItem();
 			CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
-			if (cStruct == null || cStruct.getDynamicTexture() == null) { // Card not registered or unregistered illustration, use item image instead
-				bindTexture(new ResourceLocation(Reference.MODID + ":textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
-			} else {
-				cStruct.preloadResource(instance.renderEngine, stack.getTagCompound().getInteger("assetnumber"));
-				if (cStruct.getResourceLocation() != null) {
-					bindTexture(cStruct.getResourceLocation());
-				} else {
-					bindTexture(new ResourceLocation(Reference.MODID + ":textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
-				}
-			}
-
 			tessellator.getBuffer().color(1f, 1f, 1f, 1f);
-			return true;
+			if (CardStructure.isValidCStructAsset(cStruct, stack)) {
+				bindTexture(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
+				return 0;
+			} else { // Card not registered or unregistered illustration, use item image instead
+				return 1;
+			}
 		} else {
 			tessellator.getBuffer().color(1f, 1f, 1f, 0f);
-			return false;
+			return -1;
 		}
 	}
 }

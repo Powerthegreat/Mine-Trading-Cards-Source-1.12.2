@@ -1,15 +1,12 @@
 package com.is.mtc.displayer_mono;
 
-import static net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import org.lwjgl.opengl.GL11;
 
-import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
-import com.is.mtc.util.Reference;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,7 +16,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 
 public class MonoDisplayerBlockRenderer extends TileEntitySpecialRenderer<MonoDisplayerBlockTileEntity> {
 	public void render(MonoDisplayerBlockTileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
@@ -33,69 +29,103 @@ public class MonoDisplayerBlockRenderer extends TileEntitySpecialRenderer<MonoDi
 		GlStateManager.enableAlpha();
 
 		bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		boolean displayTexture = bindTextureForSlot(tessellator, tileEntity, 0);
-		if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.NORTH && displayTexture) {
-			bufferBuilder.normal(0, 0, -1);
-			bufferBuilder.pos(0, 0, 0 - 0.01).tex(1, 1).endVertex();
-			bufferBuilder.pos(0, 1, 0 - 0.01).tex(1, 0).endVertex();
-			bufferBuilder.pos(1, 1, 0 - 0.01).tex(0, 0).endVertex();
-			bufferBuilder.pos(1, 0, 0 - 0.01).tex(0, 1).endVertex();
-			//tessellator.draw();
-		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.SOUTH && displayTexture) {
-			//bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-			bufferBuilder.normal(0, 0, 1);
-			bufferBuilder.pos(0, 0, 1.01).tex(0, 1).endVertex();
-			bufferBuilder.pos(1, 0, 1.01).tex(1, 1).endVertex();
-			bufferBuilder.pos(1, 1, 1.01).tex(1, 0).endVertex();
-			bufferBuilder.pos(0, 1, 1.01).tex(0, 0).endVertex();
-			//tessellator.draw();
-		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.EAST && displayTexture) {
-			//bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-			bufferBuilder.normal(1, 0, 0);
-			bufferBuilder.pos(1.01, 0, 0).tex(1, 1).endVertex();
-			bufferBuilder.pos(1.01, 1, 0).tex(1, 0).endVertex();
-			bufferBuilder.pos(1.01, 1, 1).tex(0, 0).endVertex();
-			bufferBuilder.pos(1.01, 0, 1).tex(0, 1).endVertex();
-			//tessellator.draw();
-		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.WEST && displayTexture) {
-			//bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-			bufferBuilder.normal(-1, 0, 0);
-			bufferBuilder.pos(0 - 0.01, 0, 0).tex(0, 1).endVertex();
-			bufferBuilder.pos(0 - 0.01, 0, 1).tex(1, 1).endVertex();
-			bufferBuilder.pos(0 - 0.01, 1, 1).tex(1, 0).endVertex();
-			bufferBuilder.pos(0 - 0.01, 1, 0).tex(0, 0).endVertex();
+		int displayTexture = bindTextureForSlot(tessellator, tileEntity, 0);
+		if (displayTexture == -1) {
+			tessellator.draw();
+		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.NORTH) {
+			if (displayTexture == 0) {
+				bufferBuilder.normal(0, 0, -1);
+				bufferBuilder.pos(0, 0, 0 - 0.01).tex(1, 1).endVertex();
+				bufferBuilder.pos(0, 1, 0 - 0.01).tex(1, 0).endVertex();
+				bufferBuilder.pos(1, 1, 0 - 0.01).tex(0, 0).endVertex();
+				bufferBuilder.pos(1, 0, 0 - 0.01).tex(0, 1).endVertex();
+				tessellator.draw();
+			} else if (displayTexture == 1) {
+				tessellator.draw();
+				RenderHelper.enableStandardItemLighting();
+				GlStateManager.translate(0.5, 0.5, 0);
+				Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(0), ItemCameraTransforms.TransformType.FIXED);
+				RenderHelper.disableStandardItemLighting();
+				GlStateManager.translate(-0.5, -0.5, 0);
+			}
+		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.SOUTH) {
+			if (displayTexture == 0) {
+				bufferBuilder.normal(0, 0, 1);
+				bufferBuilder.pos(0, 0, 1.01).tex(0, 1).endVertex();
+				bufferBuilder.pos(1, 0, 1.01).tex(1, 1).endVertex();
+				bufferBuilder.pos(1, 1, 1.01).tex(1, 0).endVertex();
+				bufferBuilder.pos(0, 1, 1.01).tex(0, 0).endVertex();
+				tessellator.draw();
+			} else if (displayTexture == 1) {
+				tessellator.draw();
+				RenderHelper.enableStandardItemLighting();
+				GlStateManager.translate(0.5, 0.5, 1);
+				GlStateManager.rotate(180, 0, 1, 0);
+				Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(0), ItemCameraTransforms.TransformType.FIXED);
+				RenderHelper.disableStandardItemLighting();
+				GlStateManager.rotate(-180, 0, 1, 0);
+				GlStateManager.translate(-0.5, -0.5, -1);
+			}
+		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.EAST) {
+			if (displayTexture == 0) {
+				bufferBuilder.normal(1, 0, 0);
+				bufferBuilder.pos(1.01, 0, 0).tex(1, 1).endVertex();
+				bufferBuilder.pos(1.01, 1, 0).tex(1, 0).endVertex();
+				bufferBuilder.pos(1.01, 1, 1).tex(0, 0).endVertex();
+				bufferBuilder.pos(1.01, 0, 1).tex(0, 1).endVertex();
+				tessellator.draw();
+			} else if (displayTexture == 1) {
+				tessellator.draw();
+				RenderHelper.enableStandardItemLighting();
+				GlStateManager.translate(1, 0.5, 0.5);
+				GlStateManager.rotate(-90, 0, 1, 0);
+				Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(0), ItemCameraTransforms.TransformType.FIXED);
+				RenderHelper.disableStandardItemLighting();
+				GlStateManager.rotate(90, 0, 1, 0);
+				GlStateManager.translate(-1, -0.5, -0.5);
+			}
+		} else if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getProperties().get(MonoDisplayerBlock.FACING) == EnumFacing.WEST) {
+			if (displayTexture == 0) {
+				bufferBuilder.normal(-1, 0, 0);
+				bufferBuilder.pos(0 - 0.01, 0, 0).tex(0, 1).endVertex();
+				bufferBuilder.pos(0 - 0.01, 0, 1).tex(1, 1).endVertex();
+				bufferBuilder.pos(0 - 0.01, 1, 1).tex(1, 0).endVertex();
+				bufferBuilder.pos(0 - 0.01, 1, 0).tex(0, 0).endVertex();
+				tessellator.draw();
+			} else if (displayTexture == 1) {
+				tessellator.draw();
+				RenderHelper.enableStandardItemLighting();
+				GlStateManager.translate(0, 0.5, 0.5);
+				GlStateManager.rotate(90, 0, 1, 0);
+				Minecraft.getMinecraft().getRenderItem().renderItem(tileEntity.getStackInSlot(0), ItemCameraTransforms.TransformType.FIXED);
+				RenderHelper.disableStandardItemLighting();
+				GlStateManager.rotate(-90, 0, 1, 0);
+				GlStateManager.translate(0, -0.5, -0.5);
+			}
 		}
 
-		tessellator.draw();
 		GlStateManager.disableAlpha();
 		GlStateManager.disableBlend();
 		RenderHelper.enableStandardItemLighting();
 		GlStateManager.popMatrix();
 	}
 
-	private boolean bindTextureForSlot(Tessellator tessellator, MonoDisplayerBlockTileEntity monoDisplayerBlockTileEntity, int slot) {
+	private int bindTextureForSlot(Tessellator tessellator, MonoDisplayerBlockTileEntity monoDisplayerBlockTileEntity, int slot) {
 		ItemStack stack = monoDisplayerBlockTileEntity.getStackInSlot(slot);
 
 		if (Tools.isValidCard(stack)) {
-			CardItem cardItem = (CardItem) stack.getItem();
 			CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
-			if (cStruct == null || cStruct.getDynamicTexture() == null) // Card not registered or unregistered illustration, use item image instead
-				bindTexture(new ResourceLocation(Reference.MODID, "textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
-			else {
-				cStruct.preloadResource(instance.renderEngine, stack.getTagCompound().getInteger("assetnumber"));
-				if (cStruct.getResourceLocation() != null) {
-					bindTexture(cStruct.getResourceLocation());
-				} else {
-					bindTexture(new ResourceLocation(Reference.MODID, "textures/items/item_card_" + Rarity.toString(cardItem.getCardRarity()).toLowerCase() + ".png"));
-				}
-			}
-
 			tessellator.getBuffer().color(1f, 1f, 1f, 1f);
-			return true;
+			if (CardStructure.isValidCStructAsset(cStruct, stack)) {
+				bindTexture(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
+				return 0;
+			} else { // Card not registered or unregistered illustration, use item image instead
+				return 1;
+			}
 		} else {
 			tessellator.getBuffer().color(1f, 1f, 1f, 0f);
-			return false;
+			return -1;
 		}
 	}
 }

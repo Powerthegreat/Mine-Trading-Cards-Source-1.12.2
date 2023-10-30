@@ -1,13 +1,9 @@
 package com.is.mtc.data_manager;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import com.google.gson.JsonElement;
 import com.is.mtc.MineTradingCards;
@@ -15,8 +11,9 @@ import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
+import com.is.mtc.util.Reference;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 /*
@@ -28,13 +25,10 @@ public class CardStructure {
 	private int rarity;
 	public int numeral;
 
-	private String name, category, /*assetPath, */
-			desc;
-	private List<String> assetPath = new ArrayList<>();
+	private String name, category, desc;
 	private int weight;
 
-	private List<DynamicTexture> dytex = new ArrayList<>();
-	private ResourceLocation relo;
+	private List<ResourceLocation> resourceLocations;
 
 	public CardStructure(JsonElement jsonId, JsonElement jsonEdition, JsonElement jsonRarity) {
 		setInput(jsonId != null ? jsonId.getAsString() : null,
@@ -63,33 +57,19 @@ public class CardStructure {
 			return true;
 
 		this.name = Tools.clean(name);
-		this.assetPath = new ArrayList<>();
-		for (String asset : assetPath) {
-			this.assetPath.add(Tools.clean(asset));
-		}
-		//this.assetPath = Tools.clean(assetPath);
 		this.desc = Tools.clean(desc);
 
-		if (!this.assetPath.isEmpty()) {
-			dytex = new ArrayList<>();
+		if (!assetPath.isEmpty()) {
+			resourceLocations = new ArrayList<>();
 
-			for (String asset : this.assetPath) {
-				if (!asset.isEmpty()) {
-					File assetFile = new File(MineTradingCards.getDataDir() + "assets/", asset + ".png");
-
-					try {
-						BufferedImage image = ImageIO.read(assetFile);
-						dytex.add(new DynamicTexture(image));
-					} catch (IOException e) {
-						Logs.errLog("Missing texture at: '" + assetFile.getAbsolutePath() + "'");
-						//dytex = null;
-
-						//return false;
-					}
+			for (String asset : assetPath) {
+				String tempAsset = Tools.clean(asset);
+				if (!tempAsset.isEmpty()) {
+					resourceLocations.add(new ResourceLocation(Reference.MODID, "mtc/assets/" + tempAsset + ".png"));
 				}
 			}
 
-			return !dytex.isEmpty();
+			return !resourceLocations.isEmpty();
 		}
 
 		return true;
@@ -112,8 +92,7 @@ public class CardStructure {
 		if (!Tools.isValidID(this.edition))
 			this.edition = "";
 
-		dytex = null;
-		relo = null;
+		resourceLocations = null;
 		numeral = 0;
 	}
 
@@ -124,21 +103,7 @@ public class CardStructure {
 	@Override
 	public String toString() {
 		return "{id:" + id + " edition:" + edition + " rarity:" + Rarity.toString(rarity) + " numeral:" + numeral + "} " +
-				"[name:'" + name + "' category:'" + category + "' weight:" + weight + " asset_path:" + assetPath + "]";
-	}
-
-	public void preloadResource(TextureManager tema, int assetNumber) {
-		if (dytex == null)
-			return;
-
-		if (assetNumber > dytex.size())
-			return;
-
-		try {
-			relo = tema.getDynamicTextureLocation("mtc_dytex", dytex.get(assetNumber));
-		} catch (Exception e) {
-			relo = null;
-		}
+				"[name:'" + name + "' category:'" + category + "' weight:" + weight + " resource_locations:" + resourceLocations + "]";
 	}
 
 	public String getId() {
@@ -165,23 +130,33 @@ public class CardStructure {
 		return weight;
 	}
 
-	public List<String> getAssetPath() {
-		return assetPath;
-	}
-
 	public String getDescription() {
 		return desc;
 	}
 
-	public List<DynamicTexture> getDynamicTexture() {
-		return dytex;
-	}
-
-	public ResourceLocation getResourceLocation() {
-		return relo;
+	public List<ResourceLocation> getResourceLocations() {
+		return resourceLocations;
 	}
 
 	public String getCDWD() {
 		return id + " " + edition + " " + rarity;
+	}
+
+	public static boolean isValidCStructAsset(CardStructure cStruct, ItemStack stack) {
+		if (stack.hasTagCompound() &&
+				cStruct != null &&
+				cStruct.getResourceLocations() != null &&
+				!cStruct.getResourceLocations().isEmpty() &&
+				stack.getTagCompound().getInteger("assetnumber") < cStruct.getResourceLocations().size() &&
+				cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")) != null) {
+			try {
+				Minecraft.getMinecraft().getResourceManager().getResource(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
+			} catch (IOException e) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

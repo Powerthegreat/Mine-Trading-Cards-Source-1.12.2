@@ -61,21 +61,15 @@ public class GuiHandler implements IGuiHandler {
 
 		switch (ID) {
 			case GUI_CARD:
-				//ItemStack stack = player.getActiveItemStack();
 				ItemStack stack = player.getHeldItem(hand);
-				/*if(currentMainItem != null) {
-					stack = currentMainItem;
-				}*/
-				//ItemStack stack = player.getActiveItemStack();
-				//System.out.println(stack.getTagCompound());
 				if (Tools.hasCDWD(stack)) {
 					CardStructure cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
 
-					if (cStruct != null && cStruct.getDynamicTexture() != null) { // Card registered and dynamic texture (illustration) exists
+					if (CardStructure.isValidCStructAsset(cStruct, stack)) { // Card registered and dynamic texture (illustration) exists
 						return new CardItemInterface(stack);
 					} else {
-						Logs.chatMessage(player, "Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));
-						Logs.errLog("Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd"));
+						Logs.chatMessage(player, "Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd") + " asset number " + stack.getTagCompound().getInteger("assetnumber"));
+						Logs.errLog("Unable to open card illustration: Missing client side illustration: " + stack.getTagCompound().getString("cdwd") + " asset number " + stack.getTagCompound().getInteger("assetnumber"));
 					}
 				}
 				break;

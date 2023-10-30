@@ -81,7 +81,7 @@ public class CDFCardStructure {
 		return weight;
 	}
 
-	public List<String> getAssetPath() {
+	public List<String> getAssetPaths() {
 		return assetPath;
 	}
 

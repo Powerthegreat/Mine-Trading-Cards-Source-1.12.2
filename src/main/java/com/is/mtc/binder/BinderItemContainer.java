@@ -58,8 +58,6 @@ public class BinderItemContainer extends Container {
 		int binderPage;
 		int tmp;
 
-		//if (!(player.getActiveItemStack().getItem() instanceof BinderItem))
-		//return ItemStack.EMPTY;
 		BinderItem.testNBT(player.getActiveItemStack());
 		binderPage = BinderItem.getCurrentPage(binderStack);
 
@@ -118,11 +116,6 @@ public class BinderItemContainer extends Container {
 		if (slot == player.inventory.currentItem) // Can't slot click on the binder
 			return ItemStack.EMPTY;
 
-		/*if(slot >= 36) {// Slot is from binder
-			int binderPage = BinderItem.getCurrentPage(binderStack);
-
-			slot += (binderPage * BinderItemInventory.getStacksPerPage()); // Set current slot offset then
-		}*/
 		return super.slotClick(slot, dragType, clickType, player);
 	}
 
@@ -143,13 +136,10 @@ public class BinderItemContainer extends Container {
 
 	public void readFromNBT(NBTTagCompound nbt) {
 		binderInventory.deserializeNBT(nbt.getCompoundTag("Items"));
-		System.out.println(nbt);
 	}
 
 	public void writeToNBT(NBTTagCompound nbt) {
 		nbt.setTag("Items", binderInventory.serializeNBT());
-
-		System.out.println(nbt);
 	}
 
 	public ItemStack getBinderStack() {

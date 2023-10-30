@@ -7,8 +7,8 @@
   "mcversion": "$mcversion",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Powerthegreat", "AstroTibs"],
-  "credits": "The Forge and FML guys, and TeamWar aka Tradeworld for originally making the mod",
+  "authorList": ["Powerthegreat", "AstroTibs", "DigitalRai"],
+  "credits": "TeamWar aka Tradeworld for originally making the mod, AstroTibs for the 3.0 village and graphics update, and DigitalRai for the memory fix",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
