@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.is.mtc.MineTradingCards;
+import com.is.mtc.handler.ConfigHandler;
 import com.is.mtc.util.Reference;
 
 import net.minecraft.client.gui.GuiButton;
@@ -57,34 +58,34 @@ public class MTCGuiConfig extends GuiConfig
 		// General config
 		subCats = new ArrayList<IConfigElement>();
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_RECIPES);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_RECIPES);
 		cc.setComment("Toggle crafting recipes");
 		cc.setRequiresMcRestart(true);
 		subCats.add(new ConfigElement(cc));
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_DROPS);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_DROPS);
 		cc.setComment("Change or toggle drop rates for cards and packs");
 		subCats.add(new ConfigElement(cc));
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_PACK_CONTENTS);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_PACK_CONTENTS);
 		cc.setComment("Modify the card rarity distribution for packs");
 		subCats.add(new ConfigElement(cc));
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_COLORS);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_COLORS);
 		cc.setComment("Change the colors of cards, packs, and tooltips");
 		subCats.add(new ConfigElement(cc));
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_VILLAGERS);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_VILLAGERS);
 		cc.setComment("Change or toggle village and villager components");
 		cc.setRequiresMcRestart(true);
 		subCats.add(new ConfigElement(cc));
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_UPDATES);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_UPDATES);
 		cc.setComment("Toggle update checker");
 		cc.setRequiresMcRestart(true);
 		subCats.add(new ConfigElement(cc));
 		
-		cc = MineTradingCards.config.getCategory(MineTradingCards.CONFIG_CAT_LOGS);
+		cc = ConfigHandler.config.getCategory(ConfigHandler.CONFIG_CAT_LOGS);
 		cc.setComment("Turn on debug logging");
 		subCats.add(new ConfigElement(cc));
 		
@@ -117,7 +118,7 @@ public class MTCGuiConfig extends GuiConfig
                         if (!event.getResult().equals(Result.DENY))
                         {
                         	MinecraftForge.EVENT_BUS.post(new PostConfigChangedEvent(modID, configID, isWorldRunning, requiresMcRestart));
-                            MineTradingCards.saveConfig(); // To force-sync the config options
+                            ConfigHandler.saveConfig(); // To force-sync the config options
                         }
                         if (requiresMcRestart)
                         {
