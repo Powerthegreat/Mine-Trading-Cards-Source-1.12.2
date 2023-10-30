@@ -3,7 +3,6 @@ package com.is.mtc.root;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.init.MTCItems;
-
 import net.minecraft.util.text.TextFormatting;
 
 public class Rarity {
@@ -70,20 +69,20 @@ public class Rarity {
 		switch (rarity) {
 			case COMMON:
 				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_COMMON);
-				return tf!=null ? tf : TextFormatting.GREEN;
+				return tf != null ? tf : TextFormatting.GREEN;
 			case UNCOMMON:
 				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_UNCOMMON);
-				return tf!=null ? tf : TextFormatting.GOLD;
+				return tf != null ? tf : TextFormatting.GOLD;
 			case RARE:
 				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_RARE);
-				return tf!=null ? tf : TextFormatting.RED;
+				return tf != null ? tf : TextFormatting.RED;
 			case ANCIENT:
 				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_ANCIENT);
-				return tf!=null ? tf : TextFormatting.AQUA;
+				return tf != null ? tf : TextFormatting.AQUA;
 			case LEGENDARY:
 				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_LEGENDARY);
-				return tf!=null ? tf : TextFormatting.DARK_PURPLE;
-	
+				return tf != null ? tf : TextFormatting.DARK_PURPLE;
+
 			default:
 				return null;
 		}

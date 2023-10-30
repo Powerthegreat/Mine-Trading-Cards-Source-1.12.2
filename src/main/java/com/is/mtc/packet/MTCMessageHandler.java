@@ -3,7 +3,6 @@ package com.is.mtc.packet;
 import com.is.mtc.binder.BinderItem;
 import com.is.mtc.binder.BinderItemGuiContainer;
 import com.is.mtc.root.Logs;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

@@ -2,7 +2,6 @@ package com.is.mtc.displayer;
 
 import com.is.mtc.root.CardSlot;
 import com.is.mtc.root.Tools;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -11,11 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public class DisplayerBlockContainer extends Container {
-	private DisplayerBlockTileEntity tileEntity;
-
 	private static final int offset4SlotsX = 6, offset4SlotsY = 6; // Base points for the 4 slots
 	private static final int offsetInv3RowsX = 56, offsetInv3RowsY = 8; // Inventory pos
 	private static final int offsetHotbarX = 56, offsetHotbarY = 66; // Hotbar pos
+	private DisplayerBlockTileEntity tileEntity;
 
 	public DisplayerBlockContainer(InventoryPlayer inventoryPlayer, DisplayerBlockTileEntity tileEntity) {
 		this.tileEntity = tileEntity;

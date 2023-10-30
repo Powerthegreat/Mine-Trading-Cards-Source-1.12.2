@@ -1,30 +1,28 @@
 package com.is.mtc.data_manager;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gson.JsonElement;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
-
 import com.is.mtc.util.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /*
  * Card is identified by id and edition. Same id can be in two different editions
  * Mandatory parameters are id, edition and rarity
  */
 public class CardStructure {
+	public int numeral;
 	private String id, edition;
 	private int rarity;
-	public int numeral;
-
 	private String name, category, desc;
 	private int weight;
 
@@ -38,6 +36,24 @@ public class CardStructure {
 
 	public CardStructure(String id, String edition, String rarity) {
 		setInput(id, edition, rarity);
+	}
+
+	public static boolean isValidCStructAsset(CardStructure cStruct, ItemStack stack) {
+		if (stack.hasTagCompound() &&
+				cStruct != null &&
+				cStruct.getResourceLocations() != null &&
+				!cStruct.getResourceLocations().isEmpty() &&
+				stack.getTagCompound().getInteger("assetnumber") < cStruct.getResourceLocations().size() &&
+				cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")) != null) {
+			try {
+				Minecraft.getMinecraft().getResourceManager().getResource(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
+			} catch (IOException e) {
+				return false;
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean setSecondaryInput(JsonElement jName, JsonElement jCategory, JsonElement jWeight,
@@ -140,23 +156,5 @@ public class CardStructure {
 
 	public String getCDWD() {
 		return id + " " + edition + " " + rarity;
-	}
-
-	public static boolean isValidCStructAsset(CardStructure cStruct, ItemStack stack) {
-		if (stack.hasTagCompound() &&
-				cStruct != null &&
-				cStruct.getResourceLocations() != null &&
-				!cStruct.getResourceLocations().isEmpty() &&
-				stack.getTagCompound().getInteger("assetnumber") < cStruct.getResourceLocations().size() &&
-				cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")) != null) {
-			try {
-				Minecraft.getMinecraft().getResourceManager().getResource(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
-			} catch (IOException e) {
-				return false;
-			}
-			return true;
-		} else {
-			return false;
-		}
 	}
 }

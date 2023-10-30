@@ -2,7 +2,6 @@ package com.is.mtc.displayer_mono;
 
 import com.is.mtc.root.CardSlot;
 import com.is.mtc.root.Tools;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -11,10 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 public class MonoDisplayerBlockContainer extends Container {
-	private MonoDisplayerBlockTileEntity tileEntity;
-
 	private static final int offsetInv3RowsX = 56, offsetInv3RowsY = 8; // Inventory pos
 	private static final int offsetHotbarX = 56, offsetHotbarY = 66; // Hotbar pos
+	private MonoDisplayerBlockTileEntity tileEntity;
 
 	public MonoDisplayerBlockContainer(InventoryPlayer inventoryPlayer, MonoDisplayerBlockTileEntity tileEntity) {
 		this.tileEntity = tileEntity;

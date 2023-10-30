@@ -13,7 +13,6 @@ import com.is.mtc.pack.PackItemRarity;
 import com.is.mtc.pack.PackItemStandard;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
-
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -35,7 +34,7 @@ public class ClientProxy extends CommonProxy {
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new CardItem.ColorableIcon(Rarity.RARE), MTCItems.cardRare);
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new CardItem.ColorableIcon(Rarity.ANCIENT), MTCItems.cardAncient);
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new CardItem.ColorableIcon(Rarity.LEGENDARY), MTCItems.cardLegendary);
-		
+
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new PackItemRarity.ColorableIcon(Rarity.COMMON), MTCItems.packCommon);
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new PackItemRarity.ColorableIcon(Rarity.UNCOMMON), MTCItems.packUncommon);
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(new PackItemRarity.ColorableIcon(Rarity.RARE), MTCItems.packRare);

@@ -4,13 +4,8 @@ import com.is.mtc.binder.BinderItem;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.displayer.DisplayerBlock;
 import com.is.mtc.displayer_mono.MonoDisplayerBlock;
-import com.is.mtc.pack.PackItemBase;
-import com.is.mtc.pack.PackItemCustom;
-import com.is.mtc.pack.PackItemEdition;
-import com.is.mtc.pack.PackItemRarity;
-import com.is.mtc.pack.PackItemStandard;
+import com.is.mtc.pack.*;
 import com.is.mtc.root.Rarity;
-
 import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -30,9 +25,9 @@ public class MTCItems {
 	public static final String BLOCK_HEAD = "tile.";*/
 	public static CardItem cardCommon, cardUncommon, cardRare, cardAncient, cardLegendary;
 	public static PackItemBase packCommon, packUncommon, packRare, packAncient, packLegendary, packStandard, packEdition, packCustom;
-	private static BinderItem binder;
 	public static Block displayerBlock;
 	public static Block monoDisplayerBlock;
+	private static BinderItem binder;
 	private static Item displayerItemBlock;
 	private static Item monoDisplayerItemBlock;
 

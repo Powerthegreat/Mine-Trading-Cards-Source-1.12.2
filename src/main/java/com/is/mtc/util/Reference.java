@@ -7,17 +7,17 @@ public class Reference {
 	public static final String MOD_VERSION = "3.1";
 	public static final String CONFIG_VERSION = "1.1";
 	public static final String NAME = "Mine Trading Cards";
-	public static final String NAME_COLORIZED = TextFormatting.BLUE+"Mine Trading Cards"+TextFormatting.RESET;
-	
+	public static final String NAME_COLORIZED = TextFormatting.BLUE + "Mine Trading Cards" + TextFormatting.RESET;
+
 	// Mod compats
 	public static final String VILLAGE_NAMES_MODID = "villagenames";
-	
+
 	// Configs
 	public static final String FML_GAME_RESTART_TITLE_GUI_ADDRESS = "fml.configgui.gameRestartTitle";
 	public static final String FML_GAME_RESTART_REQUIRED_GUI_ADDRESS = "fml.configgui.gameRestartRequired";
 	public static final String FML_GAME_CONFIRM_RESTART_GUI_ADDRESS = "fml.configgui.confirmRestartMessage";
 	public static final String GUI_FACTORY = "com.is.mtc.gui.MTCGuiFactory";
-	
+
 	// Colors
 	// Minecraft chat formatting
 	public static final int COLOR_DARK_RED = 0xAA0000; // 4
@@ -38,7 +38,7 @@ public class Reference {
 	public static final int COLOR_BLACK = 0x000000; // 0e
 	// Custom
 	public static final int COLOR_BROWN = 0xad7030;
-	
+
 	// Drops
 	public static final String KEY_CARD_COM = "common_card";
 	public static final String KEY_CARD_UNC = "uncommon_card";
@@ -53,7 +53,7 @@ public class Reference {
 	public static final String KEY_PACK_STD = "standard_pack";
 	public static final String KEY_PACK_EDT = "edition_pack";
 	public static final String KEY_PACK_CUS = "custom_pack";
-	
+
 	// Update checker
 	public static final String URL = "https://www.curseforge.com/minecraft/mc-mods/mine-trading-cards-open-source-edition";
 	public static final String VERSION_CHECKER_URL = "https://raw.githubusercontent.com/Powerthegreat/Mine-Trading-Cards-Source-1.12.2/master/CURRENT_VERSION";

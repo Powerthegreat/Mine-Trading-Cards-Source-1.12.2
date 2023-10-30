@@ -5,7 +5,6 @@ import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Logs;
 import com.is.mtc.util.Reference;
 import com.is.mtc.village.MineTradingCardVillagers;
-
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -24,9 +23,9 @@ public class CommonProxy {
 		MineTradingCardVillagers.registerCareers();
 
 		// Mod intercompat stuff
-        if (Loader.isModLoaded(Reference.VILLAGE_NAMES_MODID)) {
-        	MineTradingCards.hasVillageNamesInstalled = true;
-        }
+		if (Loader.isModLoaded(Reference.VILLAGE_NAMES_MODID)) {
+			MineTradingCards.hasVillageNamesInstalled = true;
+		}
 	}
 
 	public void postInit(FMLPostInitializationEvent event) {

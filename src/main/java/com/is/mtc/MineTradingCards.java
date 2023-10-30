@@ -1,10 +1,5 @@
 package com.is.mtc;
 
-import static com.is.mtc.init.MTCItems.displayerBlock;
-import static com.is.mtc.init.MTCItems.monoDisplayerBlock;
-
-import java.io.File;
-
 import com.is.mtc.data_manager.DataLoader;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
@@ -13,27 +8,15 @@ import com.is.mtc.handler.ConfigHandler;
 import com.is.mtc.handler.DropHandler;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.init.MTCItems;
-import com.is.mtc.pack.PackItemEdition;
-import com.is.mtc.pack.PackItemRarity;
-import com.is.mtc.pack.PackItemStandard;
-import com.is.mtc.packet.MTCMessage;
-import com.is.mtc.packet.MTCMessageHandler;
-import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
-import com.is.mtc.packet.MTCMessageRequestUpdateDisplayerHandler;
-import com.is.mtc.packet.MTCMessageUpdateDisplayer;
-import com.is.mtc.packet.MTCMessageUpdateDisplayerHandler;
+import com.is.mtc.packet.*;
 import com.is.mtc.proxy.CommonProxy;
 import com.is.mtc.root.CC_CreateCard;
 import com.is.mtc.root.CC_ForceCreateCard;
-import com.is.mtc.root.Logs;
-import com.is.mtc.util.Functions;
 import com.is.mtc.util.Reference;
 import com.is.mtc.version.DevVersionWarning;
 import com.is.mtc.version.VersionChecker;
 import com.is.mtc.village.CardMasterHome;
 import com.is.mtc.village.CardMasterHomeHandler;
-import com.is.mtc.village.MineTradingCardVillagers;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -54,24 +37,25 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.io.File;
+
+import static com.is.mtc.init.MTCItems.displayerBlock;
+import static com.is.mtc.init.MTCItems.monoDisplayerBlock;
+
 @Mod(
 		modid = Reference.MODID,
 		name = Reference.NAME,
 		version = Reference.MOD_VERSION,
 		guiFactory = Reference.GUI_FACTORY
-		)
+)
 public class MineTradingCards {
 	// The instance of the mod class that forge uses
 	@Instance(Reference.MODID)
 	public static MineTradingCards INSTANCE;
-	
+
 	// Whether the proxy is remote
 	public static boolean PROXY_IS_REMOTE = false;
-	
-	// The directories that MTC works with
-	private static String DATA_DIR = "";
 	public static String CONF_DIR = "";
-
 	// Configurable data
 	public static int CARD_COLOR_COMMON = Reference.COLOR_GREEN;
 	public static int CARD_COLOR_UNCOMMON = Reference.COLOR_GOLD;
@@ -90,37 +74,43 @@ public class MineTradingCards {
 	public static int PACK_COLOR_LEGENDARY = Reference.COLOR_LIGHT_PURPLE;
 	public static int PACK_COLOR_STANDARD = Reference.COLOR_BLUE;
 	public static boolean ENABLE_UPDATE_CHECKER = true;
-	
 	// Mod intercompatibility stuff
 	public static boolean hasVillageNamesInstalled = false;
-	
 	// The proxy, either a combined client or a dedicated server
 	@SidedProxy(clientSide = "com.is.mtc.proxy.ClientProxy", serverSide = "com.is.mtc.proxy.ServerProxy")
 	public static CommonProxy PROXY;
 	public static SimpleNetworkWrapper simpleNetworkWrapper; // The network wrapper for the mod
-
 	// The creative tab that the mod uses
 	public static CreativeTabs MODTAB = new CreativeTabs("tab_mtc") {
 		public ItemStack createIcon() {
 			return new ItemStack(MTCItems.packStandard);
 		}
 	};
-	
+	// The directories that MTC works with
+	private static String DATA_DIR = "";
+
+	public static String getDataDir() {
+		return DATA_DIR;
+	}
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 
-		// Display 
-        event.getModMetadata().logoFile = "mtc_banner.png";
-        
+		// Display
+		event.getModMetadata().logoFile = "mtc_banner.png";
+
 		// Gets the config and reads the cards, and runs the preinitialisation from the proxy
 		DATA_DIR = event.getModConfigurationDirectory().getParentFile().getAbsolutePath().replace('\\', '/') + "/resourcepacks/";
 		CONF_DIR = event.getModConfigurationDirectory().getAbsolutePath().replace('\\', '/') + '/';
 		MTCItems.init();
 
-        // Version check monitor
-        if (Reference.MOD_VERSION.contains("DEV") || Reference.MOD_VERSION.equals("@VERSION@")) {MinecraftForge.EVENT_BUS.register(DevVersionWarning.instance);}
-        else if (ENABLE_UPDATE_CHECKER) {MinecraftForge.EVENT_BUS.register(VersionChecker.instance);}
-        
+		// Version check monitor
+		if (Reference.MOD_VERSION.contains("DEV") || Reference.MOD_VERSION.equals("@VERSION@")) {
+			MinecraftForge.EVENT_BUS.register(DevVersionWarning.instance);
+		} else if (ENABLE_UPDATE_CHECKER) {
+			MinecraftForge.EVENT_BUS.register(VersionChecker.instance);
+		}
+
 		PROXY.preInit(event);
 		readConfig(event);
 
@@ -133,7 +123,7 @@ public class MineTradingCards {
 		// Runs the initialisation from the proxy, then defines the items and blocks
 		PROXY.init(event);
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		// Runs the postinitialisation from the proxy, then registers the items and blocks
@@ -144,11 +134,11 @@ public class MineTradingCards {
 		simpleNetworkWrapper.registerMessage(MTCMessageHandler.class, MTCMessage.class, 0, Side.SERVER);
 		simpleNetworkWrapper.registerMessage(MTCMessageUpdateDisplayerHandler.class, MTCMessageUpdateDisplayer.class, 1, Side.CLIENT);
 		simpleNetworkWrapper.registerMessage(MTCMessageRequestUpdateDisplayerHandler.class, MTCMessageRequestUpdateDisplayer.class, 2, Side.SERVER);
-		
+
 		// Sets up the gui and drop handlers
 		MinecraftForge.EVENT_BUS.register(new DropHandler());
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-		
+
 		// Registers tile entities
 		GameRegistry.registerTileEntity(DisplayerBlockTileEntity.class, new ResourceLocation(displayerBlock.getRegistryName().toString()));
 		GameRegistry.registerTileEntity(MonoDisplayerBlockTileEntity.class, new ResourceLocation(monoDisplayerBlock.getRegistryName().toString()));
@@ -170,9 +160,5 @@ public class MineTradingCards {
 		ConfigHandler.config = new Configuration(new File(CONF_DIR, "Mine Trading Cards.cfg"), Reference.CONFIG_VERSION, false);
 		ConfigHandler.config.load();
 		ConfigHandler.saveConfig();
-	}
-
-	public static String getDataDir() {
-		return DATA_DIR;
 	}
 }

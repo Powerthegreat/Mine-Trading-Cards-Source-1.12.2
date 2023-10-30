@@ -1,11 +1,5 @@
 package com.is.mtc.binder;
 
-import java.io.IOException;
-import java.util.Set;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.util.vector.Vector2f;
-
 import com.google.common.collect.Sets;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
@@ -13,17 +7,12 @@ import com.is.mtc.data_manager.Databank;
 import com.is.mtc.packet.MTCMessage;
 import com.is.mtc.root.Tools;
 import com.is.mtc.util.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -35,13 +24,23 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.util.vector.Vector2f;
+
+import java.io.IOException;
+import java.util.Set;
 
 public class BinderItemGuiContainer extends GuiContainer {
+	public static final int LESS1 = 0, LESS2 = 1, LESS3 = 2;
+	public static final int MORE1 = 3, MORE2 = 4, MORE3 = 5;
+	public static final int MODE_SWITCH = 6;
+	protected final Set<Slot> dragSplittingSlots = Sets.newHashSet();
 	protected int xSize = 242;
 	protected int ySize = 222;
-	private BinderItemContainer binderContainer;
 	protected int guiLeft;
 	protected int guiTop;
+	protected boolean dragSplitting;
+	private BinderItemContainer binderContainer;
 	private Slot hoveredSlot;
 	private Slot clickedSlot;
 	private boolean isRightMouseClick;
@@ -53,8 +52,6 @@ public class BinderItemGuiContainer extends GuiContainer {
 	private ItemStack returningStack = ItemStack.EMPTY;
 	private Slot currentDragTargetSlot;
 	private long dragItemDropDelay;
-	protected final Set<Slot> dragSplittingSlots = Sets.newHashSet();
-	protected boolean dragSplitting;
 	private int dragSplittingLimit;
 	private int dragSplittingButton;
 	private boolean ignoreMouseUp;
@@ -64,10 +61,6 @@ public class BinderItemGuiContainer extends GuiContainer {
 	private int lastClickButton;
 	private boolean doubleClick;
 	private ItemStack shiftClickedSlot = ItemStack.EMPTY;
-
-	public static final int LESS1 = 0, LESS2 = 1, LESS3 = 2;
-	public static final int MORE1 = 3, MORE2 = 4, MORE3 = 5;
-	public static final int MODE_SWITCH = 6;
 
 	public BinderItemGuiContainer(BinderItemContainer inventorySlots) {
 		super(inventorySlots);

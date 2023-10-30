@@ -1,10 +1,7 @@
 package com.is.mtc.displayer_mono;
 
-import javax.annotation.Nullable;
-
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
-
 import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,6 +20,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+
+import javax.annotation.Nullable;
 
 public class MonoDisplayerBlock extends Block {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);// BlockHorizontal.FACING;

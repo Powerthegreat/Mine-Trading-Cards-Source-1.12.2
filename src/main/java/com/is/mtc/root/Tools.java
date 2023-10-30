@@ -1,12 +1,11 @@
 package com.is.mtc.root;
 
+import com.is.mtc.card.CardItem;
+import net.minecraft.item.ItemStack;
+
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.is.mtc.card.CardItem;
-
-import net.minecraft.item.ItemStack;
 
 public class Tools {
 
@@ -19,6 +18,8 @@ public class Tools {
 	public static final int SIDE_WEST = 4;
 	public static final int SIDE_EAST = 5;*/
 
+	private static Pattern pattern = Pattern.compile("^[a-z0-9_]*$");
+
 	// -
 	public static String clean(String string) {
 		if (string == null)
@@ -30,8 +31,6 @@ public class Tools {
 
 		return string;
 	}
-
-	private static Pattern pattern = Pattern.compile("^[a-z0-9_]*$");
 
 	public static boolean isValidID(String string) {
 		Matcher matcher;
@@ -55,7 +54,7 @@ public class Tools {
 		for (int i = 0; i < length; i++) {
 			text[i] = characters.charAt(random.nextInt(characters.length()));
 		}
-		
+
 		return new String(text);
 	}
 

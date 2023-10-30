@@ -1,17 +1,10 @@
 package com.is.mtc.pack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.CustomPackStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.root.Logs;
 import com.is.mtc.util.Reference;
-
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -26,15 +19,20 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class PackItemCustom extends PackItemBase {
-	
+
 	private static final String CUSTOM_PACK_ID_KEY = "custom_pack_id";
-	
+
 	public PackItemCustom() {
 		setTranslationKey("item_pack_custom");
 		setRegistryName(Reference.MODID, "item_pack_custom");
 	}
-	
+
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity player, int itemSlot, boolean isSelected) {
 
@@ -43,7 +41,7 @@ public class PackItemCustom extends PackItemBase {
 		}
 		if (!stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY) && Databank.getCustomPacksCount() > 0) {
 			int i = world.rand.nextInt(Databank.getCustomPacksCount());
-			
+
 			NBTTagCompound nbtTag = stack.getTagCompound();
 			nbtTag.setString(CUSTOM_PACK_ID_KEY, Databank.getCustomPackWithNumeralId(i).getId());
 			stack.setTagCompound(nbtTag);
@@ -58,8 +56,7 @@ public class PackItemCustom extends PackItemBase {
 		if (cpid != null) {
 			if (packStructure == null) { // Pack was created earlier, but edition was removed in the mean time
 				return "custom_pack_" + cpid;
-			}
-			else {
+			} else {
 				return packStructure.getName();
 			}
 		} else {
@@ -143,25 +140,23 @@ public class PackItemCustom extends PackItemBase {
 			}
 		}
 	}
-	
-	
+
+
 	// === ICON LAYERING AND COLORIZATION === //
-	/** 
+
+	/**
 	 * From https://github.com/matshou/Generic-Mod
-     */
-	public static class ColorableIcon implements IItemColor 
-	{
+	 */
+	public static class ColorableIcon implements IItemColor {
 		@Override
-	    @SideOnly(Side.CLIENT)
-		public int colorMultiplier(ItemStack stack, int layer) 
-		{
-			if (layer==0)
-	    	{
-	    		String eid = stack.hasTagCompound() && stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY) ? stack.getTagCompound().getString(CUSTOM_PACK_ID_KEY) : null;
-	    		return eid != null && Databank.getCustomPackWithId(eid) != null ? Databank.getCustomPackWithId(eid).getColor() : Reference.COLOR_GRAY;
-	    	}
-	    	
-	        return -1;
+		@SideOnly(Side.CLIENT)
+		public int colorMultiplier(ItemStack stack, int layer) {
+			if (layer == 0) {
+				String eid = stack.hasTagCompound() && stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY) ? stack.getTagCompound().getString(CUSTOM_PACK_ID_KEY) : null;
+				return eid != null && Databank.getCustomPackWithId(eid) != null ? Databank.getCustomPackWithId(eid).getColor() : Reference.COLOR_GRAY;
+			}
+
+			return -1;
 		}
 	}
 }

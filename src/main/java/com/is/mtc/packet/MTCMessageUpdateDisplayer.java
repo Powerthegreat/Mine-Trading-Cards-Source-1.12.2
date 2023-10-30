@@ -2,7 +2,6 @@ package com.is.mtc.packet;
 
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
 import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;

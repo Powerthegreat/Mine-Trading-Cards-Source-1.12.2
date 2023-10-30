@@ -2,7 +2,6 @@ package com.is.mtc.packet;
 
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
 import com.is.mtc.displayer_mono.MonoDisplayerBlockTileEntity;
-
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

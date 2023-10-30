@@ -1,13 +1,8 @@
 package com.is.mtc.binder;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Tools;
-
 import com.is.mtc.util.Reference;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +14,9 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class BinderItem extends Item {
 	public static final int MODE_STD = 0; // Standard mode
@@ -32,21 +30,6 @@ public class BinderItem extends Item {
 		setTranslationKey("item_binder");
 		setRegistryName(Reference.MODID, "item_binder");
 		setCreativeTab(MineTradingCards.MODTAB);
-	}
-
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		testNBT(player.getHeldItem(hand));
-		GuiHandler.hand = hand;
-		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_BINDER, world, (int) player.posX, (int) player.posY, (int) player.posZ);
-
-		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
-	}
-
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
-		testNBT(stack);
-
-		infos.add("");
-		infos.add("Page: " + (stack.getTagCompound().getInteger("page") + 1) + "/" + BinderItemInventory.getTotalPages());
 	}
 
 	public static void testNBT(ItemStack binderStack) {
@@ -77,6 +60,21 @@ public class BinderItem extends Item {
 		testNBT(binderStack);
 
 		return binderStack.getTagCompound().getInteger("page");
+	}
+
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+		testNBT(player.getHeldItem(hand));
+		GuiHandler.hand = hand;
+		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_BINDER, world, (int) player.posX, (int) player.posY, (int) player.posZ);
+
+		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+	}
+
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
+		testNBT(stack);
+
+		infos.add("");
+		infos.add("Page: " + (stack.getTagCompound().getInteger("page") + 1) + "/" + BinderItemInventory.getTotalPages());
 	}
 
 	public int getItemStackLimit(ItemStack stack) {

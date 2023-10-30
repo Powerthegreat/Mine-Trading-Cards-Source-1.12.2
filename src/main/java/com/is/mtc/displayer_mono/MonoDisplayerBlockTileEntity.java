@@ -1,7 +1,6 @@
 package com.is.mtc.displayer_mono;
 
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
