@@ -9,10 +9,10 @@ import java.util.Random;
 
 public class Databank {
 
-	public static Map<String, EditionStructure> editions_by_id;
-	public static Map<String, EditionStructure> editions_by_name;
-	public static Map<Integer, EditionStructure> editions_by_color;
-	public static Map<Integer, EditionStructure> editions_by_numeral_id;
+	private static Map<String, EditionStructure> editions_by_id;
+	private static Map<String, EditionStructure> editions_by_name;
+	private static Map<Integer, EditionStructure> editions_by_color;
+	private static Map<Integer, EditionStructure> editions_by_numeral_id;
 
 	private static Map<String, CardStructure> cards_by_cdwd;
 
@@ -114,19 +114,19 @@ public class Databank {
 	}
 
 	public static EditionStructure getEditionWithId(String id) {
-		return editions_by_id.containsKey(id) ? editions_by_id.get(id) : null;
+		return editions_by_id.getOrDefault(id, null);
 	}
 
 	public static EditionStructure getEditionWithName(String name) {
-		return editions_by_name.containsKey(name) ? editions_by_name.get(name) : null;
+		return editions_by_name.getOrDefault(name, null);
 	}
 
 	public static EditionStructure getEditionWithColor(int color) {
-		return editions_by_color.containsKey(color) ? editions_by_color.get(color) : null;
+		return editions_by_color.getOrDefault(color, null);
 	}
 
 	public static EditionStructure getEditionWithNumeralId(int nid) {
-		return editions_by_numeral_id.containsKey(nid) ? editions_by_numeral_id.get(nid) : null;
+		return editions_by_numeral_id.getOrDefault(nid, null);
 	}
 
 	public static boolean registerACustomPack(CustomPackStructure cpStruct) {
@@ -158,19 +158,19 @@ public class Databank {
 	}
 
 	public static CustomPackStructure getCustomPackWithId(String id) {
-		return custom_packs_by_id.containsKey(id) ? custom_packs_by_id.get(id) : null;
+		return custom_packs_by_id.getOrDefault(id, null);
 	}
 
 	public static CustomPackStructure getCustomPackWithName(String name) {
-		return custom_packs_by_name.containsKey(name) ? custom_packs_by_name.get(name) : null;
+		return custom_packs_by_name.getOrDefault(name, null);
 	}
 
 	public static CustomPackStructure getCustomPackWithNumeralId(int nid) {
-		return custom_packs_by_numeral_id.containsKey(nid) ? custom_packs_by_numeral_id.get(nid) : null;
+		return custom_packs_by_numeral_id.getOrDefault(nid, null);
 	}
 
 	public static CustomPackStructure getCustomPackWithColor(int nid) {
-		return custom_packs_by_color.containsKey(nid) ? custom_packs_by_color.get(nid) : null;
+		return custom_packs_by_color.getOrDefault(nid, null);
 	}
 
 	public static boolean registerACard(CardStructure cStruct) {

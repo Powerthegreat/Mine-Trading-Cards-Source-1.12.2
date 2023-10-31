@@ -36,7 +36,7 @@ public class EditionStructure {
 
 	@Override
 	public String toString() {
-		return "{id:" + id + " name:'" + name + "' cards_count:" + cCount + " numeral_id:" + eNI + "}";
+		return "{id:" + id + ", name:'" + name + "', color:" + color + ", cards_count:" + cCount + ", numeral_id:" + eNI + "}";
 	}
 
 	public String getId() {
