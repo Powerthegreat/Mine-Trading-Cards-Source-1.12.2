@@ -79,7 +79,7 @@ public class CardStructure {
 			resourceLocations = new ArrayList<>();
 
 			for (String asset : assetPath) {
-				String tempAsset = Tools.clean(asset);
+				String tempAsset = Tools.clean(asset).replaceAll(" ", "_").toLowerCase();
 				if (!tempAsset.isEmpty()) {
 					resourceLocations.add(new ResourceLocation(Reference.MODID, "mtc/assets/" + tempAsset + ".png"));
 				}
