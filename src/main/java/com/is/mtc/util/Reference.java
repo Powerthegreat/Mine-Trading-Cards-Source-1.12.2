@@ -55,6 +55,6 @@ public class Reference {
 	public static final String KEY_PACK_CUS = "custom_pack";
 
 	// Update checker
-	public static final String URL = "https://www.curseforge.com/minecraft/mc-mods/mine-trading-cards-open-source-edition";
+	public static final String URL = "https://modrinth.com/mod/mine-trading-cards";
 	public static final String VERSION_CHECKER_URL = "https://raw.githubusercontent.com/Powerthegreat/Mine-Trading-Cards-Source-1.12.2/master/CURRENT_VERSION";
 }

@@ -162,9 +162,9 @@ public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHand
 	public void spinCards() {
 		ItemStack tempStack = inventory.getStackInSlot(0).copy();
 		inventory.setStackInSlot(0, inventory.getStackInSlot(3).copy());
-		inventory.setStackInSlot(3, inventory.getStackInSlot(2).copy());
-		inventory.setStackInSlot(2, inventory.getStackInSlot(1).copy());
-		inventory.setStackInSlot(1, tempStack);
+		inventory.setStackInSlot(3, inventory.getStackInSlot(1).copy());
+		inventory.setStackInSlot(1, inventory.getStackInSlot(2).copy());
+		inventory.setStackInSlot(2, tempStack);
 
 		markDirty();
 

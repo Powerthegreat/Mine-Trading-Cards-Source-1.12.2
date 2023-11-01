@@ -108,7 +108,7 @@ public class CardStructure {
 		if (!Tools.isValidID(this.edition))
 			this.edition = "";
 
-		resourceLocations = null;
+		resourceLocations = new ArrayList<>();
 		numeral = 0;
 	}
 
