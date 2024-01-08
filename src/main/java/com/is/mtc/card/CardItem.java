@@ -45,7 +45,7 @@ public class CardItem extends Item {//implements IItemColor {
 	public static ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct, Random random) {
 		NBTTagCompound nbtTag = stack.getTagCompound();
 		nbtTag.setString("cdwd", cStruct.getCDWD());
-		if (cStruct.getResourceLocations().size() > 1) {
+		if (cStruct.getResourceLocations() != null && cStruct.getResourceLocations().size() > 1) {
 			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getResourceLocations().size(), random));
 		}
 		return stack;
@@ -119,7 +119,7 @@ public class CardItem extends Item {//implements IItemColor {
 		if (!nbtTag.hasKey("assetnumber")) {
 			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
 			if (cStruct != null) {
-				if (cStruct.getResourceLocations().size() > 1) {
+				if (cStruct.getResourceLocations() != null && cStruct.getResourceLocations().size() > 1) {
 					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getResourceLocations().size(), world.rand));
 				}
 			}

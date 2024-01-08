@@ -4,7 +4,7 @@ import net.minecraft.util.text.TextFormatting;
 
 public class Reference {
 	public static final String MODID = "is_mtc";
-	public static final String MOD_VERSION = "3.1";
+	public static final String MOD_VERSION = "3.1.1";
 	public static final String CONFIG_VERSION = "1.1";
 	public static final String NAME = "Mine Trading Cards";
 	public static final String NAME_COLORIZED = TextFormatting.BLUE + "Mine Trading Cards" + TextFormatting.RESET;
