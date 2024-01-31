@@ -29,9 +29,9 @@ public class PackItemBase extends Item {
 			CardStructure cStruct = null;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
-				cStruct = Databank.generateACard(cardRarity, random);
+				cStruct = Databank.generateACard(cardRarity, new Random()); // Using new Random() because world random can cause issues generating cards
 
-				if (cStruct != null && !created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
+				if (cStruct != null && !created.contains(cStruct.getCDWD())) { // ... card was not already created. Duplicate prevention
 					created.add(cStruct.getCDWD());
 					break;
 				}

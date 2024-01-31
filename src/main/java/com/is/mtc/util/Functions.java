@@ -69,7 +69,7 @@ public class Functions {
 	 */
 	public static BlockPos getAboveTopmostSolidOrLiquidBlockVN(World world, BlockPos pos) {
 
-		Chunk chunk = world.getChunk(pos);
+		Chunk chunk = world.getChunkFromBlockCoords(pos);
 		BlockPos blockpos;
 		BlockPos blockpos1;
 

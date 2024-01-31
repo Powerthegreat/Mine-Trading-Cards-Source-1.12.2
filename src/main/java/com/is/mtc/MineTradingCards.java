@@ -82,7 +82,8 @@ public class MineTradingCards {
 	public static SimpleNetworkWrapper simpleNetworkWrapper; // The network wrapper for the mod
 	// The creative tab that the mod uses
 	public static CreativeTabs MODTAB = new CreativeTabs("tab_mtc") {
-		public ItemStack createIcon() {
+		@Override
+		public ItemStack getTabIconItem() {
 			return new ItemStack(MTCItems.packStandard);
 		}
 	};

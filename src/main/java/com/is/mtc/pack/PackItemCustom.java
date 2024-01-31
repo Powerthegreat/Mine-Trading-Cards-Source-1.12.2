@@ -29,7 +29,7 @@ public class PackItemCustom extends PackItemBase {
 	private static final String CUSTOM_PACK_ID_KEY = "custom_pack_id";
 
 	public PackItemCustom() {
-		setTranslationKey("item_pack_custom");
+		setUnlocalizedName("item_pack_custom");
 		setRegistryName(Reference.MODID, "item_pack_custom");
 	}
 
@@ -129,10 +129,10 @@ public class PackItemCustom extends PackItemBase {
 			CardStructure cStruct = null;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
-				cStruct = Databank.generatedACardFromCategory(cardRarity, category, random);
+				cStruct = Databank.generatedACardFromCategory(cardRarity, category, new Random()); // Using new Random() because world random can cause issues generating cards
 
 				if (cStruct != null) {
-					if (!created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
+					if (!created.contains(cStruct.getCDWD())) { // ... card was not already created. Duplicate prevention
 						created.add(cStruct.getCDWD());
 						break;
 					}

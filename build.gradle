@@ -1,58 +1,54 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
+        maven { url = "https://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath('net.minecraftforge.gradle:ForgeGradle:5.+') {
-            changing: true
-        }
+        classpath 'com.anatawa12.forge:ForgeGradle:2.3-1.0.+'
     }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-apply plugin: 'net.minecraftforge.gradle'
 
 version = file('CURRENT_VERSION').text.trim()
 group = "com.is.mtc"
 archivesBaseName = "MineTradingCards-1.12.2"
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-sourceSets { main { output.resourcesDir = output.classesDirs.singleFile } }
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
 
 minecraft {
-    mappings channel: 'stable', version: '39-1.12'
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-        }
-
-        server {
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-        }
-    }
+    version = "1.12.2-14.23.5.2847"
+    runDir = "run"
+    
+    // the mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   snapshot are built nightly.
+    // stable_#            stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not always work.
+    // simply re-run your setup task after changing the mappings to update your workspace.
+    mappings = "snapshot_20171003"
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-	implementation files("api/VillageNames-1.12.2-4.4.6-deobf.jar")
+	implementation files("api/VillageNames-1.12.2-4.4.7-deobf.jar")
 }
 
 processResources {
-    duplicatesStrategy('warn')
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', minecraft.mappingVersion
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
 
+    // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
 
-        expand 'version':project.version, 'mcversion':minecraft.mappingVersion
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }

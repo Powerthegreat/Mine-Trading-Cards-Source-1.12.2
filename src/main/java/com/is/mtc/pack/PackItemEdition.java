@@ -33,7 +33,7 @@ public class PackItemEdition extends PackItemBase {
 	public static String[] EDITION_PACK_CONTENT = PackItemStandard.STANDARD_PACK_CONTENT_DEFAULT;
 
 	public PackItemEdition() {
-		setTranslationKey("item_pack_edition");
+		setUnlocalizedName("item_pack_edition");
 		setRegistryName(Reference.MODID, "item_pack_edition");
 	}
 
@@ -172,10 +172,10 @@ public class PackItemEdition extends PackItemBase {
 			CardStructure cStruct = null;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
-				cStruct = Databank.generatedACardFromEdition(cardRarity, edition, random);
+				cStruct = Databank.generateACardFromEdition(cardRarity, edition, new Random()); // Using new Random() because world random can cause issues generating cards
 
 				if (cStruct != null) {
-					if (!created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
+					if (!created.contains(cStruct.getCDWD())) { // ... card was not already created. Duplicate prevention
 						created.add(cStruct.getCDWD());
 						break;
 					}

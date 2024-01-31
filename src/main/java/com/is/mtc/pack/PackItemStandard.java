@@ -29,7 +29,7 @@ public class PackItemStandard extends PackItemBase {
 	public static String[] STANDARD_PACK_CONTENT = STANDARD_PACK_CONTENT_DEFAULT;
 
 	public PackItemStandard() {
-		setTranslationKey("item_pack_standard");
+		setUnlocalizedName("item_pack_standard");
 		setRegistryName(Reference.MODID, "item_pack_standard");
 	}
 

@@ -423,7 +423,7 @@ public class CardMasterHome extends StructureVillagePieces.Village {
 					ItemStack displaystack = new ItemStack(cardIsUncommon ? MTCItems.cardUncommon : MTCItems.cardCommon, 1);
 
 					// Turn card into specific type
-					CardStructure cStruct = Databank.generateACard(cardIsUncommon ? Rarity.UNCOMMON : Rarity.COMMON, random);
+					CardStructure cStruct = Databank.generateACard(cardIsUncommon ? Rarity.UNCOMMON : Rarity.COMMON, new Random()); // Using new Random() because world random can cause issues generating cards
 					if (cStruct != null) {
 						displaystack.setTagCompound(new NBTTagCompound());
 						displaystack = CardItem.applyCDWDtoStack(displaystack, cStruct, random);

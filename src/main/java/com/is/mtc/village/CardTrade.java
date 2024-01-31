@@ -74,7 +74,7 @@ public class CardTrade implements EntityVillager.ITradeList {
 		}
 
 		// If this is a valid card type, generate a random one
-		CardStructure cStruct = Databank.generateACard(((CardItem) stack.getItem()).getCardRarity(), random);
+		CardStructure cStruct = Databank.generateACard(((CardItem)stack.getItem()).getCardRarity(), new Random()); // Using new Random() because world random can cause issues generating cards
 		if (cStruct != null) {
 			stack.setTagCompound(new NBTTagCompound());
 			stack = CardItem.applyCDWDtoStack(stack, cStruct, random);

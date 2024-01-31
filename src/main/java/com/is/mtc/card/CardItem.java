@@ -35,7 +35,7 @@ public class CardItem extends Item {//implements IItemColor {
 	private int rarity;
 
 	public CardItem(int r) {
-		setTranslationKey(PREFIX + Rarity.toString(r).toLowerCase());
+		setUnlocalizedName(PREFIX + Rarity.toString(r).toLowerCase());
 		setRegistryName(Reference.MODID, PREFIX + Rarity.toString(r).toLowerCase());
 		setCreativeTab(MineTradingCards.MODTAB);
 
@@ -90,7 +90,7 @@ public class CardItem extends Item {//implements IItemColor {
 		}
 
 		if (!Tools.hasCDWD(stack)) {
-			CardStructure cStruct = Databank.generateACard(rarity, world.rand);
+			CardStructure cStruct = Databank.generateACard(rarity, new Random()); // Using new Random() because world random can cause issues generating cards
 
 			if (cStruct != null) {
 				if (stack.getCount() != 1) { // Generate a single card from the stack and drop it into inventory

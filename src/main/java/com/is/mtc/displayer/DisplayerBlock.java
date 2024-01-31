@@ -28,7 +28,7 @@ public class DisplayerBlock extends Block {
 
 		setLightLevel(0.9375F);
 
-		setTranslationKey("block_displayer");
+		setUnlocalizedName("block_displayer");
 		setRegistryName(Reference.MODID, "block_displayer");
 		setCreativeTab(MineTradingCards.MODTAB);
 
