@@ -27,7 +27,7 @@ public class BinderItem extends Item {
 	public static final String[] MODE_STR = {"Standard", "Fill"/*, "Slot"*/};
 
 	public BinderItem() {
-		setTranslationKey("item_binder");
+		setUnlocalizedName("item_binder");
 		setRegistryName(Reference.MODID, "item_binder");
 		setCreativeTab(MineTradingCards.MODTAB);
 	}

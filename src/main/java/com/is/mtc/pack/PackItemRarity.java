@@ -57,7 +57,7 @@ public class PackItemRarity extends PackItemBase {
 	private int rarity;
 
 	public PackItemRarity(int r) {
-		setTranslationKey(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
+		setUnlocalizedName(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
 		setRegistryName(Reference.MODID, ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
 
 		rarity = r;
@@ -139,7 +139,7 @@ public class PackItemRarity extends PackItemBase {
 			CardStructure cStruct = null;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry y times until...
-				cStruct = Databank.generateACard(cardRarity, random);
+				cStruct = Databank.generateACard(cardRarity, new Random()); // Using new Random() because world random can cause issues generating cards
 
 				if (cStruct != null && !created.contains(cStruct.getCDWD())) { // ... card was not already created. Duplicate prevention
 					created.add(cStruct.getCDWD());

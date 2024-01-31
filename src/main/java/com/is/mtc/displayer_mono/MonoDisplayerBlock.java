@@ -33,7 +33,7 @@ public class MonoDisplayerBlock extends Block {
 
 		setLightLevel(0.9375F);
 
-		setTranslationKey("block_monodisplayer");
+		setUnlocalizedName("block_monodisplayer");
 		setRegistryName(Reference.MODID, "block_monodisplayer");
 		//setBlockName("block_monodisplayer");
 		//setBlockTextureName(MineTradingCards.MODID + ":block_monodisplayer");
@@ -51,7 +51,7 @@ public class MonoDisplayerBlock extends Block {
 	}
 
 	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
+		EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
 
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;

@@ -1,6 +1,29 @@
-.gradle/
-.idea/
-logs/
-out/
-run/
-build/
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+CREDITS.txt
+ForgeGradle-*.zip
+LICENSE-Paulscode IBXM Library.txt
+LICENSE-Paulscode SoundSystem CodecIBXM.txt
+LICENSE.txt
+README.txt
+changelog.txt

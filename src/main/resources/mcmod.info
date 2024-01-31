@@ -1,14 +1,14 @@
 [
 {
-  "modid": "is_mtc",
-  "name": "Mine Trading Cards",
-  "description": "Collect and trade customizeable card sets in Minecraft!",
-  "version": "$version",
-  "mcversion": "$mcversion",
+  "modid": "examplemod",
+  "name": "Example Mod",
+  "description": "Example placeholder mod.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Powerthegreat", "AstroTibs", "DigitalRai"],
-  "credits": "TeamWar aka Tradeworld for originally making the mod, AstroTibs for the 3.0 village and graphics update, and DigitalRai for the memory fix",
+  "authorList": ["ExampleDude"],
+  "credits": "The Forge and FML guys, for making this example",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
