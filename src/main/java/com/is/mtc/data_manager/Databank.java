@@ -184,7 +184,7 @@ public class Databank {
 			return false;
 		}
 
-		if (cards_by_cdwd.containsKey(cStruct.getCDWD())) { // Does this edition has a card with the same CDWD already registered
+		if (cards_by_cdwd.containsKey(cStruct.getCDWD())) { // Does this edition have a card with the same CDWD already registered
 			Logs.errLog("Card ID is already used for the edition '" + cStruct.getEdition() + "'");
 			return false;
 		}
@@ -240,11 +240,13 @@ public class Databank {
 	public static CardStructure generateACard(int rarity, Random random) {
 		int i;
 
-		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
+		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT) {
 			return null;
+		}
 
-		if (cards_by_wrarity.get(rarity).size() <= 0)
+		if (cards_by_wrarity.get(rarity).size() <= 0) {
 			return null;
+		}
 
 		i = random.nextInt(wrarity_tw.get(rarity));
 
@@ -257,46 +259,54 @@ public class Databank {
 		return null;
 	}
 
-	public static CardStructure generatedACardFromEdition(int rarity, String edition_id, Random random) {
+	public static CardStructure generateACardFromEdition(int rarity, String edition_id, Random random) {
 		int i;
 
-		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
+		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT) {
 			return null;
+		}
 
-		if (!editions_by_id.containsKey(edition_id))
+		if (!editions_by_id.containsKey(edition_id)) {
 			return null;
+		}
 
-		if (cards_by_wraed.get(edition_id).get(rarity).size() <= 0) // No cards from the specified rarity in this edition
+		if (cards_by_wraed.get(edition_id).get(rarity).size() <= 0) { // No cards from the specified rarity in this edition
 			return null;
+		}
 
 		i = random.nextInt(wraed.get(edition_id).get(rarity));
 
 		for (Map.Entry<Integer, CardStructure> entry : cards_by_wraed.get(edition_id).get(rarity).entrySet()) {
-			if (i < entry.getKey())
+			if (i < entry.getKey()) {
 				return entry.getValue();
+			}
 		}
 
 		Logs.errLog("Error: In 'generatedACardFromEdition': {i:" + i + " wraed:" + wraed.get(edition_id).get(rarity) + "}");
 		return null;
 	}
 
-	public static CardStructure generatedACardFromCategory(int rarity, String category, Random random) {
+	public static CardStructure generateACardFromCategory(int rarity, String category, Random random) {
 		int i;
 
-		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT)
+		if (rarity <= Rarity.UNSET || rarity >= Rarity.RCOUNT) {
 			return null;
+		}
 
-		if (!cards_by_wracat.containsKey(category))
+		if (!cards_by_wracat.containsKey(category)) {
 			return null;
+		}
 
-		if (cards_by_wracat.get(category).get(rarity).size() <= 0) // No cards from the specified rarity in this edition
+		if (cards_by_wracat.get(category).get(rarity).size() <= 0) { // No cards from the specified rarity in this edition
 			return null;
+		}
 
 		i = random.nextInt(wracat.get(category).get(rarity));
 
 		for (Map.Entry<Integer, CardStructure> entry : cards_by_wracat.get(category).get(rarity).entrySet()) {
-			if (i < entry.getKey())
+			if (i < entry.getKey()) {
 				return entry.getValue();
+			}
 		}
 
 		Logs.errLog("Error: In 'generatedACardFromCategory': {i:" + i + " wracat:" + wracat.get(category).get(rarity) + "}");

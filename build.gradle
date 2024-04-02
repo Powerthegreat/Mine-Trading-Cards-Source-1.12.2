@@ -38,7 +38,7 @@ minecraft {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-	implementation files("api/VillageNames-1.12.2-4.4.6-deobf.jar")
+	implementation files("api/VillageNames-1.12.2-4.4.7-deobf.jar")
 }
 
 processResources {

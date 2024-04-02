@@ -129,10 +129,10 @@ public class PackItemCustom extends PackItemBase {
 			CardStructure cStruct = null;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
-				cStruct = Databank.generatedACardFromCategory(cardRarity, category, random);
+				cStruct = Databank.generateACardFromCategory(cardRarity, category, new Random()); // Using new Random() because world random can cause issues generating cards
 
 				if (cStruct != null) {
-					if (!created.contains(cStruct.getCDWD())) { // ... cards was not already created. Duplicate prevention
+					if (!created.contains(cStruct.getCDWD())) { // ... card was not already created. Duplicate prevention
 						created.add(cStruct.getCDWD());
 						break;
 					}
