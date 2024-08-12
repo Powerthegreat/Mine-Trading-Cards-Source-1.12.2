@@ -153,20 +153,14 @@ public class CardItem extends Item {//implements IItemColor {
 		}
 
 		if (!cStruct.getDescription().isEmpty()) {
-			String[] words = cStruct.getDescription().split(" ");
-			String line = "";
+			String[] lines = cStruct.getDescription().split("\\\\n");
 
-			infos.add("");
-			for (String word : words) {
-				line = line + " " + word;
-				line = Tools.clean(line);
-				if (line.length() >= MAX_DESC_LENGTH) {
-					infos.add(TextFormatting.ITALIC + line);
-					line = "";
+			for (String currentLine : lines) {
+				while (currentLine.length() >= MAX_DESC_LENGTH) {
+					infos.add(TextFormatting.ITALIC + currentLine.substring(0, MAX_DESC_LENGTH));
+					currentLine = currentLine.substring(MAX_DESC_LENGTH);
 				}
-			}
-			if (!line.isEmpty()) {
-				infos.add(line);
+				infos.add(TextFormatting.ITALIC + currentLine);
 			}
 		}
 
