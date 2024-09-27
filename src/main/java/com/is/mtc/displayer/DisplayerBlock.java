@@ -4,6 +4,7 @@ import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -24,7 +25,7 @@ public class DisplayerBlock extends Block {
 	private boolean wasPowered;
 
 	public DisplayerBlock() {
-		super(Material.IRON);
+		super(new Material(MapColor.WOOD));
 
 		setLightLevel(0.9375F);
 
@@ -34,6 +35,7 @@ public class DisplayerBlock extends Block {
 
 		setHardness(5.0F);
 		setResistance(10.0F);
+		setHarvestLevel("axe", 0);
 	}
 
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {

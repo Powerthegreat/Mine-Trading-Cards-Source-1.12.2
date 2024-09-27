@@ -4,6 +4,7 @@ import com.is.mtc.MineTradingCards;
 import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.util.Reference;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -29,21 +30,19 @@ public class MonoDisplayerBlock extends Block {
 	//private IIcon iFace, iSides, iDisplaySide;
 
 	public MonoDisplayerBlock() {
-		super(Material.IRON);
+		super(new Material(MapColor.WOOD));
 
 		setLightLevel(0.9375F);
 
 		setTranslationKey("block_monodisplayer");
 		setRegistryName(Reference.MODID, "block_monodisplayer");
-		//setBlockName("block_monodisplayer");
-		//setBlockTextureName(MineTradingCards.MODID + ":block_monodisplayer");
 		setCreativeTab(MineTradingCards.MODTAB);
 
 		setHardness(5.0F);
 		setResistance(10.0F);
+		setHarvestLevel("axe", 0);
 
 		setDefaultState(getBlockState().getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		//isBlockContainer = true;
 	}
 
 	protected BlockStateContainer createBlockState() {
