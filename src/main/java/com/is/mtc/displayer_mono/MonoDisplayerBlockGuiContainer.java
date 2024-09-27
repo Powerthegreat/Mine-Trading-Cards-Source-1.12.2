@@ -1,68 +1,47 @@
 package com.is.mtc.displayer_mono;
 
 import com.is.mtc.util.Reference;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.util.vector.Vector2f;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class MonoDisplayerBlockGuiContainer extends GuiContainer {
+@OnlyIn(Dist.CLIENT)
+public class MonoDisplayerBlockGuiContainer extends ContainerScreen<MonoDisplayerBlockContainer> {
 	private static final int WIDTH = 224, HEIGHT = 90;
-	private InventoryPlayer inventoryPlayer;
+	private static final ResourceLocation MONO_DISPLAYER_BLOCK_BACKGROUND = new ResourceLocation(Reference.MODID, "textures/gui/ui_monodisplayer.png");
 
-	public MonoDisplayerBlockGuiContainer(InventoryPlayer inventoryPlayer, Container inventorySlots) {
-		super(inventorySlots);
-		this.inventoryPlayer = inventoryPlayer;
+	public MonoDisplayerBlockGuiContainer(MonoDisplayerBlockContainer screenContainer, PlayerInventory player, ITextComponent title) {
+		super(screenContainer, player, title);
 
-		xSize = WIDTH;
-		ySize = HEIGHT;
+		leftPos = 0;
+		topPos = 0;
+		imageWidth = WIDTH;
+		imageHeight = HEIGHT;
 	}
 
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		super.drawScreen(mouseX, mouseY, partialTicks);
-		renderHoveredToolTip(mouseX, mouseY);
+	@Override
+	protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
 	}
 
-	public boolean doesGuiPauseGame() {
-		return false;
+	@Override
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		renderBackground(matrixStack);
+		super.render(matrixStack, mouseX, mouseY, partialTicks);
+		renderTooltip(matrixStack, mouseX, mouseY);
 	}
 
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		Vector2f drawPos = new Vector2f((width - WIDTH) / 2f, (height - HEIGHT) / 2f);
+	@Override
+	protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		minecraft.textureManager.bind(MONO_DISPLAYER_BLOCK_BACKGROUND);
 
-		this.drawDefaultBackground();
-		mc.getTextureManager().bindTexture(new ResourceLocation(Reference.MODID, "textures/gui/ui_monodisplayer.png"));
-		drawTexturedModalRect((int) drawPos.x, (int) drawPos.y, 0, 0, WIDTH, HEIGHT);
-	}
-
-	public void onGuiClosed() {
-		super.onGuiClosed();
-	}
-
-	protected void renderHoveredToolTip(int mouseX, int mouseY) {
-		Slot hoveredSlot = getSlotAtPosition(mouseX, mouseY);
-		if (mc.player.inventory.getItemStack().isEmpty() && hoveredSlot != null && hoveredSlot.getHasStack()) {
-			ItemStack stack = hoveredSlot.getStack();
-			FontRenderer font = stack.getItem().getFontRenderer(stack);
-			net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
-			drawHoveringText(getItemToolTip(stack), mouseX, mouseY, (font == null ? fontRenderer : font));
-			net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
-		}
-	}
-
-	private Slot getSlotAtPosition(int x, int y) {
-		for (int i = 0; i < inventorySlots.inventorySlots.size(); ++i) {
-			Slot slot = inventorySlots.inventorySlots.get(i);
-
-			if (isPointInRegion(slot.xPos, slot.yPos, 16, 16, x, y) && slot.isEnabled()) {
-				return slot;
-			}
-		}
-
-		return null;
+		int x = (width - imageWidth) / 2;
+		int y = (height - imageHeight) / 2;
+		blit(matrixStack, x, y, 0, 0, imageWidth, imageHeight);
 	}
 }

@@ -118,14 +118,14 @@ public class DataLoader {
 					continue;
 				}
 				for (Tuple<ZipEntry, Boolean> entry : cardZipEntries) { // Load cards after editions
-					if (entry.getSecond()) {
-						InputStreamReader inputStreamReader = new InputStreamReader(file.getInputStream(entry.getFirst()));
+					if (entry.getB()) {
+						InputStreamReader inputStreamReader = new InputStreamReader(file.getInputStream(entry.getA()));
 						BufferedReader br = new BufferedReader(inputStreamReader);
-						getSingleCardCdf(br, entry.getFirst().getName());
+						getSingleCardCdf(br, entry.getA().getName());
 						br.close();
 						inputStreamReader.close();
 					} else {
-						getSingleCardJson((JsonObject) parser.parse(loadInputStreamJson(file.getInputStream(entry.getFirst()))), entry.getFirst().getName());
+						getSingleCardJson((JsonObject) parser.parse(loadInputStreamJson(file.getInputStream(entry.getA()))), entry.getA().getName());
 					}
 				}
 				for (ZipEntry entry : packZipEntries) { // Load packs last

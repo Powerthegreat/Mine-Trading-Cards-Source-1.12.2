@@ -1,15 +1,14 @@
 package com.is.mtc.pack;
 
-import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -19,14 +18,14 @@ public class PackItemBase extends Item {
 
 	protected static final int RETRY = 50;
 
-	public PackItemBase() {
-		setCreativeTab(MineTradingCards.MODTAB);
+	public PackItemBase(Properties properties) {
+		super(properties);
 	}
 
 	protected void createCards(int cardRarity, int count, ArrayList<String> created, Random random) {
 
 		for (int x = 0; x < count; ++x) { // Generate x cards
-			CardStructure cStruct = null;
+			CardStructure cStruct;
 
 			for (int y = 0; y < RETRY; ++y) { // Retry x times until...
 				cStruct = Databank.generateACard(cardRarity, new Random()); // Using new Random() because world random can cause issues generating cards
@@ -39,18 +38,18 @@ public class PackItemBase extends Item {
 		}
 	}
 
-	protected void spawnCard(EntityPlayer player, World world, String cdwd) {
+	protected void spawnCard(PlayerEntity player, World world, String cdwd) {
 
 		ItemStack genStack = new ItemStack(Rarity.getAssociatedCardItem(Databank.getCardByCDWD(cdwd).getRarity()));
-		EntityItem spawnedEnt;
+		ItemEntity spawnedEnt;
 
-		NBTTagCompound nbtTag = new NBTTagCompound();
-		nbtTag.setString("cdwd", cdwd); // Setting card
+		CompoundNBT nbtTag = new CompoundNBT();
+		nbtTag.putString("cdwd", cdwd); // Setting card
 		if (Databank.getCardByCDWD(cdwd).getResourceLocations().size() > 1)
-			nbtTag.setInteger("assetnumber", Tools.randInt(0, Databank.getCardByCDWD(cdwd).getResourceLocations().size(), world.rand));
-		genStack.setTagCompound(nbtTag);
-		spawnedEnt = new EntityItem(world, player.posX, player.posY + 1, player.posZ, genStack); // Spawning card
+			nbtTag.putInt("assetnumber", Tools.randInt(0, Databank.getCardByCDWD(cdwd).getResourceLocations().size(), world.getRandom()));
+		genStack.setTag(nbtTag);
+		spawnedEnt = new ItemEntity(world, player.position().x, player.position().y + 1, player.position().z, genStack); // Spawning card
 
-		world.spawnEntity(spawnedEnt);
+		world.addFreshEntity(spawnedEnt);
 	}
 }

@@ -8,18 +8,19 @@ import com.is.mtc.util.Reference;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,99 +29,96 @@ public class PackItemCustom extends PackItemBase {
 
 	private static final String CUSTOM_PACK_ID_KEY = "custom_pack_id";
 
-	public PackItemCustom() {
-		setTranslationKey("item_pack_custom");
-		setRegistryName(Reference.MODID, "item_pack_custom");
+	public PackItemCustom(Properties properties) {
+		super(properties);
 	}
 
 	@Override
-	public void onUpdate(ItemStack stack, World world, Entity player, int itemSlot, boolean isSelected) {
+	public void inventoryTick(ItemStack stack, World world, Entity player, int itemSlot, boolean isSelected) {
 
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
-		}
-		if (!stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY) && Databank.getCustomPacksCount() > 0) {
-			int i = world.rand.nextInt(Databank.getCustomPacksCount());
+		stack.getOrCreateTag();
+		if (!stack.getTag().contains(CUSTOM_PACK_ID_KEY) && Databank.getCustomPacksCount() > 0) {
+			int i = world.getRandom().nextInt(Databank.getCustomPacksCount());
 
-			NBTTagCompound nbtTag = stack.getTagCompound();
-			nbtTag.setString(CUSTOM_PACK_ID_KEY, Databank.getCustomPackWithNumeralId(i).getId());
-			stack.setTagCompound(nbtTag);
+			CompoundNBT nbtTag = stack.getTag();
+			nbtTag.putString(CUSTOM_PACK_ID_KEY, Databank.getCustomPackWithNumeralId(i).getId());
+			stack.setTag(nbtTag);
 		}
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack stack) {
-		String cpid = stack.hasTagCompound() && stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY) ? stack.getTagCompound().getString(CUSTOM_PACK_ID_KEY) : null;
+	public ITextComponent getName(ItemStack stack) {
+		String cpid = (stack.getTag() != null && stack.getTag().contains(CUSTOM_PACK_ID_KEY)) ? stack.getTag().getString(CUSTOM_PACK_ID_KEY) : null;
 		CustomPackStructure packStructure = cpid != null ? Databank.getCustomPackWithId(cpid) : null;
 
 		if (cpid != null) {
 			if (packStructure == null) { // Pack was created earlier, but edition was removed in the mean time
-				return "custom_pack_" + cpid;
+				return new StringTextComponent("custom_pack_" + cpid);
 			} else {
-				return packStructure.getName();
+				return new StringTextComponent(packStructure.getName());
 			}
 		} else {
-			return super.getItemStackDisplayName(stack);
+			return super.getName(stack);
 		}
 	}
 
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infos, ITooltipFlag flag) {
 		CustomPackStructure packStructure;
-		NBTTagCompound nbt;
+		CompoundNBT nbt;
 
-		if (!stack.hasTagCompound() || !stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY)) {
+		if (stack.getTag() == null || !stack.getTag().contains(CUSTOM_PACK_ID_KEY)) {
 			return;
 		}
 
-		nbt = stack.getTagCompound();
-		packStructure = Databank.getCustomPackWithId(stack.getTagCompound().getString(CUSTOM_PACK_ID_KEY));
+		nbt = stack.getTag();
+		packStructure = Databank.getCustomPackWithId(stack.getTag().getString(CUSTOM_PACK_ID_KEY));
 
 		if (packStructure == null) {
-			infos.add(TextFormatting.RED + "/!\\ Missing client-side custom pack");
-			infos.add(TextFormatting.GRAY + nbt.getString(CUSTOM_PACK_ID_KEY));
+			infos.add(new StringTextComponent(TextFormatting.RED + "/!\\ Missing client-side custom pack"));
+			infos.add(new StringTextComponent(TextFormatting.GRAY + nbt.getString(CUSTOM_PACK_ID_KEY)));
 			return;
 		}
 
-		infos.add("Contains cards from the custom pack '" + packStructure.getName() + "'");
+		infos.add(new StringTextComponent("Contains cards from the custom pack '" + packStructure.getName() + "'"));
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 		ArrayList<String> created;
 		CustomPackStructure packStructure;
-		NBTTagCompound nbt;
+		CompoundNBT nbt;
 
-		if (world.isRemote) {
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		if (world.isClientSide) {
+			return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
 		}
-		if (!player.getHeldItem(hand).hasTagCompound() || !player.getHeldItem(hand).getTagCompound().hasKey(CUSTOM_PACK_ID_KEY)) {
+		if (player.getItemInHand(hand).getTag() == null || !player.getItemInHand(hand).getTag().contains(CUSTOM_PACK_ID_KEY)) {
 			Logs.errLog("PackItemCustom: Missing NBT or NBTTag");
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+			return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
 		}
 
-		nbt = player.getHeldItem(hand).getTagCompound();
-		packStructure = Databank.getCustomPackWithId(player.getHeldItem(hand).getTagCompound().getString(CUSTOM_PACK_ID_KEY));
+		nbt = player.getItemInHand(hand).getTag();
+		packStructure = Databank.getCustomPackWithId(nbt.getString(CUSTOM_PACK_ID_KEY));
 
 		if (packStructure == null) {
 			Logs.chatMessage(player, "The custom pack this pack is linked to does not exist, thus zero cards were generated");
 			Logs.errLog("PackItemCustom: Custom pack is missing");
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+			return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
 		}
 
 		created = new ArrayList<String>();
-		packStructure.categoryQuantities.forEach((category, categoryInfo) -> createCards(category, categoryInfo[1], categoryInfo[0], created, world.rand));
+		packStructure.categoryQuantities.forEach((category, categoryInfo) -> createCards(category, categoryInfo[1], categoryInfo[0], created, world.getRandom()));
 
-		if (created.size() > 0) {
+		if (!created.isEmpty()) {
 			for (String cdwd : created) {
 				spawnCard(player, world, cdwd);
 			}
-			player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
+			player.getItemInHand(hand).setCount(player.getItemInHand(hand).getCount() - 1);
 		} else {
 			Logs.chatMessage(player, "Zero cards were registered, thus zero cards were generated");
 			Logs.errLog("Zero cards were registered, thus zero cards were generated");
 		}
 
-		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
 	}
 
 	private void createCards(String category, int cardRarity, int count, ArrayList<String> created, Random random) {
@@ -147,12 +145,12 @@ public class PackItemCustom extends PackItemBase {
 	/**
 	 * From https://github.com/matshou/Generic-Mod
 	 */
+	@OnlyIn(Dist.CLIENT)
 	public static class ColorableIcon implements IItemColor {
 		@Override
-		@SideOnly(Side.CLIENT)
-		public int colorMultiplier(ItemStack stack, int layer) {
+		public int getColor(ItemStack stack, int layer) {
 			if (layer == 0) {
-				String eid = stack.hasTagCompound() && stack.getTagCompound().hasKey(CUSTOM_PACK_ID_KEY) ? stack.getTagCompound().getString(CUSTOM_PACK_ID_KEY) : null;
+				String eid = stack.getTag() != null && stack.getTag().contains(CUSTOM_PACK_ID_KEY) ? stack.getTag().getString(CUSTOM_PACK_ID_KEY) : null;
 				return eid != null && Databank.getCustomPackWithId(eid) != null ? Databank.getCustomPackWithId(eid).getColor() : Reference.COLOR_GRAY;
 			}
 

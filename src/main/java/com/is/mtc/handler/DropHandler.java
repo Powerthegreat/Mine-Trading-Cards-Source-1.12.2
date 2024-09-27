@@ -4,37 +4,41 @@ import com.is.mtc.init.MTCItems;
 import com.is.mtc.root.Logs;
 import com.is.mtc.util.Functions;
 import com.is.mtc.util.Reference;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Random;
 
+@Mod.EventBusSubscriber(modid = Reference.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class DropHandler {
 
-	public static final String[] ENDER_DRAGON_DROPS_DEFAULT = new String[]{
+	public static final List<String> ENDER_DRAGON_DROPS_DEFAULT = Arrays.asList(
 			"common_pack:7",
 			"uncommon_pack:5",
 			"rare_pack:3",
 			"ancient_pack:2",
 			"legendary_pack:1"
-	};
-	public static final String[] BOSS_DROPS_DEFAULT = new String[]{
+	);
+	public static final List<String> BOSS_DROPS_DEFAULT = Arrays.asList(
 			"common_pack:3",
 			"uncommon_pack:3",
 			"rare_pack:2",
 			"ancient_pack:1",
 			"legendary_pack:0.25"
-	};
+	);
 	public static boolean CAN_DROP_CARDS_ANIMAL = false;
 	public static boolean CAN_DROP_CARDS_PLAYER = false;
 	public static boolean CAN_DROP_CARDS_MOB = true;
@@ -43,81 +47,81 @@ public class DropHandler {
 	public static boolean CAN_DROP_PACKS_MOB = true;
 	public static boolean ONLY_ONE_DROP = false;
 	// 1 chance out of DROP_RATE_X (test order)
-	public static float CARD_DROP_RATE_COM = 16F;
-	public static float CARD_DROP_RATE_UNC = 32F;
-	public static float CARD_DROP_RATE_RAR = 48F;
-	public static float CARD_DROP_RATE_ANC = 64F;
-	public static float CARD_DROP_RATE_LEG = 256F;
-	public static float PACK_DROP_RATE_COM = 16F;
-	public static float PACK_DROP_RATE_UNC = 32F;
-	public static float PACK_DROP_RATE_RAR = 48F;
-	public static float PACK_DROP_RATE_ANC = 64F;
-	public static float PACK_DROP_RATE_LEG = 256F;
-	public static float PACK_DROP_RATE_STD = 40F;
-	public static float PACK_DROP_RATE_EDT = 40F;
-	public static float PACK_DROP_RATE_CUS = 40F;
-	public static String[] ENDER_DRAGON_DROPS = ENDER_DRAGON_DROPS_DEFAULT;
-	public static String[] BOSS_DROPS = BOSS_DROPS_DEFAULT;
+	public static double CARD_DROP_RATE_COM = 16F;
+	public static double CARD_DROP_RATE_UNC = 32F;
+	public static double CARD_DROP_RATE_RAR = 48F;
+	public static double CARD_DROP_RATE_ANC = 64F;
+	public static double CARD_DROP_RATE_LEG = 256F;
+	public static double PACK_DROP_RATE_COM = 16F;
+	public static double PACK_DROP_RATE_UNC = 32F;
+	public static double PACK_DROP_RATE_RAR = 48F;
+	public static double PACK_DROP_RATE_ANC = 64F;
+	public static double PACK_DROP_RATE_LEG = 256F;
+	public static double PACK_DROP_RATE_STD = 40F;
+	public static double PACK_DROP_RATE_EDT = 40F;
+	public static double PACK_DROP_RATE_CUS = 40F;
+	public static List<String> ENDER_DRAGON_DROPS = ENDER_DRAGON_DROPS_DEFAULT;
+	public static List<String> BOSS_DROPS = BOSS_DROPS_DEFAULT;
 
-	private void addDrop(Item drop, LivingDropsEvent event, int count) {
+	private static void addDrop(Item drop, LivingDropsEvent event, int count) {
 		if (count == 0) {
 			return;
 		}
 
 		ItemStack dropStack = new ItemStack(drop, count);
-		event.getDrops().add(new EntityItem(event.getEntity().getEntityWorld(), event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, dropStack));
+		event.getDrops().add(new ItemEntity(event.getEntity().level, event.getEntity().position().x(), event.getEntity().position().y(), event.getEntity().position().z(), dropStack));
 	}
 
-	private void addDrop(Item drop, LivingDropsEvent event) {
+	private static void addDrop(Item drop, LivingDropsEvent event) {
 		addDrop(drop, event, 1);
 	}
 
-	private boolean testWhetherDrop(float rate, Random random) {
+	private static boolean testWhetherDrop(double rate, Random random) {
 		if (rate == 0) {
 			return false;
 		}
 		return random.nextFloat() * rate < 1F;
 	}
 
-	private Hashtable<String, Integer> addToDropDict(Hashtable<String, Integer> dict, String key, int valueToAdd) {
+	private static Hashtable<String, Integer> addToDropDict(Hashtable<String, Integer> dict, String key, int valueToAdd) {
 		dict.put(key, dict.get(key) + valueToAdd);
 		return dict;
 	}
 
-	@SubscribeEvent
-	public void onEvent(LivingDropsEvent event) {
+	@SubscribeEvent()
+	public static void onEvent(LivingDropsEvent event) {
 
 		// === HANDLE PACK DROPS === //
 
 		// Ignore if drops are not enabled
-		if (!(event.getEntity() instanceof EntityLiving)) {
+		if (!(event.getEntity() instanceof LivingEntity)) {
 			return;
 		}
-		if (!CAN_DROP_CARDS_MOB && !CAN_DROP_PACKS_MOB && event.getEntity() instanceof EntityMob && !event.getEntity().isNonBoss()) {
+		if (!CAN_DROP_CARDS_MOB && !CAN_DROP_PACKS_MOB && event.getEntity() instanceof MobEntity && !event.getEntity().canChangeDimensions()) {
 			return;
 		}
-		if (!CAN_DROP_CARDS_ANIMAL && !CAN_DROP_PACKS_ANIMAL && event.getEntity() instanceof EntityAnimal && !event.getEntity().isNonBoss()) {
+		if (!CAN_DROP_CARDS_ANIMAL && !CAN_DROP_PACKS_ANIMAL && event.getEntity() instanceof AnimalEntity && !event.getEntity().canChangeDimensions()) {
 			return;
 		}
-		if (!CAN_DROP_CARDS_PLAYER && !CAN_DROP_PACKS_PLAYER && event.getEntity() instanceof EntityPlayer && !event.getEntity().isNonBoss()) {
+		if (!CAN_DROP_CARDS_PLAYER && !CAN_DROP_PACKS_PLAYER && event.getEntity() instanceof PlayerEntity && !event.getEntity().canChangeDimensions()) {
 			return;
 		}
 
 		// Set flags to determine what can drop
 		boolean willDropCards = false;
 		boolean willDropPacks = false;
-		if (event.getEntityLiving() instanceof EntityMob) {
+		if (event.getEntityLiving() instanceof MobEntity) {
 			willDropCards = CAN_DROP_CARDS_MOB;
 			willDropPacks = CAN_DROP_PACKS_MOB;
-		} else if (event.getEntityLiving() instanceof EntityAnimal) {
+		} else if (event.getEntityLiving() instanceof AnimalEntity) {
 			willDropCards = CAN_DROP_CARDS_ANIMAL;
 			willDropPacks = CAN_DROP_PACKS_ANIMAL;
-		} else if (event.getEntityLiving() instanceof EntityPlayer) {
+		} else if (event.getEntityLiving() instanceof PlayerEntity) {
 			willDropCards = CAN_DROP_CARDS_PLAYER;
 			willDropPacks = CAN_DROP_PACKS_PLAYER;
 		}
 
-		Random random = event.getEntityLiving().world.rand;
+		Random random = event.getEntityLiving().level.getRandom();
 
 		// Initialize empty dictionary
 		Hashtable<String, Integer> dropCountDict = new Hashtable<String, Integer>();
@@ -270,7 +274,7 @@ public class DropHandler {
 		}
 
 		// Add set drops to bosses
-		if (event.getEntityLiving() instanceof EntityDragon) { // 18 packs
+		if (event.getEntityLiving() instanceof EnderDragonEntity) { // 18 packs
 			for (String line : ENDER_DRAGON_DROPS) {
 				try {
 					String[] split_config_entry = line.toLowerCase().trim().split(":");
@@ -284,7 +288,7 @@ public class DropHandler {
 					Logs.errLog("Malformed config entry: " + line);
 				}
 			}
-		} else if (!event.getEntityLiving().isNonBoss()) {
+		} else if (!event.getEntityLiving().canChangeDimensions()) {
 			for (String line : BOSS_DROPS) {
 				try {
 					String[] split_config_entry = line.toLowerCase().trim().split(":");
@@ -301,19 +305,19 @@ public class DropHandler {
 		}
 
 		// Add all the drops
-		addDrop(MTCItems.cardLegendary, event, dropCountDict.get(Reference.KEY_CARD_LEG));
-		addDrop(MTCItems.cardAncient, event, dropCountDict.get(Reference.KEY_CARD_ANC));
-		addDrop(MTCItems.cardRare, event, dropCountDict.get(Reference.KEY_CARD_RAR));
-		addDrop(MTCItems.cardUncommon, event, dropCountDict.get(Reference.KEY_CARD_UNC));
-		addDrop(MTCItems.cardCommon, event, dropCountDict.get(Reference.KEY_CARD_COM));
+		addDrop(MTCItems.cardLegendary.get(), event, dropCountDict.get(Reference.KEY_CARD_LEG));
+		addDrop(MTCItems.cardAncient.get(), event, dropCountDict.get(Reference.KEY_CARD_ANC));
+		addDrop(MTCItems.cardRare.get(), event, dropCountDict.get(Reference.KEY_CARD_RAR));
+		addDrop(MTCItems.cardUncommon.get(), event, dropCountDict.get(Reference.KEY_CARD_UNC));
+		addDrop(MTCItems.cardCommon.get(), event, dropCountDict.get(Reference.KEY_CARD_COM));
 
-		addDrop(MTCItems.packLegendary, event, dropCountDict.get(Reference.KEY_PACK_LEG));
-		addDrop(MTCItems.packAncient, event, dropCountDict.get(Reference.KEY_PACK_ANC));
-		addDrop(MTCItems.packCustom, event, dropCountDict.get(Reference.KEY_PACK_CUS));
-		addDrop(MTCItems.packEdition, event, dropCountDict.get(Reference.KEY_PACK_EDT));
-		addDrop(MTCItems.packStandard, event, dropCountDict.get(Reference.KEY_PACK_STD));
-		addDrop(MTCItems.packRare, event, dropCountDict.get(Reference.KEY_PACK_RAR));
-		addDrop(MTCItems.packUncommon, event, dropCountDict.get(Reference.KEY_PACK_UNC));
-		addDrop(MTCItems.packCommon, event, dropCountDict.get(Reference.KEY_PACK_COM));
+		addDrop(MTCItems.packLegendary.get(), event, dropCountDict.get(Reference.KEY_PACK_LEG));
+		addDrop(MTCItems.packAncient.get(), event, dropCountDict.get(Reference.KEY_PACK_ANC));
+		addDrop(MTCItems.packCustom.get(), event, dropCountDict.get(Reference.KEY_PACK_CUS));
+		addDrop(MTCItems.packEdition.get(), event, dropCountDict.get(Reference.KEY_PACK_EDT));
+		addDrop(MTCItems.packStandard.get(), event, dropCountDict.get(Reference.KEY_PACK_STD));
+		addDrop(MTCItems.packRare.get(), event, dropCountDict.get(Reference.KEY_PACK_RAR));
+		addDrop(MTCItems.packUncommon.get(), event, dropCountDict.get(Reference.KEY_PACK_UNC));
+		addDrop(MTCItems.packCommon.get(), event, dropCountDict.get(Reference.KEY_PACK_COM));
 	}
 }

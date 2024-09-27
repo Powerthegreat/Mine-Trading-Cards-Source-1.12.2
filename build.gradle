@@ -4,9 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('net.minecraftforge.gradle:ForgeGradle:5.+') {
-            changing: true
-        }
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5+', changing: true
     }
 }
 
@@ -14,32 +12,75 @@ apply plugin: 'net.minecraftforge.gradle'
 
 version = file('CURRENT_VERSION').text.trim()
 group = "com.is.mtc"
-archivesBaseName = "MineTradingCards-1.12.2"
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-sourceSets { main { output.resourcesDir = output.classesDirs.singleFile } }
+archivesBaseName = "MineTradingCards-1.16.5"
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
-    mappings channel: 'stable', version: '39-1.12'
+    mappings channel: 'official', version: '1.16.5'
 
     runs {
         client {
             workingDirectory project.file('run')
 
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+
+            mods {
+                is_mtc {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            workingDirectory project.file('run')
+            
+            property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+
+            mods {
+                is_mtc {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'is_mtc', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+            mods {
+                is_mtc {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-	implementation files("api/VillageNames-1.12.2-4.4.7-deobf.jar")
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
 }
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title": "is_mtc",
+                "Specification-Vendor": "Powerthegreat",
+                "Specification-Version": "1", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${archiveVersion}",
+                "Implementation-Vendor" :"Powerthegreat",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
 
 processResources {
     duplicatesStrategy('warn')
@@ -47,12 +88,12 @@ processResources {
     inputs.property 'mcversion', minecraft.mappingVersion
 
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+        include 'META-INF/mods.toml'
 
-        expand 'version':project.version, 'mcversion':minecraft.mappingVersion
+        expand 'version':project.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        exclude 'META-INF/mods.toml'
     }
 }

@@ -9,75 +9,80 @@ import com.is.mtc.root.Rarity;
 import com.is.mtc.util.Functions;
 import com.is.mtc.util.Reference;
 import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class PackItemRarity extends PackItemBase {
 
-	public static final String[] COMMON_PACK_CONTENT_DEFAULT = new String[]{
+	public static final List<String> COMMON_PACK_CONTENT_DEFAULT = Arrays.asList(
 			"7x",
 			"2x0:1:0:0:0",
-			"1x0:0:1:0:0",
-	};
-	public static final String[] UNCOMMON_PACK_CONTENT_DEFAULT = new String[]{
+			"1x0:0:1:0:0"
+	);
+	public static final List<String> UNCOMMON_PACK_CONTENT_DEFAULT = Arrays.asList(
 			"6x1:0:0:0:0",
 			"3x",
-			"1x0:0:1:0:0",
-	};
-	public static final String[] RARE_PACK_CONTENT_DEFAULT = new String[]{
+			"1x0:0:1:0:0"
+	);
+	public static final List<String> RARE_PACK_CONTENT_DEFAULT = Arrays.asList(
 			"5x1:0:0:0:0",
 			"3x0:1:0:0:0",
-			"2x",
-	};
-	public static final String[] ANCIENT_PACK_CONTENT_DEFAULT = new String[]{
+			"2x"
+	);
+	public static final List<String> ANCIENT_PACK_CONTENT_DEFAULT = Arrays.asList(
 			"3x1:0:0:0:0",
 			"3x0:1:0:0:0",
 			"3x0:0:1:0:0",
-			"1x",
-	};
-	public static final String[] LEGENDARY_PACK_CONTENT_DEFAULT = new String[]{
-			"1x",
-	};
+			"1x"
+	);
+	public static final List<String> LEGENDARY_PACK_CONTENT_DEFAULT = Arrays.asList(
+			"1x"
+	);
 	private static final String ITEM_PACK_UNLOC_PREFIX = "item_pack_";
-	public static String[] COMMON_PACK_CONTENT = COMMON_PACK_CONTENT_DEFAULT;
-	public static String[] UNCOMMON_PACK_CONTENT = UNCOMMON_PACK_CONTENT_DEFAULT;
-	public static String[] RARE_PACK_CONTENT = RARE_PACK_CONTENT_DEFAULT;
-	public static String[] ANCIENT_PACK_CONTENT = ANCIENT_PACK_CONTENT_DEFAULT;
-	public static String[] LEGENDARY_PACK_CONTENT = LEGENDARY_PACK_CONTENT_DEFAULT;
+	public static List<String> COMMON_PACK_CONTENT = COMMON_PACK_CONTENT_DEFAULT;
+	public static List<String> UNCOMMON_PACK_CONTENT = UNCOMMON_PACK_CONTENT_DEFAULT;
+	public static List<String> RARE_PACK_CONTENT = RARE_PACK_CONTENT_DEFAULT;
+	public static List<String> ANCIENT_PACK_CONTENT = ANCIENT_PACK_CONTENT_DEFAULT;
+	public static List<String> LEGENDARY_PACK_CONTENT = LEGENDARY_PACK_CONTENT_DEFAULT;
 	private int rarity;
 
-	public PackItemRarity(int r) {
-		setTranslationKey(ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
-		setRegistryName(Reference.MODID, ITEM_PACK_UNLOC_PREFIX + Rarity.toString(r).toLowerCase());
+	public PackItemRarity(Properties properties, int rarity) {
+		super(properties);
 
-		rarity = r;
+		this.rarity = rarity;
+	}
+
+	public static String makeRegistryName(int rarity) {
+		return ITEM_PACK_UNLOC_PREFIX + Rarity.toString(rarity).toLowerCase();
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		if (world.isRemote) {
-			return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+	public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+		if (world.isClientSide) {
+			return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
 		} // Don't do this on the client side
 
 		ArrayList<String> created;
-		Random random = world.rand;
+		Random random = world.getRandom();
 
 		// Figure out how many of each card rarity to create
 
 		int[] card_set_to_create = new int[]{0, 0, 0, 0, 0}; // Set of cards that will come out of the pack
-		String[][] set_distribution_array = new String[][]{COMMON_PACK_CONTENT, UNCOMMON_PACK_CONTENT, RARE_PACK_CONTENT, ANCIENT_PACK_CONTENT, LEGENDARY_PACK_CONTENT};
+		List<List<String>> set_distribution_array = Arrays.asList(COMMON_PACK_CONTENT, UNCOMMON_PACK_CONTENT, RARE_PACK_CONTENT, ANCIENT_PACK_CONTENT, LEGENDARY_PACK_CONTENT);
 
-		for (String entry : set_distribution_array[rarity]) {
+		for (String entry : set_distribution_array.get(rarity)) {
 			try {
 				double[] card_weighted_dist = new double[]{0, 0, 0, 0, 0}; // Distribution used when a card is randomized
 
@@ -116,20 +121,20 @@ public class PackItemRarity extends PackItemBase {
 		created = new ArrayList<String>();
 
 		for (int rarity : CardItem.CARD_RARITY_ARRAY) {
-			createCards(rarity, card_set_to_create[rarity], created, world.rand);
+			createCards(rarity, card_set_to_create[rarity], created, world.getRandom());
 		}
 
 		if (created.size() > 0) {
 			for (String cdwd : created) {
 				spawnCard(player, world, cdwd);
 			}
-			player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
+			player.getItemInHand(hand).setCount(player.getItemInHand(hand).getCount() - 1);
 		} else {
 			Logs.chatMessage(player, "Zero cards were registered, thus zero cards were generated");
 			Logs.errLog("Zero cards were registered, thus zero cards can be generated");
 		}
 
-		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		return new ActionResult<>(ActionResultType.SUCCESS, player.getItemInHand(hand));
 	}
 
 	@Override
@@ -154,6 +159,7 @@ public class PackItemRarity extends PackItemBase {
 	/**
 	 * From https://github.com/matshou/Generic-Mod
 	 */
+	@OnlyIn(Dist.CLIENT)
 	public static class ColorableIcon implements IItemColor {
 		private int rarity;
 
@@ -162,8 +168,7 @@ public class PackItemRarity extends PackItemBase {
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
-		public int colorMultiplier(ItemStack stack, int layer) {
+		public int getColor(ItemStack stack, int layer) {
 			if (layer == 0) {
 				switch (this.rarity) {
 					case Rarity.COMMON:

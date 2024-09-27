@@ -49,15 +49,15 @@ public class Rarity {
 	public static CardItem getAssociatedCardItem(int rarity) {
 		switch (rarity) {
 			case COMMON:
-				return MTCItems.cardCommon;
+				return (CardItem) MTCItems.cardCommon.get();
 			case UNCOMMON:
-				return MTCItems.cardUncommon;
+				return (CardItem) MTCItems.cardUncommon.get();
 			case RARE:
-				return MTCItems.cardRare;
+				return (CardItem) MTCItems.cardRare.get();
 			case ANCIENT:
-				return MTCItems.cardAncient;
+				return (CardItem) MTCItems.cardAncient.get();
 			case LEGENDARY:
-				return MTCItems.cardLegendary;
+				return (CardItem) MTCItems.cardLegendary.get();
 
 			default:
 				return null;
@@ -68,19 +68,19 @@ public class Rarity {
 		TextFormatting tf;
 		switch (rarity) {
 			case COMMON:
-				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_COMMON);
+				tf = TextFormatting.getByName(MineTradingCards.CARD_TOOLTIP_COLOR_COMMON);
 				return tf != null ? tf : TextFormatting.GREEN;
 			case UNCOMMON:
-				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_UNCOMMON);
+				tf = TextFormatting.getByName(MineTradingCards.CARD_TOOLTIP_COLOR_UNCOMMON);
 				return tf != null ? tf : TextFormatting.GOLD;
 			case RARE:
-				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_RARE);
+				tf = TextFormatting.getByName(MineTradingCards.CARD_TOOLTIP_COLOR_RARE);
 				return tf != null ? tf : TextFormatting.RED;
 			case ANCIENT:
-				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_ANCIENT);
+				tf = TextFormatting.getByName(MineTradingCards.CARD_TOOLTIP_COLOR_ANCIENT);
 				return tf != null ? tf : TextFormatting.AQUA;
 			case LEGENDARY:
-				tf = TextFormatting.getValueByName(MineTradingCards.CARD_TOOLTIP_COLOR_LEGENDARY);
+				tf = TextFormatting.getByName(MineTradingCards.CARD_TOOLTIP_COLOR_LEGENDARY);
 				return tf != null ? tf : TextFormatting.DARK_PURPLE;
 
 			default:

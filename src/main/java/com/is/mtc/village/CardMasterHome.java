@@ -1,10 +1,11 @@
 package com.is.mtc.village;
 
-import com.is.mtc.MineTradingCards;
+/*import com.is.mtc.MineTradingCards;
 import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import com.is.mtc.displayer.DisplayerBlockTileEntity;
+import com.is.mtc.init.MTCBlocks;
 import com.is.mtc.init.MTCItems;
 import com.is.mtc.integration.villagenames.VNCompat;
 import com.is.mtc.root.Rarity;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class CardMasterHome extends StructureVillagePieces.Village {
+*/public class CardMasterHome {/* extends StructureVillagePieces.Village {
 	public static final int STRUCTURE_HEIGHT = 7;
 	// Make foundation with blanks as empty air and F as foundation spaces
 	private static final String[] foundationPattern = new String[]{
@@ -412,15 +413,15 @@ public class CardMasterHome extends StructureVillagePieces.Village {
 
 			// Set contents
 			BlockPos pos = new BlockPos(x, y, z);
-			if (structureBB.isVecInside(pos) && world.getBlockState(pos) != null && world.getBlockState(pos) != MTCItems.monoDisplayerBlock) {
-				world.setBlockState(pos, MTCItems.monoDisplayerBlock.getStateFromMeta(VNCompat.chooseMonoDisplayMeta(uvwoc[3], this.getCoordBaseMode())), 2);
+			if (structureBB.isVecInside(pos) && world.getBlockState(pos) != null && world.getBlockState(pos).getBlock() != MTCBlocks.monoDisplayerBlock.get()) {
+				world.setBlockState(pos, MTCBlocks.monoDisplayerBlock.get().getStateFromMeta(VNCompat.chooseMonoDisplayMeta(uvwoc[3], this.getCoordBaseMode())), 2);
 				TileEntity te = world.getTileEntity(pos);
 
 				if (te != null && te instanceof DisplayerBlockTileEntity) {
 					// The center card will sometimes be an uncommon
 					boolean cardIsUncommon = uvwoc[4] != 0 && (random.nextInt(100) < uvwoc[4]);
 
-					ItemStack displaystack = new ItemStack(cardIsUncommon ? MTCItems.cardUncommon : MTCItems.cardCommon, 1);
+					ItemStack displaystack = new ItemStack(cardIsUncommon ? MTCItems.cardUncommon.get() : MTCItems.cardCommon.get(), 1);
 
 					// Turn card into specific type
 					CardStructure cStruct = Databank.generateACard(cardIsUncommon ? Rarity.UNCOMMON : Rarity.COMMON, new Random()); // Using new Random() because world random can cause issues generating cards
@@ -531,6 +532,6 @@ public class CardMasterHome extends StructureVillagePieces.Village {
 	@Override
 	protected VillagerRegistry.VillagerProfession chooseForgeProfession(int count, VillagerRegistry.VillagerProfession prof) {
 		return MineTradingCardVillagers.PROFESSION_CARD_MASTER;
-	}
+	}*/
 }
 

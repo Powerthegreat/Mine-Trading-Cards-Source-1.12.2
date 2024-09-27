@@ -1,110 +1,82 @@
 package com.is.mtc.displayer;
 
-import com.is.mtc.MineTradingCards;
-import com.is.mtc.handler.GuiHandler;
-import com.is.mtc.util.Reference;
+import com.is.mtc.init.MTCTileEntities;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
 public class DisplayerBlock extends Block {
 	private boolean wasPowered;
 
-	public DisplayerBlock() {
-		super(new Material(MapColor.WOOD));
-
-		setLightLevel(0.9375F);
-
-		setTranslationKey("block_displayer");
-		setRegistryName(Reference.MODID, "block_displayer");
-		setCreativeTab(MineTradingCards.MODTAB);
-
-		setHardness(5.0F);
-		setResistance(10.0F);
-		setHarvestLevel("axe", 0);
+	public DisplayerBlock(Properties properties) {
+		super(properties);
 	}
 
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		TileEntity tileEntity = world.getTileEntity(pos);
+	@Override
+	public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+		return 14;
+	}
 
-		if (!(tileEntity instanceof DisplayerBlockTileEntity))
-			return false;
-
-		player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_DISPLAYER, world, pos.getX(), pos.getY(), pos.getZ());
+	@Override
+	public boolean hasTileEntity(BlockState state) {
 		return true;
-	}
-
-	private void emptyDisplayerBlockTileEntity(DisplayerBlockTileEntity dte, World world, int x, int y, int z) {
-		IItemHandler content;
-
-		if (dte == null)
-			return;
-		content = dte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);//.getContent();
-
-		for (int i = 0; i < 4; ++i) {
-			ItemStack stack = content.getStackInSlot(i);//content[i];
-
-			if (!stack.isEmpty()) {
-				EntityItem entity = new EntityItem(world, x, y, z, stack);
-
-				world.spawnEntity(entity);
-			}
-		}
-	}
-
-	/*public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state) {
-		if (world.isRemote)
-			return;
-
-
-	}*/
-
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
-		emptyDisplayerBlockTileEntity((DisplayerBlockTileEntity) world.getTileEntity(pos), world, pos.getX(), pos.getY(), pos.getZ());
-		world.removeTileEntity(pos);
 	}
 
 	@Nullable
-	public TileEntity createTileEntity(World world, IBlockState state) {
-		return new DisplayerBlockTileEntity();
+	@Override
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return MTCTileEntities.displayerBlockTileEntity.get().create();
 	}
 
-	public boolean hasTileEntity(IBlockState state) {
-		return true;
-	}
-
-	public Class<DisplayerBlockTileEntity> getTileEntityClass() {
-		return DisplayerBlockTileEntity.class;
-	}
-
-	public DisplayerBlockTileEntity getTileEntity(IBlockAccess world, BlockPos pos) {
-		return (DisplayerBlockTileEntity) world.getTileEntity(pos);
-	}
-
-	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos neighbor) {
-		boolean isPowered = world.getTileEntity(pos).getWorld().isBlockPowered(pos);
-		try {
-			DisplayerBlockTileEntity thisEntity = (DisplayerBlockTileEntity) world.getTileEntity(pos);
-			if (isPowered && !wasPowered) {
-				thisEntity.spinCards();
+	@SuppressWarnings("deprecation")
+	@Override
+	public ActionResultType use(BlockState blockState, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult traceResult) {
+		if (!world.isClientSide && hand == Hand.MAIN_HAND) {
+			TileEntity tileEntity = world.getBlockEntity(pos);
+			if (tileEntity instanceof DisplayerBlockTileEntity) {
+				NetworkHooks.openGui((ServerPlayerEntity) player, (DisplayerBlockTileEntity) tileEntity, pos);
 			}
-		} catch (Exception ignored) {
-
 		}
-		wasPowered = isPowered;
+
+		return ActionResultType.SUCCESS;
+	}
+
+	@Override
+	public void onRemove(BlockState oldState, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (!oldState.is(newState.getBlock())) {
+			TileEntity tileEntity = world.getBlockEntity(pos);
+			if (tileEntity instanceof DisplayerBlockTileEntity) {
+				InventoryHelper.dropContents(world, pos, (IInventory) tileEntity);
+				world.updateNeighbourForOutputSignal(pos, this);
+			}
+
+			super.onRemove(oldState, world, pos, newState, isMoving);
+		}
+	}
+
+	@Override
+	public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos neighbor, boolean isMoving) {
+		if (!world.isClientSide) {
+			boolean isPowered = world.hasNeighborSignal(pos);
+			TileEntity tileEntity = world.getBlockEntity(pos);
+			if (tileEntity instanceof DisplayerBlockTileEntity && isPowered && !wasPowered) {
+				((DisplayerBlockTileEntity) tileEntity).spinCards();
+			}
+
+			wasPowered = isPowered;
+		}
 	}
 }

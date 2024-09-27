@@ -3,50 +3,55 @@ package com.is.mtc.card;
 import com.is.mtc.MineTradingCards;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import com.is.mtc.handler.GuiHandler;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
 import com.is.mtc.util.Reference;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class CardItem extends Item {//implements IItemColor {
+public class CardItem extends Item {
 
 	public static final int[] CARD_RARITY_ARRAY = new int[]{Rarity.COMMON, Rarity.UNCOMMON, Rarity.RARE, Rarity.ANCIENT, Rarity.LEGENDARY};
 	private static final String PREFIX = "item_card_";
 	private static final int MAX_DESC_LENGTH = 42;
-	private int rarity;
+	private final int rarity;
 
-	public CardItem(int r) {
-		setTranslationKey(PREFIX + Rarity.toString(r).toLowerCase());
-		setRegistryName(Reference.MODID, PREFIX + Rarity.toString(r).toLowerCase());
-		setCreativeTab(MineTradingCards.MODTAB);
+	public CardItem(Properties properties, int rarity) {
+		super(properties);
 
-		rarity = r;
+		this.rarity = rarity;
+	}
+
+	public static String makeRegistryName(int rarity) {
+		return PREFIX + Rarity.toString(rarity).toLowerCase();
 	}
 
 	public static ItemStack applyCDWDtoStack(ItemStack stack, CardStructure cStruct, Random random) {
-		NBTTagCompound nbtTag = stack.getTagCompound();
-		nbtTag.setString("cdwd", cStruct.getCDWD());
+		CompoundNBT nbtTag = stack.getOrCreateTag();
+		nbtTag.putString("cdwd", cStruct.getCDWD());
 		if (cStruct.getResourceLocations() != null && cStruct.getResourceLocations().size() > 1) {
-			nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getResourceLocations().size(), random));
+			nbtTag.putInt("assetnumber", Tools.randInt(0, cStruct.getResourceLocations().size(), random));
 		}
 		return stack;
 	}
@@ -56,38 +61,42 @@ public class CardItem extends Item {//implements IItemColor {
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack stack) {
-		String cdwd = Tools.hasCDWD(stack) ? stack.getTagCompound().getString("cdwd") : null;
+	public ITextComponent getName(ItemStack stack) {
+		String cdwd = Tools.hasCDWD(stack) ? stack.getTag().getString("cdwd") : null;
 		CardStructure cStruct = cdwd != null ? Databank.getCardByCDWD(cdwd) : null;
 
 		if (cdwd != null) {
 			if (cStruct == null) { // Card not registered ? Display cdwd
-				return cdwd;
-			} else {
-				return cStruct.getName();
+				return new StringTextComponent(cdwd);
+			} else if (cStruct.getName() != null) {
+				return new StringTextComponent(cStruct.getName());
 			}
-		} else {
-			return super.getItemStackDisplayName(stack);
 		}
+		return super.getName(stack);
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	public ActionResultType useOn(ItemUseContext p_195939_1_) {
+		return super.useOn(p_195939_1_);
+	}
 
-		ItemStack stack = player.getHeldItem(hand);
+	@Override
+	public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+		ItemStack stack = player.getItemInHand(hand);
 
-		if (world.isRemote) {
-			if (Tools.hasCDWD(stack)) {
-				GuiHandler.hand = hand;
-				player.openGui(MineTradingCards.INSTANCE, GuiHandler.GUI_CARD, world, (int) player.posX, (int) player.posY, (int) player.posZ);
+		if (world.isClientSide && Tools.hasCDWD(stack)) {
+			CardStructure cStruct = Databank.getCardByCDWD(stack.getTag() != null ? stack.getTag().getString("cdwd") : null);
+			if (CardStructure.isValidCStructAsset(cStruct, stack)) {
+				Minecraft.getInstance().setScreen(new CardItemInterface(stack));
+			} else {
+				Logs.chatMessage(player, "Unable to open card illustration: Missing client side illustration: " + stack.getTag().getString("cdwd") + " asset number " + stack.getTag().getInt("assetnumber"));
+				Logs.errLog("Unable to open card illustration: Missing client side illustration: " + stack.getTag().getString("cdwd") + " asset number " + stack.getTag().getInt("assetnumber"));
 			}
 
-			return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+			return new ActionResult<>(ActionResultType.SUCCESS, stack);
 		}
 
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
-		}
+		stack.getOrCreateTag();
 
 		if (!Tools.hasCDWD(stack)) {
 			CardStructure cStruct = Databank.generateACard(rarity, new Random()); // Using new Random() because world random can cause issues generating cards
@@ -95,61 +104,58 @@ public class CardItem extends Item {//implements IItemColor {
 			if (cStruct != null) {
 				if (stack.getCount() != 1) { // Generate a single card from the stack and drop it into inventory
 					ItemStack popoffStack = stack.copy();
-					if (!popoffStack.hasTagCompound()) {
-						popoffStack.setTagCompound(new NBTTagCompound());
-					}
+					popoffStack.getOrCreateTag();
 					popoffStack.setCount(1);
-					popoffStack = applyCDWDtoStack(popoffStack, cStruct, world.rand);
+					popoffStack = applyCDWDtoStack(popoffStack, cStruct, world.getRandom());
 
-					EntityItem dropped_card = player.entityDropItem(popoffStack, 1);
-					dropped_card.setPickupDelay(0);
+					ItemEntity dropped_card = player.drop(popoffStack, false);
+					dropped_card.setNoPickUpDelay();
 
-					if (!player.capabilities.isCreativeMode) {
+					if (!player.isCreative()) {
 						stack.shrink(1);
 					}
 				} else { // Add data to the singleton "empty" card
-					stack = applyCDWDtoStack(stack, cStruct, world.rand);
+					stack = applyCDWDtoStack(stack, cStruct, world.getRandom());
 				}
 			} else {
 				Logs.errLog("Unable to generate a card of this rarity: " + Rarity.toString(rarity));
 			}
 		}
 
-		NBTTagCompound nbtTag = stack.getTagCompound();
-		if (!nbtTag.hasKey("assetnumber")) {
+		CompoundNBT nbtTag = stack.getTag();
+		if (nbtTag.get("assetnumber") == null) {
 			CardStructure cStruct = Databank.getCardByCDWD(nbtTag.getString("cdwd"));
 			if (cStruct != null) {
 				if (cStruct.getResourceLocations() != null && cStruct.getResourceLocations().size() > 1) {
-					nbtTag.setInteger("assetnumber", Tools.randInt(0, cStruct.getResourceLocations().size(), world.rand));
+					nbtTag.putInt("assetnumber", Tools.randInt(0, cStruct.getResourceLocations().size(), world.getRandom()));
 				}
 			}
 		}
 
-		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+		return new ActionResult<>(ActionResultType.SUCCESS, stack);
 	}
 
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> infos, ITooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> infos, ITooltipFlag flag) {
 		CardStructure cStruct;
-		NBTTagCompound nbt;
+		CompoundNBT nbt = stack.getTag();
 
-		if (!stack.hasTagCompound() || !Tools.hasCDWD(stack)) {
+		if (nbt == null || !Tools.hasCDWD(stack)) {
 			return;
 		}
 
-		nbt = stack.getTagCompound();
 		cStruct = Databank.getCardByCDWD(nbt.getString("cdwd"));
 
 		if (cStruct == null) {
-			infos.add(TextFormatting.RED + "/!\\ Missing client-side data");
-			infos.add(TextFormatting.GRAY + nbt.getString("cdwd"));
+			infos.add(new StringTextComponent(TextFormatting.RED + "/!\\ Missing client-side data"));
+			infos.add(new StringTextComponent(TextFormatting.GRAY + nbt.getString("cdwd")));
 			return;
 		}
 
-		infos.add("");
-		infos.add("Edition: " + Rarity.toColor(rarity) + Databank.getEditionWithId(cStruct.getEdition()).getName());
+		infos.add(new StringTextComponent(""));
+		infos.add(new StringTextComponent("Edition: " + Rarity.toColor(rarity) + Databank.getEditionWithId(cStruct.getEdition()).getName()));
 
 		if (!cStruct.getCategory().isEmpty()) {
-			infos.add("Category: " + TextFormatting.WHITE + cStruct.getCategory());
+			infos.add(new StringTextComponent("Category: " + TextFormatting.WHITE + cStruct.getCategory()));
 		}
 
 		if (!cStruct.getDescription().isEmpty()) {
@@ -157,15 +163,15 @@ public class CardItem extends Item {//implements IItemColor {
 
 			for (String currentLine : lines) {
 				while (currentLine.length() >= MAX_DESC_LENGTH) {
-					infos.add(TextFormatting.ITALIC + currentLine.substring(0, MAX_DESC_LENGTH));
+					infos.add(new StringTextComponent(TextFormatting.ITALIC + currentLine.substring(0, MAX_DESC_LENGTH)));
 					currentLine = currentLine.substring(MAX_DESC_LENGTH);
 				}
-				infos.add(TextFormatting.ITALIC + currentLine);
+				infos.add(new StringTextComponent(TextFormatting.ITALIC + currentLine));
 			}
 		}
 
-		infos.add("");
-		infos.add(cStruct.numeral + "/" + Databank.getEditionWithId(cStruct.getEdition()).cCount);
+		infos.add(new StringTextComponent(""));
+		infos.add(new StringTextComponent(cStruct.numeral + "/" + Databank.getEditionWithId(cStruct.getEdition()).cCount));
 	}
 
 
@@ -174,6 +180,7 @@ public class CardItem extends Item {//implements IItemColor {
 	/**
 	 * From https://github.com/matshou/Generic-Mod
 	 */
+	@OnlyIn(Dist.CLIENT)
 	public static class ColorableIcon implements IItemColor {
 		private int rarity;
 
@@ -181,9 +188,7 @@ public class CardItem extends Item {//implements IItemColor {
 			rarity = r;
 		}
 
-		@Override
-		@SideOnly(Side.CLIENT)
-		public int colorMultiplier(ItemStack stack, int layer) {
+		public int getColor(ItemStack stack, int layer) {
 			if (layer == 0) {
 				switch (rarity) {
 					case Rarity.COMMON:

@@ -1,25 +1,25 @@
 package com.is.mtc.village;
 
-import com.is.mtc.init.MTCItems;
+import java.util.Arrays;
+import java.util.List;
+
+/*import com.is.mtc.init.MTCItems;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.util.Reference;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.init.Items;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
 @Mod.EventBusSubscriber
-public class MineTradingCardVillagers {
+*/public class MineTradingCardVillagers {/*
 	public static final VillagerProfession PROFESSION_CARD_MASTER = new VillagerProfession(
 			Reference.MODID + ":card_master",
 			Reference.MODID + ":textures/entities/card_master.png",
@@ -28,7 +28,8 @@ public class MineTradingCardVillagers {
 			Reference.MODID + ":card_trader",
 			Reference.MODID + ":textures/entities/card_trader.png",
 			"minecraft:textures/entity/zombie_villager/zombie_villager.png");
-	public static final String[] CARD_MASTER_TRADE_LIST_DEFAULT = new String[]{
+	*/
+	public static final List<String> CARD_MASTER_TRADE_LIST_DEFAULT = Arrays.asList(
 			// Trades that existed in previous versions
 //			"1|1.0|common_pack|1-3|emerald|1",
 //			"1|1.0|standard_pack|1-2|emerald|1",
@@ -50,9 +51,9 @@ public class MineTradingCardVillagers {
 			"4|1.0|ancient_pack|1|emerald|16-21",
 			"4|0.6|ancient_card_random|1|emerald|18-24",
 			"5|0.5|legendary_pack|1|emerald|53-64",
-			"5|0.5|legendary_card_random|1|diamond|16-21",
-	};
-	public static final String[] CARD_TRADER_TRADE_LIST_DEFAULT = new String[]{
+			"5|0.5|legendary_card_random|1|diamond|16-21"
+	);
+	public static final List<String> CARD_TRADER_TRADE_LIST_DEFAULT = Arrays.asList(
 			// Trade either a specific card for an arbitrary card of that same level,
 			// or a non-generated card for two arbitrary cards of that level.
 			"1|1.0|common_card_random|1|common_card|1",
@@ -63,8 +64,8 @@ public class MineTradingCardVillagers {
 			"3|0.3|rare_card|1|rare_card|1|rare_card|1",
 			"4|1.0|ancient_card_random|1|ancient_card|1",
 			"4|0.2|ancient_card|1|ancient_card|1|ancient_card|1",
-			"5|0.5|legendary_card_random|1|legendary_card|1",
-	};
+			"5|0.5|legendary_card_random|1|legendary_card|1"
+	);/*
 	// Indices used to disassemble trade list
 	private static final int INDEX_TRADELEVEL = 0;
 	private static final int INDEX_TRADECHANCE = 1;
@@ -76,8 +77,9 @@ public class MineTradingCardVillagers {
 	private static final int INDEX_BUYITEM2_AMOUNT = 7;
 	public static VillagerCareer careerCardMaster;
 	public static VillagerCareer careerCardTrader;
-	public static String[] CARD_MASTER_TRADE_LIST = CARD_MASTER_TRADE_LIST_DEFAULT;
-	public static String[] CARD_TRADER_TRADE_LIST = CARD_TRADER_TRADE_LIST_DEFAULT;
+	*/
+	public static List<String> CARD_MASTER_TRADE_LIST = CARD_MASTER_TRADE_LIST_DEFAULT;
+	public static List<String> CARD_TRADER_TRADE_LIST = CARD_TRADER_TRADE_LIST_DEFAULT;/*
 
 	@Nullable
 	private static ItemStack getItemStackFromKeyName(String item_key) {
@@ -103,53 +105,53 @@ public class MineTradingCardVillagers {
 				break;
 			// Packs
 			case Reference.KEY_PACK_COM:
-				item = MTCItems.packCommon;
+				item = MTCItems.packCommon.get();
 				break;
 			case Reference.KEY_PACK_UNC:
-				item = MTCItems.packUncommon;
+				item = MTCItems.packUncommon.get();
 				break;
 			case Reference.KEY_PACK_RAR:
-				item = MTCItems.packRare;
+				item = MTCItems.packRare.get();
 				break;
 			case Reference.KEY_PACK_ANC:
-				item = MTCItems.packAncient;
+				item = MTCItems.packAncient.get();
 				break;
 			case Reference.KEY_PACK_LEG:
-				item = MTCItems.packLegendary;
+				item = MTCItems.packLegendary.get();
 				break;
 			case Reference.KEY_PACK_STD:
-				item = MTCItems.packStandard;
+				item = MTCItems.packStandard.get();
 				break;
 			case Reference.KEY_PACK_EDT:
-				item = MTCItems.packEdition;
+				item = MTCItems.packEdition.get();
 				break;
 			case Reference.KEY_PACK_CUS:
-				item = MTCItems.packCustom;
+				item = MTCItems.packCustom.get();
 				break;
 			// Cards
 			case Reference.KEY_CARD_COM:
 			case Reference.KEY_CARD_COM + "_random":
-				item = MTCItems.cardCommon;
+				item = MTCItems.cardCommon.get();
 				rarity = Rarity.COMMON;
 				break;
 			case Reference.KEY_CARD_UNC:
 			case Reference.KEY_CARD_UNC + "_random":
-				item = MTCItems.cardUncommon;
+				item = MTCItems.cardUncommon.get();
 				rarity = Rarity.UNCOMMON;
 				break;
 			case Reference.KEY_CARD_RAR:
 			case Reference.KEY_CARD_RAR + "random":
-				item = MTCItems.cardRare;
+				item = MTCItems.cardRare.get();
 				rarity = Rarity.RARE;
 				break;
 			case Reference.KEY_CARD_ANC:
 			case Reference.KEY_CARD_ANC + "_random":
-				item = MTCItems.cardAncient;
+				item = MTCItems.cardAncient.get();
 				rarity = Rarity.ANCIENT;
 				break;
 			case Reference.KEY_CARD_LEG:
 			case Reference.KEY_CARD_LEG + "_random":
-				item = MTCItems.cardLegendary;
+				item = MTCItems.cardLegendary.get();
 				rarity = Rarity.LEGENDARY;
 				break;
 		}
@@ -279,5 +281,5 @@ public class MineTradingCardVillagers {
 				careerCardTrader.addTrade(card_villager_trade.getTradeLevel(), card_villager_trade);
 			}
 		}
-	}
+	}*/
 }

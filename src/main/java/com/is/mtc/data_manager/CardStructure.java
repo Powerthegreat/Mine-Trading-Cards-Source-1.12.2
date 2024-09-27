@@ -1,7 +1,6 @@
 package com.is.mtc.data_manager;
 
 import com.google.gson.JsonElement;
-import com.is.mtc.MineTradingCards;
 import com.is.mtc.root.Logs;
 import com.is.mtc.root.Rarity;
 import com.is.mtc.root.Tools;
@@ -39,14 +38,14 @@ public class CardStructure {
 	}
 
 	public static boolean isValidCStructAsset(CardStructure cStruct, ItemStack stack) {
-		if (stack.hasTagCompound() &&
+		if (stack.getTag() != null &&
 				cStruct != null &&
 				cStruct.getResourceLocations() != null &&
 				!cStruct.getResourceLocations().isEmpty() &&
-				stack.getTagCompound().getInteger("assetnumber") < cStruct.getResourceLocations().size() &&
-				cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")) != null) {
+				stack.getTag().getInt("assetnumber") < cStruct.getResourceLocations().size() &&
+				cStruct.getResourceLocations().get(stack.getTag().getInt("assetnumber")) != null) {
 			try {
-				Minecraft.getMinecraft().getResourceManager().getResource(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
+				Minecraft.getInstance().getResourceManager().getResource(cStruct.getResourceLocations().get(stack.getTag().getInt("assetnumber")));
 			} catch (IOException e) {
 				return false;
 			}
@@ -69,7 +68,8 @@ public class CardStructure {
 		this.weight = (int) Tools.clamp(0, weight, Integer.MAX_VALUE);
 		this.category = Tools.clean(category);
 
-		if (!MineTradingCards.PROXY_IS_REMOTE) // Only weight and category are really needed on server side
+
+		if (Minecraft.getInstance().level != null && !Minecraft.getInstance().level.isClientSide) // Only weight and category are really needed on server side
 			return true;
 
 		this.name = Tools.clean(name);

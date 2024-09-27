@@ -1,6 +1,6 @@
 package com.is.mtc.village;
 
-import com.is.mtc.card.CardItem;
+/*import com.is.mtc.card.CardItem;
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
 import net.minecraft.entity.IMerchant;
@@ -13,7 +13,7 @@ import net.minecraft.village.MerchantRecipeList;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class CardTrade implements EntityVillager.ITradeList {
+*/public class CardTrade {/* implements EntityVillager.ITradeList {
 	private int tradeLevel;
 	private float tradeChance;
 	private ItemStack buyingItemStack1;
@@ -120,5 +120,5 @@ public class CardTrade implements EntityVillager.ITradeList {
 			buyingItemStack2.setCount(buying2PriceInfo.getPrice(random));
 			recipeList.add(new MerchantRecipe(buyingItemStack1, buyingItemStack2, sellingItemStack));
 		}
-	}
+	}*/
 }

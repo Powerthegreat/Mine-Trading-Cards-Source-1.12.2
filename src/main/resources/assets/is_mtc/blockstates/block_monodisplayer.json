@@ -2,18 +2,18 @@
   "forge_marker": 1,
   "variants": {
     "facing=north": {
-      "model": "is_mtc:block_monodisplayer"
+      "model": "is_mtc:block/block_monodisplayer"
     },
     "facing=east": {
-      "model": "is_mtc:block_monodisplayer",
+      "model": "is_mtc:block/block_monodisplayer",
       "y": 90
     },
     "facing=south": {
-      "model": "is_mtc:block_monodisplayer",
+      "model": "is_mtc:block/block_monodisplayer",
       "y": 180
     },
     "facing=west": {
-      "model": "is_mtc:block_monodisplayer",
+      "model": "is_mtc:block/block_monodisplayer",
       "y": 270
     }
   }

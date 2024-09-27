@@ -1,0 +1,11 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="GNU GPLv3"
+[[mods]]
+modId="is_mtc"
+version="$version"
+displayName="Mine Trading Cards"
+logoFile="mtc_banner.png"
+credits="TeamWar aka Tradeworld for originally making the mod, AstroTibs for the 3.0 village and graphics update, and DigitalRai for the memory fix"
+authors="Powerthegreat"
+description='''Collect and trade customizeable card sets in Minecraft!'''

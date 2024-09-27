@@ -1,24 +1,15 @@
 package com.is.mtc.root;
 
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
-import javax.annotation.Nonnull;
-
-public class CardSlot extends SlotItemHandler {
-
-	public CardSlot(IItemHandler inventory, int index, int xPosition, int yPosition) {
+public class CardSlot extends Slot {
+	public CardSlot(IInventory inventory, int index, int xPosition, int yPosition) {
 		super(inventory, index, xPosition, yPosition);
 	}
 
-	@Nonnull
-	@Override
-	public ItemStack getStack() {
-		return super.getStack();
-	}
-
-	public boolean isItemValid(ItemStack stack) {
+	public boolean mayPlace(ItemStack stack) {
 		return Tools.isValidCard(stack);
 	}
 }

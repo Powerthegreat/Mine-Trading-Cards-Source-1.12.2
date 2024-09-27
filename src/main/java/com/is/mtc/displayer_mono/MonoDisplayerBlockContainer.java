@@ -1,70 +1,71 @@
 package com.is.mtc.displayer_mono;
 
+import com.is.mtc.init.MTCBlocks;
+import com.is.mtc.init.MTCContainers;
 import com.is.mtc.root.CardSlot;
-import com.is.mtc.root.Tools;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.IWorldPosCallable;
 
 public class MonoDisplayerBlockContainer extends Container {
 	private static final int offsetInv3RowsX = 56, offsetInv3RowsY = 8; // Inventory pos
 	private static final int offsetHotbarX = 56, offsetHotbarY = 66; // Hotbar pos
-	private MonoDisplayerBlockTileEntity tileEntity;
+	public final MonoDisplayerBlockTileEntity tileEntity;
+	private final IWorldPosCallable canInteractWithCallable;
 
-	public MonoDisplayerBlockContainer(InventoryPlayer inventoryPlayer, MonoDisplayerBlockTileEntity tileEntity) {
+	public MonoDisplayerBlockContainer(int windowId, PlayerInventory playerInventory, MonoDisplayerBlockTileEntity tileEntity) {
+		super(MTCContainers.monoDisplayerBlockContainer.get(), windowId);
 		this.tileEntity = tileEntity;
-		//IItemHandler inventory = tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
+		canInteractWithCallable = IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos());
 
-		addSlotToContainer(new CardSlot(tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), 0, 21, 26));
+		addSlot(new CardSlot(tileEntity, 0, 21, 26));
 
-		for (int i = 0; i < 9; i++) // Toolbar
-			addSlotToContainer(new Slot(inventoryPlayer, i,
-					offsetHotbarX + i * 18, offsetHotbarY));
-
-		for (int i = 0; i < 3; i++) // Player inv
-			for (int j = 0; j < 9; j++)
-				addSlotToContainer(new Slot(inventoryPlayer, j + i * 9 + 9, // Slot number + the toolbar size
-						offsetInv3RowsX + j * 18, offsetInv3RowsY + i * 18));
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer user) {
-		return tileEntity.isUsableByPlayer(user);
-	}
-
-	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
-		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Since slots are syncs, get from self
-		ItemStack providedStack;
-		int tmp;
-
-		if (providerSlot == null || !providerSlot.getHasStack())
-			return ItemStack.EMPTY;
-		providedStack = providerSlot.getStack();
-
-		if (providerSlotIndex == 0) { // Comes from the displayer slots
-			if (!mergeItemStack(providedStack, 1, 1 + 9, false)) //
-				if (!mergeItemStack(providedStack, 1 + 9, 1 + 9 + 27, false)) // Then inventory
-					return ItemStack.EMPTY;
-
-			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
-			providerSlot.onSlotChanged();
-		} else { // Not from slot ? then from inventory !
-			if (!Tools.isValidCard(providedStack))
-				return ItemStack.EMPTY;
-
-			if (!mergeItemStack(providedStack, 0, 1, false)) // Shove the card somewhere
-				return ItemStack.EMPTY;
-
-			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
-			providerSlot.onSlotChanged();
+		for (int row = 0; row < 3; ++row) {
+			for (int column = 0; column < 9; ++column) {
+				addSlot(new Slot(playerInventory, column + row * 9 + 9, offsetInv3RowsX + column * 18, offsetInv3RowsY + row * 18));
+			}
 		}
 
-		return ItemStack.EMPTY;
+		for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
+			addSlot(new Slot(playerInventory, hotbarSlot, offsetHotbarX + hotbarSlot * 18, offsetHotbarY));
+		}
+	}
+
+	public MonoDisplayerBlockContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
+		this(windowId, playerInventory, (MonoDisplayerBlockTileEntity) playerInventory.player.level.getBlockEntity(data.readBlockPos()));
+	}
+
+	@Override
+	public boolean stillValid(PlayerEntity player) {
+		return stillValid(canInteractWithCallable, player, MTCBlocks.monoDisplayerBlock.get());
+	}
+
+	@Override
+	public ItemStack quickMoveStack(PlayerEntity player, int index) {
+		ItemStack stack = ItemStack.EMPTY;
+		Slot slot = this.slots.get(index);
+		if (slot != null && slot.hasItem()) {
+			ItemStack slotOriginalStack = slot.getItem();
+			stack = slotOriginalStack.copy();
+			if (index < tileEntity.getContainerSize()) {
+				if (!moveItemStackTo(slotOriginalStack, tileEntity.getContainerSize(), slots.size(), true)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (!moveItemStackTo(slotOriginalStack, 0, tileEntity.getContainerSize(), false)) {
+				return ItemStack.EMPTY;
+			}
+
+			if (slotOriginalStack.isEmpty()) {
+				slot.set(ItemStack.EMPTY);
+			} else {
+				slot.setChanged();
+			}
+		}
+
+		return stack;
 	}
 }

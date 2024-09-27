@@ -1,9 +1,17 @@
 package com.is.mtc.packet;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import com.is.mtc.binder.BinderItem;
+import com.is.mtc.binder.BinderItemGuiContainer;
+import com.is.mtc.root.Logs;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MTCMessage implements IMessage {
+import java.util.function.Supplier;
+
+public class MTCMessage {
 	public int id;
 
 	public MTCMessage() {
@@ -13,13 +21,55 @@ public class MTCMessage implements IMessage {
 		this.id = id;
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		buf.writeInt(id);
+	public static MTCMessage fromBytes(PacketBuffer buf) {
+		MTCMessage newMessage = new MTCMessage(buf.readInt());
+		//id = buf.readInt();
+		return newMessage;
 	}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		id = buf.readInt();
+	public static void onMessage(MTCMessage message, Supplier<NetworkEvent.Context> ctx) {
+		ctx.get().enqueueWork(() -> {
+			ServerPlayerEntity player = ctx.get().getSender();
+			ItemStack binderStack = player.getItemInHand(player.getUsedItemHand());
+
+			if (!binderStack.hasTag() || !binderStack.getTag().contains("page"))
+				return;
+
+			switch (message.id) {
+				case BinderItemGuiContainer.LESS1:
+					BinderItem.changePageBy(binderStack, -1);
+					break;
+				case BinderItemGuiContainer.LESS2:
+					BinderItem.changePageBy(binderStack, -4);
+					break;
+				case BinderItemGuiContainer.LESS3:
+					BinderItem.changePageBy(binderStack, -8);
+					break;
+
+				case BinderItemGuiContainer.MORE1:
+					BinderItem.changePageBy(binderStack, 1);
+					break;
+				case BinderItemGuiContainer.MORE2:
+					BinderItem.changePageBy(binderStack, 4);
+					break;
+				case BinderItemGuiContainer.MORE3:
+					BinderItem.changePageBy(binderStack, 8);
+					break;
+
+				case BinderItemGuiContainer.MODE_SWITCH:
+					int mode = binderStack.getTag().getInt("mode_mtc");
+
+					CompoundNBT nbtTag = binderStack.getTag();
+					nbtTag.putInt("mode_mtc", mode == BinderItem.MODE_STD ? BinderItem.MODE_FIL : BinderItem.MODE_STD);
+					Logs.devLog("Server: " + mode + ">>" + binderStack.getTag().getInt("mode_mtc"));
+					break;
+			}
+		});
+
+		ctx.get().setPacketHandled(true);
+	}
+
+	public void toBytes(PacketBuffer buf) {
+		buf.writeInt(id);
 	}
 }

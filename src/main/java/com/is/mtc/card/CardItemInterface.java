@@ -2,59 +2,47 @@ package com.is.mtc.card;
 
 import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import com.is.mtc.util.Reference;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class CardItemInterface extends GuiScreen {
-	private static final double UI_WIDTH = 224, UI_HEIGHT = 224;
-
+@OnlyIn(Dist.CLIENT)
+public class CardItemInterface extends Screen {
+	public static final TranslationTextComponent title = new TranslationTextComponent("gui." + Reference.MODID + ".card_screen");
+	private static final int UI_WIDTH = 224, UI_HEIGHT = 224;
 	private CardStructure cStruct;
 	private ItemStack stack;
 
 	public CardItemInterface(ItemStack stack) {
+		super(title);
 		this.stack = stack;
-		cStruct = Databank.getCardByCDWD(stack.getTagCompound().getString("cdwd"));
+		cStruct = Databank.getCardByCDWD(stack.getTag() != null ? stack.getTag().getString("cdwd") : null);
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		double dpx = (width - CardItemInterface.UI_WIDTH) / 2, dpy = (height - CardItemInterface.UI_HEIGHT) / 2;
+	public void render(MatrixStack matrixStack, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
+		int dpx = (width - CardItemInterface.UI_WIDTH) / 2, dpy = (height - CardItemInterface.UI_HEIGHT) / 2;
 
-		//System.out.println(cStruct.getResourceLocation());
-		drawDefaultBackground();
+		renderBackground(matrixStack);
 		if (CardStructure.isValidCStructAsset(cStruct, stack)) {
-			mc.getTextureManager().bindTexture(cStruct.getResourceLocations().get(stack.getTagCompound().getInteger("assetnumber")));
+			Minecraft.getInstance().getTextureManager().bind(cStruct.getResourceLocations().get(stack.getTag().getInt("assetnumber")));
 
-			drawTexturedModalRect(dpx, dpy, CardItemInterface.UI_WIDTH, CardItemInterface.UI_HEIGHT);
+			blit(matrixStack,
+					/* Start position on screen */ dpx, dpy,
+					/* Start position in source image */ 0, 0,
+					/* Size on screen */ CardItemInterface.UI_WIDTH, CardItemInterface.UI_HEIGHT,
+					/* Scale within drawing */ CardItemInterface.UI_WIDTH, CardItemInterface.UI_HEIGHT);
 		}
-		super.drawScreen(mouseX, mouseY, partialTicks);
-	}
-
-	// Adapted drawing
-	public void drawTexturedModalRect(double x, double y, double width, double height) { // Custom for 01 size
-		float f = 0.00390625F;
-		float f1 = 0.00390625F;
-		Tessellator tessellator = Tessellator.getInstance();
-		tessellator.getBuffer().begin(7, DefaultVertexFormats.POSITION_TEX);
-		tessellator.getBuffer().pos(x + 0, y + height, (int) this.zLevel).tex(0, 1).endVertex();
-		tessellator.getBuffer().pos(x + width, y + height, (int) this.zLevel).tex(1, 1).endVertex();
-		tessellator.getBuffer().pos(x + width, y + 0, (int) this.zLevel).tex(1, 0).endVertex();
-		tessellator.getBuffer().pos(x + 0, y + 0, (int) this.zLevel).tex(0, 0).endVertex();
-		tessellator.draw();
-		/*.tex((double)textureSprite.getMinU(), (double)textureSprite.getMaxV())*/
-		//Tessellator tessellator = Tessellator.getInstance();
-		////tessellator.startDrawingQuads();
-		//tessellator.getBuffer().addVertexData(new int[] {x + 0, y + height, (int) this.zLevel, 0, 1});
-		//tessellator.getBuffer().addVertexData(new int[] {x + width, y + height, (int) this.zLevel, 1, 1});
-		//tessellator.getBuffer().addVertexData(new int[] {x + width, y + 0, (int) this.zLevel, 1, 0});
-		//tessellator.getBuffer().addVertexData(new int[] {x + 0, y + 0, (int) this.zLevel, 0, 0});
-		//tessellator.draw();
+		super.render(matrixStack, p_230430_2_, p_230430_3_, p_230430_4_);
 	}
 
 	@Override
-	public boolean doesGuiPauseGame() {
+	public boolean isPauseScreen() {
 		return false;
 	}
 }

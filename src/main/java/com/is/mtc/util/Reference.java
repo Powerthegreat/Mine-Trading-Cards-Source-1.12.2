@@ -10,7 +10,7 @@ public class Reference {
 	public static final String NAME_COLORIZED = TextFormatting.BLUE + "Mine Trading Cards" + TextFormatting.RESET;
 
 	// Mod compats
-	public static final String VILLAGE_NAMES_MODID = "villagenames";
+	//public static final String VILLAGE_NAMES_MODID = "villagenames";
 
 	// Configs
 	public static final String FML_GAME_RESTART_TITLE_GUI_ADDRESS = "fml.configgui.gameRestartTitle";

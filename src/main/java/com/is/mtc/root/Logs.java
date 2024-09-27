@@ -1,10 +1,9 @@
 package com.is.mtc.root;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
 
 public class Logs {
-
 	public static boolean ENABLE_DEV_LOGS = false;
 
 	public static void stdLog(String message) {
@@ -20,7 +19,7 @@ public class Logs {
 			System.out.println("[MTC_DEV]: " + message);
 	}
 
-	public static void chatMessage(EntityPlayer player, String message) {
-		player.sendMessage(new TextComponentString(message));
+	public static void chatMessage(PlayerEntity player, String message) {
+		player.sendMessage(new StringTextComponent(message), player.getUUID());
 	}
 }

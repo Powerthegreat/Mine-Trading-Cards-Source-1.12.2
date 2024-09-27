@@ -1,51 +1,69 @@
 package com.is.mtc.root;
 
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.item.EntityItem;
+import com.is.mtc.util.Reference;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
-
-import java.util.regex.Pattern;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 
 public class CC_ForceCreateCard extends CC_CreateCard { // Command to create a specific card. Does not have to be an existing one
+	protected static final SimpleCommandExceptionType ERROR_FAILED_RANGE = new SimpleCommandExceptionType(new TranslationTextComponent("commands." + Reference.MODID + ".mtc_force_card.failed"));
 
-	public String getName() {
-		return "mtc_force_card";
+	public static void register(CommandDispatcher<CommandSource> commandDispatcher) {
+		commandDispatcher.register(Commands.literal("mtc_force_card").requires((commandSource) -> commandSource.hasPermission(1))
+				.then(Commands.argument("id", StringArgumentType.string())
+						.then(Commands.argument("edition", StringArgumentType.string())
+								.then(Commands.argument("rarity (0-4)", IntegerArgumentType.integer())
+										.executes((commandContext) -> dropCard(commandContext, StringArgumentType.getString(commandContext, "id"), StringArgumentType.getString(commandContext, "edition"), IntegerArgumentType.getInteger(commandContext, "rarity (0-4)"), -1))
+										.then(Commands.argument("asset number", IntegerArgumentType.integer())
+												.executes((commandContext) -> dropCard(commandContext, StringArgumentType.getString(commandContext, "id"), StringArgumentType.getString(commandContext, "edition"), IntegerArgumentType.getInteger(commandContext, "rarity (0-4)"), IntegerArgumentType.getInteger(commandContext, "asset number")))
+										)
+								)
+						)
+				)
+		);
 	}
 
-	public String getUsage(ICommandSender sender) {
-		return "mtc_force_card <id> <edition> <rarity_index(0-4)>";
-	}
+	protected static int dropCard(CommandContext<CommandSource> commandContext, String id, String edition, int rarity, int assetNumber) throws CommandSyntaxException {
+		ServerWorld serverWorld = commandContext.getSource().getLevel();
+		CommandSource commandSource = commandContext.getSource();
 
-	public void execute(MinecraftServer server, ICommandSender player, String[] args) {
-		World world = player.getEntityWorld();
-		EntityItem spawnedEntity;
-		ItemStack genStack;
-		String cdwd;
+		String cdwd = id.toLowerCase() + ' ' + edition + ' ' + rarity;
 
-		if (!world.isRemote) {
-
-			if (args.length != 3) {
-				player.sendMessage(new TextComponentString("Invalid arguments; " + getUsage(player)));
-				return;
-			}
-			cdwd = args[0].toLowerCase() + ' ' + args[1].toLowerCase() + ' ' + args[2];
-
-			if (!Pattern.matches("^[01234]$", args[2])) {
-				player.sendMessage(new TextComponentString("<rarity_index> is invalid. Must be a number between 0 and 4"));
-				return;
-			}
-			genStack = new ItemStack(Rarity.getAssociatedCardItem(Integer.parseInt(args[2])));
-
-			NBTTagCompound nbtTag = new NBTTagCompound();
-			nbtTag.setString("cdwd", cdwd); // Setting card
-			genStack.setTagCompound(nbtTag);
-			spawnedEntity = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY() + 1, player.getPosition().getZ(), genStack); // Spawning card
-
-			world.spawnEntity(spawnedEntity);
+		if (rarity < 0 || rarity > 4) {
+			throw ERROR_FAILED_RANGE.create();
 		}
+
+		ItemStack gennedStack = new ItemStack(Rarity.getAssociatedCardItem(rarity));
+		CompoundNBT tag = new CompoundNBT();
+		tag.putString("cdwd", cdwd);
+
+		if (assetNumber > -1) {
+			tag.putInt("assetnumber", assetNumber);
+		}
+
+		gennedStack.setTag(tag);
+
+		ItemEntity spawnedItem = new ItemEntity(serverWorld,
+				commandContext.getSource().getPosition().x,
+				commandContext.getSource().getPosition().y,
+				commandContext.getSource().getPosition().z,
+				gennedStack);
+
+		serverWorld.addFreshEntity(spawnedItem);
+		commandSource.sendSuccess(new TranslationTextComponent("commands." + Reference.MODID + ".mtc_card.success",
+				commandContext.getSource().getPosition().x,
+				commandContext.getSource().getPosition().y,
+				commandContext.getSource().getPosition().z), true);
+		return 1;
 	}
 }

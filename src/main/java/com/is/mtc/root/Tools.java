@@ -8,16 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Tools {
-
-	/*public static final int SIDE_BOTTOM = 0;
-	public static final int SIDE_TOP = 1;
-
-	public static final int SIDE_NORTH = 2;
-	public static final int SIDE_SOUTH = 3;
-
-	public static final int SIDE_WEST = 4;
-	public static final int SIDE_EAST = 5;*/
-
 	private static Pattern pattern = Pattern.compile("^[a-z0-9_]*$");
 
 	// -
@@ -67,6 +57,6 @@ public class Tools {
 	}
 
 	public static boolean hasCDWD(ItemStack stack) {
-		return stack != ItemStack.EMPTY && stack.hasTagCompound() && stack.getTagCompound().hasKey("cdwd");
+		return stack != ItemStack.EMPTY && stack.getTag() != null && stack.getTag().get("cdwd") != null;
 	}
 }

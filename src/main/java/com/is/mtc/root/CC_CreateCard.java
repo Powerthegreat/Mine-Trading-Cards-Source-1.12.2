@@ -1,62 +1,72 @@
 package com.is.mtc.root;
 
+import com.is.mtc.data_manager.CardStructure;
 import com.is.mtc.data_manager.Databank;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.item.EntityItem;
+import com.is.mtc.util.Reference;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nullable;
-import java.util.List;
+public class CC_CreateCard { // Command to create an existing card
+	protected static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(new TranslationTextComponent("commands." + Reference.MODID + ".mtc_card.failed"));
 
-public class CC_CreateCard extends CommandBase { // Command to create an existing card
-
-	public String getName() {
-		return "mtc_card";
+	public static void register(CommandDispatcher<CommandSource> commandDispatcher) {
+		commandDispatcher.register(Commands.literal("mtc_card").requires((commandSource) -> commandSource.hasPermission(1))
+				.then(Commands.argument("id", StringArgumentType.string())
+						.then(Commands.argument("edition", StringArgumentType.string())
+								.then(Commands.argument("rarity", IntegerArgumentType.integer())
+										.executes((commandContext) -> dropCard(commandContext, StringArgumentType.getString(commandContext, "id"), StringArgumentType.getString(commandContext, "edition"), IntegerArgumentType.getInteger(commandContext, "rarity"), -1))
+										.then(Commands.argument("asset number", IntegerArgumentType.integer())
+												.executes((commandContext) -> dropCard(commandContext, StringArgumentType.getString(commandContext, "id"), StringArgumentType.getString(commandContext, "edition"), IntegerArgumentType.getInteger(commandContext, "rarity"), IntegerArgumentType.getInteger(commandContext, "asset number")))
+										)
+								)
+						)
+				)
+		);
 	}
 
-	public String getUsage(ICommandSender sender) {
-		return "mtc_card <id> <edition> <rarity_index>";
-	}
+	protected static int dropCard(CommandContext<CommandSource> commandContext, String id, String edition, int rarity, int assetNumber) throws CommandSyntaxException {
+		ServerWorld serverWorld = commandContext.getSource().getLevel();
+		CommandSource commandSource = commandContext.getSource();
 
-	public void execute(MinecraftServer server, ICommandSender player, String[] args) {
-		World world = player.getEntityWorld();
-		EntityItem spawnedEntity;
-		ItemStack genStack;
-		String cdwd;
+		String cdwd = id.toLowerCase() + ' ' + edition + ' ' + rarity;
+		CardStructure cStruct = Databank.getCardByCDWD(cdwd);
 
-		if (!world.isRemote) {
-			// Check args first
-
-			if (args.length != 3) {
-
-				player.sendMessage(new TextComponentString("Invalid arguments; " + getUsage(player)));
-				return;
-			}
-			cdwd = args[0].toLowerCase() + ' ' + args[1].toLowerCase() + ' ' + args[2];
-
-			if (Databank.getCardByCDWD(cdwd) == null) {
-				player.sendMessage(new TextComponentString("Unable to fetch this card. Card data not found"));
-				return;
-			}
-			genStack = new ItemStack(Rarity.getAssociatedCardItem(Databank.getCardByCDWD(cdwd).getRarity()));
-
-			NBTTagCompound nbtTag = new NBTTagCompound();
-			nbtTag.setString("cdwd", cdwd); // Setting card
-			genStack.setTagCompound(nbtTag);
-			spawnedEntity = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY() + 1, player.getPosition().getZ(), genStack); // Spawning card
-
-			world.spawnEntity(spawnedEntity);
+		if (cStruct == null) {
+			throw ERROR_FAILED.create();
 		}
-	}
 
-	@Override
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
-		return null;
+		ItemStack gennedStack = new ItemStack(Rarity.getAssociatedCardItem(cStruct.getRarity()));
+		CompoundNBT tag = new CompoundNBT();
+		tag.putString("cdwd", cdwd);
+
+		if (assetNumber > -1 && assetNumber < cStruct.getResourceLocations().size()) {
+			tag.putInt("assetnumber", assetNumber);
+		}
+
+		gennedStack.setTag(tag);
+
+		ItemEntity spawnedItem = new ItemEntity(serverWorld,
+				commandContext.getSource().getPosition().x,
+				commandContext.getSource().getPosition().y,
+				commandContext.getSource().getPosition().z,
+				gennedStack);
+
+		serverWorld.addFreshEntity(spawnedItem);
+		commandSource.sendSuccess(new TranslationTextComponent("commands." + Reference.MODID + ".mtc_card.success",
+				commandContext.getSource().getPosition().x,
+				commandContext.getSource().getPosition().y,
+				commandContext.getSource().getPosition().z), true);
+		return 1;
 	}
 }

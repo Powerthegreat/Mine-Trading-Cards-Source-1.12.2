@@ -1,174 +1,109 @@
 package com.is.mtc.displayer;
 
-import com.is.mtc.MineTradingCards;
-import com.is.mtc.packet.MTCMessageRequestUpdateDisplayer;
-import com.is.mtc.packet.MTCMessageUpdateDisplayer;
-import net.minecraft.entity.player.EntityPlayer;
+import com.is.mtc.init.MTCBlocks;
+import com.is.mtc.init.MTCTileEntities;
+import com.is.mtc.util.Reference;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.LockableLootTileEntity;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class DisplayerBlockTileEntity extends TileEntity {//implements IItemHandlerModifiable {
+public class DisplayerBlockTileEntity extends LockableLootTileEntity {
 	public static final int INVENTORY_SIZE = 4;
-	private ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE);
+	protected NonNullList<ItemStack> items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
 
 	public DisplayerBlockTileEntity() {
+		super(MTCTileEntities.displayerBlockTileEntity.get());
 	}
 
-	public void readFromNBT(NBTTagCompound nbt) {
-		if (nbt != null) {
-			inventory.deserializeNBT(nbt.getCompoundTag("Items"));
-			super.readFromNBT(nbt);
+	@Override
+	public CompoundNBT save(CompoundNBT nbt) {
+		super.save(nbt);
+		if (!this.trySaveLootTable(nbt)) {
+			ItemStackHelper.saveAllItems(nbt, items);
 		}
-	}
-
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-		nbt.setTag("Items", inventory.serializeNBT());
-		readFromNBT(nbt);
 		return nbt;
 	}
 
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound syncData = new NBTTagCompound();
-		writeToNBT(syncData);
-
-		return new SPacketUpdateTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ()), 1, syncData);
+	@Override
+	public void load(BlockState state, CompoundNBT nbt) {
+		super.load(state, nbt);
+		items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
+		if (!this.tryLoadLootTable(nbt)) {
+			ItemStackHelper.loadAllItems(nbt, items);
+		}
 	}
 
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
+	@Override
+	protected ITextComponent getDefaultName() {
+		return new TranslationTextComponent("container." + Reference.MODID + ".block_displayer");
 	}
 
-	public void updateContainingBlockInfo() { // Allow data being sync on game loading
-		world.markTileEntityForRemoval(world.getTileEntity(pos));
-		//world.markBlockForUpdate(xCoord, yCoord, zCoord); // Makes the server call getDescriptionPacket for a full data sync
-		markDirty();
-
-		super.updateContainingBlockInfo();
+	@Override
+	protected Container createMenu(int id, PlayerInventory player) {
+		return new DisplayerBlockContainer(id, player, this);
 	}
 
-	public int getSlots() {
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		CompoundNBT nbt = new CompoundNBT();
+		save(nbt);
+
+		return new SUpdateTileEntityPacket(this.worldPosition, -1, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		super.onDataPacket(net, pkt);
+		CompoundNBT nbt = pkt.getTag();
+		load(MTCBlocks.displayerBlock.get().defaultBlockState(), nbt);
+	}
+
+	@Override
+	protected NonNullList<ItemStack> getItems() {
+		return items;
+	}
+
+	@Override
+	protected void setItems(NonNullList<ItemStack> items) {
+		this.items = items;
+	}
+
+	@Override
+	public int getContainerSize() {
 		return INVENTORY_SIZE;
 	}
 
-	public int getSlotLimit(int slot) {
-		return 64;
+	@Override
+	public CompoundNBT getUpdateTag() {
+		CompoundNBT nbt = super.getUpdateTag();
+		save(nbt);
+
+		return nbt;
 	}
 
-	@Nonnull
-	public ItemStack getStackInSlot(int slot) {
-		if (slot < getSlots()) {
-			return inventory.getStackInSlot(slot);//content[slot];
-		}
-		return ItemStack.EMPTY;
-	}
-
-	public void setStackIntoSlot(ItemStack stack, int slot, boolean simulate) {
-		if (slot >= getSlots()) {
-			return;
-		}
-		inventory.insertItem(slot, stack, simulate);
-	}
-
-	/*@Nonnull
-	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-		if (stack.isEmpty())
-			return ItemStack.EMPTY;
-
-		if (!Tools.isValidCard(stack))
-			return stack;
-		int limit = Math.min(getSlotLimit(slot), stack.getMaxStackSize());
-
-		ItemStack existing = inventory.getStackInSlot(slot);//content[slot];
-		if (!existing.isEmpty()) {
-			if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
-				return stack;
-
-			limit -= existing.getCount();
-		}
-
-		if (limit <= 0)
-			return stack;
-
-		boolean reachedLimit = stack.getCount() > limit;
-
-		if (!simulate) {
-			if (existing.isEmpty()) {
-				setStackInSlot(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
-			} else {
-				existing.grow(reachedLimit ? limit : stack.getCount());
-			}
-			//onContentsChanged(slot);
-		}
-
-		markDirty();
-		return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit);
-	}
-
-	@Nonnull
-	public ItemStack extractItem(int slot, int amount, boolean simulate) {
-		ItemStack stackToReturn = getStackInSlot(slot).copy();
-		stackToReturn.setCount(Math.min(amount, getStackInSlot(slot).getCount()));
-		if (!simulate) {
-			getStackInSlot(slot).shrink(stackToReturn.getCount());
-			markDirty();
-		}
-		return stackToReturn;
-	}*/
-
-	public boolean isUsableByPlayer(EntityPlayer player) { // Use standard chest formula
-		return world.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ())) == this && player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
-	}
-
-	//public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-	//inventory.setStackInSlot(slot, stack);
-		/*if (slot < getSlots()) {
-			//content[slot] = stack.copy();
-			markDirty();
-		}*/
-	//}
-
-	public void onLoad() {
-		if (world.isRemote)
-			MineTradingCards.simpleNetworkWrapper.sendToServer(new MTCMessageRequestUpdateDisplayer(this));
-	}
-
-	public AxisAlignedBB getRenderBoundingBox() {
-		return new AxisAlignedBB(getPos(), getPos().add(1, 1, 1));
-	}
-
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-	}
-
-	@Nullable
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : super.getCapability(capability, facing);
+	@Override
+	public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+		super.handleUpdateTag(state, tag);
+		load(state, tag);
 	}
 
 	public void spinCards() {
-		ItemStack tempStack = inventory.getStackInSlot(0).copy();
-		inventory.setStackInSlot(0, inventory.getStackInSlot(3).copy());
-		inventory.setStackInSlot(3, inventory.getStackInSlot(1).copy());
-		inventory.setStackInSlot(1, inventory.getStackInSlot(2).copy());
-		inventory.setStackInSlot(2, tempStack);
+		ItemStack tempStack = items.get(0).copy();
+		items.set(0, items.get(3).copy());
+		items.set(3, items.get(1).copy());
+		items.set(1, items.get(2).copy());
+		items.set(2, tempStack);
 
-		markDirty();
+		setChanged();
 
-		if (!world.isRemote)
-			MineTradingCards.simpleNetworkWrapper.sendToAllAround(new MTCMessageUpdateDisplayer(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+		level.sendBlockUpdated(worldPosition, level.getBlockState(worldPosition), level.getBlockState(worldPosition), 2);
 	}
 }

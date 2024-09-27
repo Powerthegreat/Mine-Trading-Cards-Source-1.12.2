@@ -1,40 +1,43 @@
 package com.is.mtc.binder;
 
-import com.is.mtc.root.CardSlot;
+import com.is.mtc.init.MTCContainers;
 import com.is.mtc.root.Tools;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class BinderItemContainer extends Container {
 	private static final int offsetBinderX = 44, offsetBinderY = 44; // Top left, for card slots
 	private static final int offsetInv3RowsX = 41, offsetInv3RowsY = 140; // Inventory pos
 	private static final int offsetHotbarX = 41, offsetHotbarY = 198; // Hotbar pos
 
-	private ItemStackHandler binderInventory;
-	private ItemStack binderStack;
+	private final ItemStackHandler binderInventory;
+	private final ItemStack binderStack;
 
-	public BinderItemContainer(InventoryPlayer inventory, ItemStack binderStack) {
-		this.binderStack = binderStack;
-		binderInventory = (ItemStackHandler) binderStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+	public BinderItemContainer(int windowId, PlayerInventory playerInventory, ItemStack stack) {
+		super(MTCContainers.binderContainer.get(), windowId);
+		binderStack = stack;
+		binderInventory = (ItemStackHandler) binderStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElseThrow(NullPointerException::new);
 		BinderItem.testNBT(binderStack);
-		readFromNBT(binderStack.getTagCompound());
+		//readFromNBT(binderStack.getTag());
 
-		BinderItem.testNBT(binderStack);
-		inventorySlots.clear();
+		for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
+			addSlot(new Slot(playerInventory, hotbarSlot, offsetHotbarX + hotbarSlot * 18, offsetHotbarY));
+		}
 
-		for (int i = 0; i < 9; i++) // Toolbar
-			addSlotToContainer(new Slot(inventory, i, offsetHotbarX + i * 18, offsetHotbarY));
-
-		for (int i = 0; i < 3; i++) // Player inv
-			for (int j = 0; j < 9; j++)
-				addSlotToContainer(new Slot(inventory, j + i * 9 + 9, /* Slot number + the toolbar size */offsetInv3RowsX + j * 18, offsetInv3RowsY + i * 18));
+		for (int row = 0; row < 3; ++row) {
+			for (int column = 0; column < 9; ++column) {
+				addSlot(new Slot(playerInventory, column + row * 9 + 9, offsetInv3RowsX + column * 18, offsetInv3RowsY + row * 18));
+			}
+		}
 
 		// Creating card slots by slot index - NOT slot number
 		for (int idx = 0; idx < BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages(); idx++) {
@@ -43,53 +46,49 @@ public class BinderItemContainer extends Container {
 			int column = slot % 4;
 			int row = slot / 4;
 
-			addSlotToContainer(new CardSlot(binderStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), idx, /* New card slot with binderItemInventory, slot index */offsetBinderX + column * 58, offsetBinderY + row * 64)); // and slot coords
+			addSlot(new CardSlotItemHandler(this, binderInventory, idx, /* New card slot with binderItemInventory, slot index */offsetBinderX + column * 58, offsetBinderY + row * 64)); // and slot coords
 		}
 	}
 
-	public ItemStack getCardStackAtIndex(int index) {
-		return inventorySlots.get(index + 36).getStack(); // Adding player's inventory size
+	public BinderItemContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
+		this(windowId, playerInventory, playerInventory.getSelected());
 	}
 
-	public ItemStack transferStackInSlot(EntityPlayer player, int providerSlotIndex) {
-		Slot providerSlot = inventorySlots.get(providerSlotIndex); // Slot from where the stack comes from
-		ItemStack providedStack; // Stack that is to be moved
-		int binderPage;
-		int tmp;
+	@Override
+	public boolean stillValid(PlayerEntity player) {
+		return player.getItemInHand(player.getUsedItemHand()).getItem() instanceof BinderItem;
+	}
 
-		BinderItem.testNBT(player.getActiveItemStack());
-		binderPage = BinderItem.getCurrentPage(binderStack);
+	@Override
+	public ItemStack quickMoveStack(PlayerEntity player, int index) {
+		BinderItem.testNBT(binderInventory.getStackInSlot(player.inventory.selected));
+		int binderPage = BinderItem.getCurrentPage(binderStack);
 
-		if (providerSlot == null || !providerSlot.getHasStack())
-			return ItemStack.EMPTY;
-		providedStack = providerSlot.getStack();
-
-
-		if (providerSlotIndex >= 36) { // Comes from the binder
-
-			if (!mergeItemStack(providedStack, 0, 36, false))
-				return ItemStack.EMPTY;
-
-			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
-			providerSlot.onSlotChanged();
-		} else { // From inv to binder
-			int mode = binderStack.getTagCompound().getInteger("mode_mtc");
-
-			if (!Tools.isValidCard(providedStack))
-				return ItemStack.EMPTY;
-
-			switch (mode) {
-				case BinderItem.MODE_STD:
-					if (!mergeItemStack(providedStack, 36 + (binderPage * BinderItemInventory.getStacksPerPage()),
-							36 + BinderItemInventory.getStacksPerPage() + (binderPage * BinderItemInventory.getStacksPerPage()), false))
-						return ItemStack.EMPTY;
-					break;
-				case BinderItem.MODE_FIL:
-					if (!mergeItemStack(providedStack, 36 + (binderPage * BinderItemInventory.getStacksPerPage()),
-							36 + (BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages()), false))
-						return ItemStack.EMPTY;
-					break;
+		ItemStack stack = ItemStack.EMPTY;
+		Slot slot = this.slots.get(index);
+		if (slot != null && slot.hasItem()) {
+			ItemStack slotOriginalStack = slot.getItem();
+			stack = slotOriginalStack.copy();
+			if (index >= 36) {  // Comes from the binder
+				if (!moveItemStackTo(slotOriginalStack, 0, 36, true)) {
+					return ItemStack.EMPTY;
+				}
+			} else {
+				int mode = binderStack.getTag().getInt("mode_mtc");
+				if (!Tools.isValidCard(stack)) {
+					return ItemStack.EMPTY;
+				}
+				switch (mode) {
+					case BinderItem.MODE_STD:
+						if (!moveItemStackTo(slotOriginalStack, 36 + (binderPage * BinderItemInventory.getStacksPerPage()),
+								36 + BinderItemInventory.getStacksPerPage() + (binderPage * BinderItemInventory.getStacksPerPage()), false))
+							return ItemStack.EMPTY;
+						break;
+					case BinderItem.MODE_FIL:
+						if (!moveItemStackTo(slotOriginalStack, 36 + (binderPage * BinderItemInventory.getStacksPerPage()),
+								36 + (BinderItemInventory.getStacksPerPage() * BinderItemInventory.getTotalPages()), false))
+							return ItemStack.EMPTY;
+						break;
 				/*case BinderItem.MODE_PLA:
 				CardStructure cs = Databank.getCardByCDWD(providerSlot.getStack().stackTagCompound.getString("cdwd"));
 
@@ -97,51 +96,51 @@ public class BinderItemContainer extends Container {
 						!mergeItemStack(providedStack, 36 + cs.numeral - 1, 36 + cs.numeral, false)) /// Note: Works. But player and server should use the same editions for better results
 					return null;
 				break;*/
+				}
 			}
 
-			tmp = providedStack.getCount();
-			providerSlot.putStack(tmp < 1 ? ItemStack.EMPTY : providedStack); // Inform the slot about some changes
-			providerSlot.onSlotChanged();
+			if (slotOriginalStack.isEmpty()) {
+				slot.set(ItemStack.EMPTY);
+			} else {
+				slot.setChanged();
+			}
 		}
 
-		return ItemStack.EMPTY;
+		return stack;
 	}
 
-	public ItemStack slotClick(int slot, int dragType, ClickType clickType, EntityPlayer player) {
-
-		if (binderStack.getTagCompound() == null) // Invalid binder
+	@Override
+	public ItemStack clicked(int slot, int dragType, ClickType clickType, PlayerEntity player) {
+		if (slot == player.inventory.selected) { // Can't slot click on the binder
 			return ItemStack.EMPTY;
+		}
 
-		if (slot == player.inventory.currentItem) // Can't slot click on the binder
-			return ItemStack.EMPTY;
-
-		return super.slotClick(slot, dragType, clickType, player);
+		return super.clicked(slot, dragType, clickType, player);
 	}
 
-	public boolean canInteractWith(EntityPlayer playerIn) {
-		return true;
+	public ItemStack getCardStackAtIndex(int index) {
+		return slots.get(index + 36).getItem(); // Adding player's inventory size
 	}
 
 	public int getCurrentPage() {
 		return BinderItem.getCurrentPage(binderStack);
 	}
 
-	public void onContainerClosed(EntityPlayer player) {
-		if (binderStack != null && binderStack.getTagCompound() != null)
-			writeToNBT(binderStack.getTagCompound()); // Save data
-
-		super.onContainerClosed(player);
-	}
-
-	public void readFromNBT(NBTTagCompound nbt) {
-		binderInventory.deserializeNBT(nbt.getCompoundTag("Items"));
-	}
-
-	public void writeToNBT(NBTTagCompound nbt) {
-		nbt.setTag("Items", binderInventory.serializeNBT());
-	}
-
 	public ItemStack getBinderStack() {
 		return binderStack;
+	}
+
+	static class CardSlotItemHandler extends SlotItemHandler {
+		BinderItemContainer container;
+
+		CardSlotItemHandler(BinderItemContainer container, IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+			super(itemHandler, index, xPosition, yPosition);
+			this.container = container;
+		}
+
+		@Override
+		public boolean isActive() {
+			return this.getSlotIndex() / BinderItemInventory.getStacksPerPage() == container.getCurrentPage();
+		}
 	}
 }

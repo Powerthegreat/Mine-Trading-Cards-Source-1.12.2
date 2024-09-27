@@ -1,81 +1,97 @@
 package com.is.mtc.displayer_mono;
 
-import com.is.mtc.displayer.DisplayerBlockTileEntity;
-import net.minecraft.nbt.NBTTagCompound;
+import com.is.mtc.init.MTCBlocks;
+import com.is.mtc.init.MTCTileEntities;
+import com.is.mtc.util.Reference;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.LockableLootTileEntity;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
-public class MonoDisplayerBlockTileEntity extends DisplayerBlockTileEntity {
+public class MonoDisplayerBlockTileEntity extends LockableLootTileEntity {
 	public static final int INVENTORY_SIZE = 1;
-
-	/*-*/
+	protected NonNullList<ItemStack> items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
 
 	public MonoDisplayerBlockTileEntity() {
-		/*content = new ItemStack[INVENTORY_SIZE];
-		Arrays.fill(content, ItemStack.EMPTY);*/
+		super(MTCTileEntities.monoDisplayerBlockTileEntity.get());
 	}
 
-	public int getSlots() {
+	@Override
+	public CompoundNBT save(CompoundNBT nbt) {
+		super.save(nbt);
+		if (!this.trySaveLootTable(nbt)) {
+			ItemStackHelper.saveAllItems(nbt, items);
+		}
+		return nbt;
+	}
+
+	@Override
+	public void load(BlockState state, CompoundNBT nbt) {
+		super.load(state, nbt);
+		items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
+		if (!this.tryLoadLootTable(nbt)) {
+			ItemStackHelper.loadAllItems(nbt, items);
+		}
+	}
+
+	@Override
+	protected ITextComponent getDefaultName() {
+		return new TranslationTextComponent("container." + Reference.MODID + ".block_monodisplayer");
+	}
+
+	@Override
+	protected Container createMenu(int id, PlayerInventory player) {
+		return new MonoDisplayerBlockContainer(id, player, this);
+	}
+
+	public SUpdateTileEntityPacket getUpdatePacket() {
+		CompoundNBT nbt = new CompoundNBT();
+		save(nbt);
+
+		return new SUpdateTileEntityPacket(this.worldPosition, -1, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		super.onDataPacket(net, pkt);
+		CompoundNBT nbt = pkt.getTag();
+		load(MTCBlocks.displayerBlock.get().defaultBlockState(), nbt);
+	}
+
+	@Override
+	protected NonNullList<ItemStack> getItems() {
+		return items;
+	}
+
+	@Override
+	protected void setItems(NonNullList<ItemStack> items) {
+		this.items = items;
+	}
+
+	@Override
+	public int getContainerSize() {
 		return INVENTORY_SIZE;
 	}
 
-	/*-*/
+	@Override
+	public CompoundNBT getUpdateTag() {
+		CompoundNBT nbt = super.getUpdateTag();
+		save(nbt);
 
-	/*public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
-		NBTTagList nbttaglist = nbt.getTagList("Items", 10);
-		content = new ItemStack[getSlots()];
-		Arrays.fill(content, ItemStack.EMPTY);
-
-		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbtTagCompound = nbttaglist.getCompoundTagAt(i);
-			int j = nbtTagCompound.getByte("Slot") & 255;
-
-			if (j >= 0 && j < content.length) {
-				ItemStack item = new ItemStack(GameRegistry.findRegistry(Item.class).getValue(new ResourceLocation(nbtTagCompound.getString("id").split(":")[0], nbtTagCompound.getString("id").split(":")[1])));
-				item.setCount(nbtTagCompound.getInteger("Count"));
-				item.setTagCompound(nbtTagCompound.getCompoundTag("tag"));
-				content[j] = item;
-			}
-		}
-	}
-
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-		NBTTagList nbttaglist = new NBTTagList();
-
-		for (int i = 0; i < content.length; ++i) {
-			if (!content[i].isEmpty()) {
-				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-				nbttagcompound1.setByte("Slot", (byte) i);
-				content[i].writeToNBT(nbttagcompound1);
-				nbttaglist.appendTag(nbttagcompound1);
-			}
-		}
-
-		nbt.setTag("Items", nbttaglist);
-		readFromNBT(nbt);
 		return nbt;
-	}*/
-
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound syncData = new NBTTagCompound();
-		writeToNBT(syncData);
-
-		return new SPacketUpdateTileEntity(new BlockPos(this.pos.getX(), this.pos.getY(), this.pos.getZ()), 1, syncData);
 	}
 
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.getNbtCompound());
+	@Override
+	public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+		super.handleUpdateTag(state, tag);
+		load(state, tag);
 	}
-
-	/*@Override
-	public void updateContainingBlockInfo() { // Allow data being sync on game loading
-
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord); // Makes the server call getDescriptionPacket for a full data sync
-		markDirty();
-
-		super.updateContainingBlockInfo();
-	}*/
 }

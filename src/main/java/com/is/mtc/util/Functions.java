@@ -1,23 +1,12 @@
 package com.is.mtc.util;
 
 import com.is.mtc.root.Logs;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Random;
 
 public class Functions {
-
-
 	private static final int MINECRAFT_ID_HASH = "minecraft".hashCode();
 	private static final int MINECRAFT_ID_TARGET_HASH = 0x5e8f51;
 	// base 16777216 plus target color int, minus "minecraft" hash 7207341
@@ -37,7 +26,7 @@ public class Functions {
 	 * <p>
 	 * horizIndex is the integer that represents the orientation of the structure.
 	 */
-	public static int getMedianGroundLevel(World world, StructureBoundingBox boundingBox, boolean outlineOnly, byte sideFlag, int horizIndex) {
+	/*public static int getMedianGroundLevel(World world, StructureBoundingBox boundingBox, boolean outlineOnly, byte sideFlag, int horizIndex) {
 		ArrayList<Integer> i = new ArrayList<Integer>();
 
 		for (int k = boundingBox.minZ; k <= boundingBox.maxZ; ++k) {
@@ -62,12 +51,12 @@ public class Functions {
 		}
 
 		return medianIntArray(i, true);
-	}
+	}*/
 
 	/**
 	 * Returns the space above the topmost block that is solid or liquid. Does not count leaves or other foliage
 	 */
-	public static BlockPos getAboveTopmostSolidOrLiquidBlockVN(World world, BlockPos pos) {
+	/*public static BlockPos getAboveTopmostSolidOrLiquidBlockVN(World world, BlockPos pos) {
 
 		Chunk chunk = world.getChunk(pos);
 		BlockPos blockpos;
@@ -97,14 +86,14 @@ public class Functions {
 		}
 
 		return blockpos;
-	}
+	}*/
 
 	/**
 	 * Returns the median value of an int array.
 	 * If the returned value is a halfway point, round up or down depending on if the average value is higher or lower than the median.
 	 * If it's the same, specify based on roundup parameter.
 	 */
-	public static int medianIntArray(ArrayList<Integer> array, boolean roundup) {
+	/*public static int medianIntArray(ArrayList<Integer> array, boolean roundup) {
 		if (array.size() <= 0) return -1;
 
 		Collections.sort(array);
@@ -147,12 +136,12 @@ public class Functions {
 			//LogHelper.info("Median chosen type E: " + array.get(array.size()/2));
 			return array.get(array.size() / 2);
 		}
-	}
+	}*/
 
 	/**
 	 * Deletes EntityItems within a given structure bounding box
 	 */
-	public static void cleanEntityItems(World world, StructureBoundingBox boundingBox) {
+	/*public static void cleanEntityItems(World world, MutableBoundingBox StructureBoundingBox boundingBox) {
 		// selectEntitiesWithinAABB is an AABB method
 		AxisAlignedBB aabb = (new AxisAlignedBB(
 				// Modified to center onto front of house
@@ -173,7 +162,7 @@ public class Functions {
 				Logs.devLog("Cleaned " + list.size() + " Entity items within " + aabb.toString());
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Inputs a color string, either as a decimal integer or a hex integer
